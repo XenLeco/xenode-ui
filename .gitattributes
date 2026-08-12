@@ -1,0 +1,14 @@
+# Normalize line endings: text files as LF in the repo, native on checkout.
+* text=auto
+
+# Files that must always be LF, even on Windows checkouts.
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files.
+*.ico binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.woff2 binary
