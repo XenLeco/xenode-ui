@@ -50,7 +50,9 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  /* 0.55, not shadcn's 0.704: white text on the stock dark red measures
+     2.75:1 (needs 4.5:1, SC 1.4.3). Same red family as light mode. */
+  --destructive: oklch(0.55 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 12%);
   /* 36% alpha, not shadcn's 16% (~1.5:1 composited on --background):
