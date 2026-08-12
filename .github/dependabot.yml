@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    # Wait out the first week after a release before proposing it — most
+    # supply-chain compromises are caught within days of publication.
+    # Security advisories bypass the cooldown.
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    cooldown:
+      default-days: 7

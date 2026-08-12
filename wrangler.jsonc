@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "danleco-portfolio",
+  "compatibility_date": "2026-08-12",
+  // Assets-only Worker: no "main" entry — Cloudflare serves the prerendered
+  // static output directly.
+  "assets": {
+    "directory": "./dist/portfolio/browser",
+    "html_handling": "auto-trailing-slash",
+    // Serves 404.html for unknown paths — the build must prerender one.
+    "not_found_handling": "404-page"
+  }
+  // Attach the custom domain once Cloudflare secrets + DNS are set up:
+  // "routes": [
+  //   { "pattern": "danleco.dev", "custom_domain": true },
+  //   { "pattern": "www.danleco.dev", "custom_domain": true }
+  // ]
+}
