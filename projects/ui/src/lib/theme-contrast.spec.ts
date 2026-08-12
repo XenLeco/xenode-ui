@@ -47,7 +47,7 @@ const compositeOver = (fgCss: string, bgCss: string): Rgb => {
   };
 };
 
-const TEXT_PAIRS: ReadonlyArray<readonly [string, string]> = [
+const TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['foreground', 'background'],
   ['card-foreground', 'card'],
   ['primary-foreground', 'primary'],
@@ -58,7 +58,7 @@ const TEXT_PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['destructive-foreground', 'destructive'],
 ];
 
-const NON_TEXT_PAIRS: ReadonlyArray<readonly [string, string]> = [
+const NON_TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['ring', 'background'],
   ['input', 'background'],
 ];
