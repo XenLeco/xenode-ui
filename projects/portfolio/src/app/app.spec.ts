@@ -1,10 +1,14 @@
+import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
+
 import { App } from './app';
+import { routes } from './app.routes';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter(routes)],
     }).compileComponents();
   });
 
@@ -14,12 +18,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('renders the site header with the theme toggle', async () => {
+  it('renders the site header with nav and theme toggle', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('header')?.textContent).toContain('danleco.dev');
-    const toggleButtons = compiled.querySelectorAll('app-theme-toggle button');
-    expect(toggleButtons.length).toBe(3);
+    expect(compiled.querySelector('nav')?.textContent).toContain('danleco.dev');
+    expect(compiled.querySelector('nav')?.textContent).toContain('Components');
+    expect(compiled.querySelectorAll('app-theme-toggle button').length).toBe(3);
   });
 });

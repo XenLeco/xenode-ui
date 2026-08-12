@@ -9,6 +9,7 @@
     "test": "ng test portfolio --watch=false && ng test @xenode/ui --watch=false",
     "lint": "ng lint",
     "build:portfolio": "ng build portfolio",
+    "postbuild:portfolio": "node tools/postbuild-404.mjs",
     "csp:hash": "node tools/csp-hash.mjs"
   },
   "private": true,
