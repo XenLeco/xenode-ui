@@ -1,0 +1,12 @@
+<div role="group" aria-label="Color theme" class="inline-flex items-center gap-1 rounded-md border border-input p-1">
+  @for (option of options; track option) {
+    <button
+      type="button"
+      [attr.aria-pressed]="theme.preference() === option"
+      (click)="theme.setPreference(option)"
+      class="rounded-sm px-2 py-1 text-sm capitalize text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-pressed:bg-secondary aria-pressed:text-foreground"
+    >
+      {{ option }}
+    </button>
+  }
+</div>

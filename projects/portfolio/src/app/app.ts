@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
+import { ThemeToggle } from './theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ThemeToggle],
   templateUrl: './app.html',
-  styles: [],
 })
-export class App {
-  protected readonly title = signal('portfolio');
-}
+export class App {}

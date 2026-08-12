@@ -6,6 +6,10 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 
+# index.html carries a CSP-hashed inline script; identical bytes on every
+# platform keep the hash valid.
+*.html text eol=lf
+
 # Binary files.
 *.ico binary
 *.png binary

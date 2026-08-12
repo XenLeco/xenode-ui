@@ -2,10 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Portfolio</title>
+    <title>Dan Leco — developer</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Developer building open-source tools in C# and Angular — game server panel, component library, bots and MCP servers."
+    />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      Theme init: must run before first paint, hence inline in <head>.
+      No stored preference means dark (brand default); 'system' follows the OS.
+      Single line on purpose: its SHA-256 is allowlisted in the CSP
+      (public/_headers) — if you change ANY byte here, regenerate the hash:
+      npm run csp:hash
+    -->
+    <!-- prettier-ignore -->
+    <script>(()=>{try{const t=localStorage.getItem('theme');document.documentElement.classList.toggle('dark',t==='light'?false:t==='system'?matchMedia('(prefers-color-scheme: dark)').matches:true)}catch(e){document.documentElement.classList.add('dark')}})();</script>
   </head>
   <body>
     <app-root></app-root>

@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test portfolio --watch=false && ng test @xenode/ui --watch=false",
     "lint": "ng lint",
-    "build:portfolio": "ng build portfolio"
+    "build:portfolio": "ng build portfolio",
+    "csp:hash": "node tools/csp-hash.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

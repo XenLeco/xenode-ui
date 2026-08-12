@@ -1,3 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * source(none): in a multi-project workspace Tailwind's automatic detection
+ * scans from the repo root and would absorb classes from every project.
+ * Only the explicit @source paths below are scanned.
+ */
+@import 'tailwindcss' source(none);
+@import '../../ui/theme.css';
 
-@import 'tailwindcss';
+@source './';
+@source '../../ui/src';

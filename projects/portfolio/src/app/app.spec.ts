@@ -14,10 +14,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('renders the site header with the theme toggle', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, portfolio');
+    expect(compiled.querySelector('header')?.textContent).toContain('danleco.dev');
+    const toggleButtons = compiled.querySelectorAll('app-theme-toggle button');
+    expect(toggleButtons.length).toBe(3);
   });
 });
