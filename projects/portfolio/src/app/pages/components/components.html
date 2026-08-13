@@ -253,6 +253,55 @@
   </div>
 </section>
 
+<section class="mt-12" aria-labelledby="native-forms-heading">
+  <h2 id="native-forms-heading" class="text-lg font-semibold">Native form controls</h2>
+  <div class="mt-3 grid max-w-sm gap-6">
+    <div class="flex items-center gap-2">
+      <input xnCheckbox type="checkbox" id="nf-terms" checked />
+      <label xnLabel for="nf-terms">Accept the license</label>
+    </div>
+    <fieldset xnRadioGroup>
+      <legend class="mb-2 text-sm font-medium">Deployment target</legend>
+      <div class="flex items-center gap-2">
+        <input xnRadio type="radio" name="nf-target" id="nf-pi" checked />
+        <label xnLabel for="nf-pi">Raspberry Pi</label>
+      </div>
+      <div class="flex items-center gap-2">
+        <input xnRadio type="radio" name="nf-target" id="nf-vps" />
+        <label xnLabel for="nf-vps">VPS</label>
+      </div>
+    </fieldset>
+    <div class="flex items-center gap-2">
+      <input xnSwitch type="checkbox" id="nf-notify" />
+      <label xnLabel for="nf-notify">Email notifications</label>
+    </div>
+    <div class="grid gap-2">
+      <label xnLabel for="nf-volume">Volume</label>
+      <input xnSlider type="range" id="nf-volume" min="0" max="100" value="40" />
+    </div>
+    <div class="grid gap-2">
+      <label xnLabel for="nf-game">Game</label>
+      <select xnNativeSelect id="nf-game">
+        <option>Minecraft</option>
+        <option>Project Zomboid</option>
+      </select>
+    </div>
+    <div xnToggleGroup aria-label="Text style">
+      <button xnToggle>Bold</button>
+      <button xnToggle>Italic</button>
+      <button xnToggle disabled>Locked</button>
+    </div>
+    <details xnCollapsible>
+      <summary xnCollapsibleTrigger>
+        Advanced options <span data-chevron aria-hidden="true">⌄</span>
+      </summary>
+      <p class="pb-2 text-sm text-muted-foreground">
+        Native details/summary — the platform toggles it, the library only styles it.
+      </p>
+    </details>
+  </div>
+</section>
+
 <section class="mt-12" aria-labelledby="dialog-heading">
   <h2 id="dialog-heading" class="text-lg font-semibold">Dialog &amp; Toast</h2>
   <div class="mt-3 flex flex-wrap items-center gap-3">
