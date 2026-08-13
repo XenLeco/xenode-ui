@@ -22,3 +22,5 @@ export * from './lib/breadcrumb/breadcrumb';
 export * from './lib/avatar/avatar';
 export * from './lib/progress/progress';
 export * from './lib/accordion/accordion';
+export * from './lib/dialog/dialog';
+export * from './lib/toast/toast';

@@ -253,6 +253,30 @@
   </div>
 </section>
 
+<section class="mt-12" aria-labelledby="dialog-heading">
+  <h2 id="dialog-heading" class="text-lg font-semibold">Dialog &amp; Toast</h2>
+  <div class="mt-3 flex flex-wrap items-center gap-3">
+    <button xnButton variant="outline" (click)="confirmDialog.showModal()">Open dialog</button>
+    <button xnButton variant="secondary" (click)="showToast()">Show toast</button>
+    <button xnButton variant="destructive" (click)="showDestructiveToast()">
+      Show destructive toast
+    </button>
+  </div>
+  <dialog xnDialog #confirmDialog aria-labelledby="confirm-title">
+    <div xnDialogHeader>
+      <h2 xnDialogTitle id="confirm-title">Native dialog</h2>
+      <p xnDialogDescription>
+        showModal() traps focus, Esc closes, the backdrop is a real pseudo-element — all platform
+        behavior, zero overlay code.
+      </p>
+    </div>
+    <div xnDialogFooter>
+      <button xnButton variant="outline" (click)="confirmDialog.close()">Close</button>
+      <button xnButton (click)="confirmDialog.close()">Confirm</button>
+    </div>
+  </dialog>
+</section>
+
 <section class="mt-12" aria-labelledby="breadcrumb-heading">
   <h2 id="breadcrumb-heading" class="text-lg font-semibold">Breadcrumb</h2>
   <nav xnBreadcrumb class="mt-3">

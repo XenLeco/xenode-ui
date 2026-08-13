@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   AccordionContent,
   AccordionGroup,
@@ -17,6 +17,7 @@ import {
   Button,
   buttonVariantConfig,
   CARD,
+  DIALOG,
   Input,
   Kbd,
   Label,
@@ -25,6 +26,7 @@ import {
   Skeleton,
   TABLE,
   Textarea,
+  ToastService,
   XN_ACCORDION,
   XN_TABS,
 } from '@xenode/ui';
@@ -62,6 +64,7 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     AccordionTrigger,
     AccordionPanel,
     AccordionContent,
+    DIALOG,
   ],
   templateUrl: './components.html',
 })
@@ -79,4 +82,17 @@ export class Components {
   protected readonly alertVariants = Object.keys(
     alertVariantConfig.variants.variant,
   ) as AlertVariantName[];
+
+  private readonly toastService = inject(ToastService);
+
+  protected showToast(): void {
+    this.toastService.show('Changes saved to the library.', { title: 'Saved' });
+  }
+
+  protected showDestructiveToast(): void {
+    this.toastService.show('The deploy step exited non-zero.', {
+      title: 'Deploy failed',
+      variant: 'destructive',
+    });
+  }
 }
