@@ -202,6 +202,40 @@
   </div>
 </section>
 
+<section class="mt-12" aria-labelledby="accordion-heading">
+  <h2 id="accordion-heading" class="text-lg font-semibold">Accordion</h2>
+  <div ngAccordionGroup xnAccordion class="mt-3 max-w-xl">
+    <div xnAccordionItem>
+      <h3 class="flex">
+        <button ngAccordionTrigger xnAccordionTrigger [panel]="faqOne">
+          Why no component stylesheets?
+          <span data-chevron aria-hidden="true">⌄</span>
+        </button>
+      </h3>
+      <div ngAccordionPanel xnAccordionPanel #faqOne="ngAccordionPanel">
+        <ng-template ngAccordionContent>
+          Angular injects component CSS unlayered into the head, where it beats every Tailwind
+          utility regardless of layer order — so the library emits utility class strings only.
+        </ng-template>
+      </div>
+    </div>
+    <div xnAccordionItem>
+      <h3 class="flex">
+        <button ngAccordionTrigger xnAccordionTrigger [panel]="faqTwo">
+          Where does the behavior come from?
+          <span data-chevron aria-hidden="true">⌄</span>
+        </button>
+      </h3>
+      <div ngAccordionPanel xnAccordionPanel #faqTwo="ngAccordionPanel">
+        <ng-template ngAccordionContent>
+          &#64;angular/aria — keyboard navigation, aria wiring and expansion state. The library
+          only styles beside it.
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="mt-12" aria-labelledby="avatar-heading">
   <h2 id="avatar-heading" class="text-lg font-semibold">Avatar &amp; Progress</h2>
   <div class="mt-3 flex items-center gap-4">

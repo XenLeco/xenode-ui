@@ -1,4 +1,10 @@
 import { Component, signal } from '@angular/core';
+import {
+  AccordionContent,
+  AccordionGroup,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@angular/aria/accordion';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
 import {
@@ -19,6 +25,7 @@ import {
   Skeleton,
   TABLE,
   Textarea,
+  XN_ACCORDION,
   XN_TABS,
 } from '@xenode/ui';
 
@@ -50,6 +57,11 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     Textarea,
     AVATAR,
     Progress,
+    XN_ACCORDION,
+    AccordionGroup,
+    AccordionTrigger,
+    AccordionPanel,
+    AccordionContent,
   ],
   templateUrl: './components.html',
 })

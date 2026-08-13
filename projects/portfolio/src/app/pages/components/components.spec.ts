@@ -57,6 +57,29 @@ describe('Components', () => {
     expect(styling?.hasAttribute('inert')).toBe(false);
   });
 
+  it('composes @angular/aria accordion with the styling layer: expand toggles inert', async () => {
+    const fixture = TestBed.createComponent(Components);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const triggers = compiled.querySelectorAll<HTMLElement>('[data-slot="accordion-trigger"]');
+    const panels = () => [
+      ...compiled.querySelectorAll<HTMLElement>('[data-slot="accordion-panel"]'),
+    ];
+    expect(triggers.length).toBe(2);
+    expect(panels().every((p) => p.hasAttribute('inert'))).toBe(true);
+
+    triggers[0].click();
+    await fixture.whenStable();
+    expect(triggers[0].getAttribute('aria-expanded')).toBe('true');
+    expect(panels()[0].hasAttribute('inert')).toBe(false);
+    expect(panels()[0].textContent).toContain('unlayered');
+
+    triggers[0].click();
+    await fixture.whenStable();
+    expect(panels()[0].hasAttribute('inert')).toBe(true);
+  });
+
   it('gives every rendered button an accessible name', async () => {
     const fixture = TestBed.createComponent(Components);
     await fixture.whenStable();

@@ -21,3 +21,4 @@ export * from './lib/table/table';
 export * from './lib/breadcrumb/breadcrumb';
 export * from './lib/avatar/avatar';
 export * from './lib/progress/progress';
+export * from './lib/accordion/accordion';
