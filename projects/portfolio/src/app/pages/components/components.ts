@@ -11,7 +11,6 @@ import {
   ALERT,
   alertVariantConfig,
   AVATAR,
-  AspectRatio,
   Badge,
   badgeVariantConfig,
   BREADCRUMB,
