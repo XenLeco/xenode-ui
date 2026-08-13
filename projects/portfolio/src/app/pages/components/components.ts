@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
 import {
   Badge,
@@ -8,6 +9,7 @@ import {
   CARD,
   Input,
   Label,
+  XN_TABS,
 } from '@xenode/ui';
 
 type VariantName = keyof typeof buttonVariantConfig.variants.variant;
@@ -16,7 +18,7 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
 
 @Component({
   selector: 'app-components',
-  imports: [Button, Badge, CARD, Label, Input],
+  imports: [Button, Badge, CARD, Label, Input, XN_TABS, Tabs, TabList, Tab, TabPanel, TabContent],
   templateUrl: './components.html',
 })
 export class Components {
@@ -27,4 +29,6 @@ export class Components {
   protected readonly badgeVariants = Object.keys(
     badgeVariantConfig.variants.variant,
   ) as BadgeVariantName[];
+
+  protected readonly selectedTab = signal<string | undefined>('overview');
 }

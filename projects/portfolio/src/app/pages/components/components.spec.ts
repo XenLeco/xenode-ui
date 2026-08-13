@@ -35,6 +35,28 @@ describe('Components', () => {
     ).toBe(badgeCount + 1);
   });
 
+  it('composes @angular/aria tabs with the styling layer: clicking switches panels', async () => {
+    const fixture = TestBed.createComponent(Components);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const tabs = compiled.querySelectorAll<HTMLElement>('[data-slot="tab"]');
+    const panels = () => [...compiled.querySelectorAll<HTMLElement>('[data-slot="tab-panel"]')];
+    expect(tabs.length).toBe(3);
+
+    // Initial state: first tab selected, the other panels are inert.
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+    expect(panels().filter((p) => p.hasAttribute('inert')).length).toBe(2);
+
+    tabs[1].click();
+    await fixture.whenStable();
+
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+    expect(tabs[0].getAttribute('aria-selected')).toBe('false');
+    const styling = panels().find((p) => p.textContent?.includes('aria-selected'));
+    expect(styling?.hasAttribute('inert')).toBe(false);
+  });
+
   it('gives every rendered button an accessible name', async () => {
     const fixture = TestBed.createComponent(Components);
     await fixture.whenStable();

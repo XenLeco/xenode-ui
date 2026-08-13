@@ -91,3 +91,35 @@
     </div>
   </div>
 </section>
+
+<section class="mt-12" aria-labelledby="tabs-heading">
+  <h2 id="tabs-heading" class="text-lg font-semibold">Tabs</h2>
+  <div ngTabs xnTabs class="mt-3">
+    <ul ngTabList xnTabList [(selectedTab)]="selectedTab">
+      <li ngTab xnTab value="overview">Overview</li>
+      <li ngTab xnTab value="styling">Styling</li>
+      <li ngTab xnTab value="locked" disabled>Locked</li>
+    </ul>
+    <div ngTabPanel xnTabPanel value="overview">
+      <ng-template ngTabContent>
+        <p class="max-w-prose text-muted-foreground">
+          Behavior — roving focus, arrow keys, aria wiring — comes from &#64;angular/aria. The
+          library ships only the styling directives composed beside it.
+        </p>
+      </ng-template>
+    </div>
+    <div ngTabPanel xnTabPanel value="styling">
+      <ng-template ngTabContent>
+        <p class="max-w-prose text-muted-foreground">
+          Selected-state styling reads aria-selected, so visual state and accessible state cannot
+          disagree.
+        </p>
+      </ng-template>
+    </div>
+    <div ngTabPanel xnTabPanel value="locked">
+      <ng-template ngTabContent>
+        <p>Never rendered — the tab is disabled.</p>
+      </ng-template>
+    </div>
+  </div>
+</section>
