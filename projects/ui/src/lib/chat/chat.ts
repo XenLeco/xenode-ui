@@ -198,16 +198,23 @@ export class AttachmentRemove {
  */
 @Directive({ selector: '[xnMarker]', host: { 'data-slot': 'marker', '[class]': 'classes()' } })
 export class Marker {
-  readonly variant = input<'default' | 'active' | 'danger'>('default');
+  readonly variant = input<'default' | 'active' | 'danger' | 'success' | 'warning' | 'info'>(
+    'default',
+  );
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
       'inline-block size-2 shrink-0 rounded-full',
-      { default: 'bg-muted-foreground', active: 'bg-primary', danger: 'bg-destructive' }[
-        this.variant()
-      ],
+      {
+        default: 'bg-muted-foreground',
+        active: 'bg-primary',
+        danger: 'bg-destructive',
+        success: 'bg-success',
+        warning: 'bg-warning',
+        info: 'bg-info',
+      }[this.variant()],
       this.userClass(),
     ),
   );

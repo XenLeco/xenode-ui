@@ -32,6 +32,19 @@
      surface (white text on it) and fails 4.5:1 as dark-mode text — this
      pair is tuned for text and contrast-tested as such. */
   --danger: oklch(0.577 0.245 27.325);
+  /* Semantic status colors: each is a surface (+foreground for text ON it)
+     plus a -text pair tuned for use AS text on the page background. All
+     locked by the contrast test. Amber cannot hold white text, so warning
+     uses dark foreground. */
+  --success: oklch(0.5 0.13 150);
+  --success-foreground: oklch(0.985 0 0);
+  --success-text: oklch(0.45 0.12 150);
+  --warning: oklch(0.82 0.15 85);
+  --warning-foreground: oklch(0.205 0 0);
+  --warning-text: oklch(0.5 0.1 85);
+  --info: oklch(0.5 0.16 255);
+  --info-foreground: oklch(0.985 0 0);
+  --info-text: oklch(0.48 0.15 255);
   --border: oklch(0.922 0 0);
   /* 0.65, not shadcn's 0.922 (1.26:1): an input's border is often its only
      visible boundary, so it needs ≥3:1 (SC 1.4.11). */
@@ -59,6 +72,15 @@
   --destructive: oklch(0.55 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --danger: oklch(0.704 0.191 22.216);
+  --success: oklch(0.45 0.12 150);
+  --success-foreground: oklch(0.985 0 0);
+  --success-text: oklch(0.75 0.13 150);
+  --warning: oklch(0.75 0.14 85);
+  --warning-foreground: oklch(0.205 0 0);
+  --warning-text: oklch(0.8 0.13 85);
+  --info: oklch(0.5 0.16 255);
+  --info-foreground: oklch(0.985 0 0);
+  --info-text: oklch(0.72 0.12 255);
   --border: oklch(1 0 0 / 12%);
   /* 36% alpha, not shadcn's 16% (~1.5:1 composited on --background):
      functional boundaries need ≥3:1 (SC 1.4.11). */
@@ -88,6 +110,15 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-text: var(--warning-text);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-text: var(--info-text);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

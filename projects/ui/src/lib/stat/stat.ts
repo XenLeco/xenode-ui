@@ -54,15 +54,15 @@ export class StatValue {
   host: { 'data-slot': 'stat-delta', '[class]': 'classes()' },
 })
 export class StatDelta {
-  /** 'down' renders in the danger text token; 'up' stays neutral-strong. */
-  readonly trend = input<'up' | 'down'>('up');
+  /** Trend colors use the text-tuned status tokens. */
+  readonly trend = input<'up' | 'down' | 'flat'>('up');
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
       'text-xs font-medium',
-      this.trend() === 'down' ? 'text-danger' : 'text-foreground',
+      { up: 'text-success-text', down: 'text-danger', flat: 'text-muted-foreground' }[this.trend()],
       this.userClass(),
     ),
   );

@@ -13,6 +13,9 @@ export const calloutVariantConfig = {
       default: 'bg-card text-card-foreground',
       accent: 'border-transparent bg-accent text-accent-foreground',
       destructive: 'border-transparent bg-destructive text-destructive-foreground',
+      success: 'border-transparent bg-success text-success-foreground',
+      warning: 'border-transparent bg-warning text-warning-foreground',
+      info: 'border-transparent bg-info text-info-foreground',
     },
   },
   defaultVariants: { variant: 'default' },
@@ -56,11 +59,20 @@ export class CalloutContent {
 /** Full-width announcement bar for the top of a page. */
 @Directive({ selector: '[xnBanner]', host: { 'data-slot': 'banner', '[class]': 'classes()' } })
 export class Banner {
+  readonly variant = input<'default' | 'success' | 'warning' | 'destructive' | 'info'>('default');
+
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'flex w-full items-center justify-center gap-3 bg-primary px-4 py-2 text-sm text-primary-foreground',
+      'flex w-full items-center justify-center gap-3 px-4 py-2 text-sm',
+      {
+        default: 'bg-primary text-primary-foreground',
+        success: 'bg-success text-success-foreground',
+        warning: 'bg-warning text-warning-foreground',
+        destructive: 'bg-destructive text-destructive-foreground',
+        info: 'bg-info text-info-foreground',
+      }[this.variant()],
       this.userClass(),
     ),
   );

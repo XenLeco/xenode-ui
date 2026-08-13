@@ -58,6 +58,12 @@ const TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['destructive-foreground', 'destructive'],
   ['danger', 'background'],
   ['danger', 'card'],
+  ['success-foreground', 'success'],
+  ['warning-foreground', 'warning'],
+  ['info-foreground', 'info'],
+  ['success-text', 'background'],
+  ['warning-text', 'background'],
+  ['info-text', 'background'],
 ];
 
 const NON_TEXT_PAIRS: readonly (readonly [string, string])[] = [

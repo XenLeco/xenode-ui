@@ -15,11 +15,14 @@ import { cn } from '../cn';
   },
 })
 export class Spinner {
+  readonly size = input<'sm' | 'default' | 'lg'>('default');
+
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent',
+      'inline-block animate-spin rounded-full border-2 border-current border-t-transparent',
+      { sm: 'size-3', default: 'size-4', lg: 'size-6 border-[3px]' }[this.size()],
       this.userClass(),
     ),
   );

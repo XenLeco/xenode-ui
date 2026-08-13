@@ -2,9 +2,11 @@ import { Component, Service, computed, inject, signal } from '@angular/core';
 
 import { cn } from '../cn';
 
+export type ToastVariant = 'default' | 'destructive' | 'success' | 'warning' | 'info';
+
 export interface ToastOptions {
   title?: string;
-  variant?: 'default' | 'destructive';
+  variant?: ToastVariant;
   /** Milliseconds until auto-dismiss; 0 disables auto-dismiss. */
   duration?: number;
 }
@@ -13,7 +15,7 @@ export interface ActiveToast {
   readonly id: number;
   readonly message: string;
   readonly title?: string;
-  readonly variant: 'default' | 'destructive';
+  readonly variant: ToastVariant;
 }
 
 /**
@@ -85,9 +87,13 @@ export class Toaster {
   protected classFor(variant: ActiveToast['variant']): string {
     return cn(
       'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border p-4 shadow-lg transition-[opacity,translate] duration-200 starting:translate-y-2 starting:opacity-0',
-      variant === 'destructive'
-        ? 'border-transparent bg-destructive text-destructive-foreground'
-        : 'bg-card text-card-foreground',
+      {
+        default: 'bg-card text-card-foreground',
+        destructive: 'border-transparent bg-destructive text-destructive-foreground',
+        success: 'border-transparent bg-success text-success-foreground',
+        warning: 'border-transparent bg-warning text-warning-foreground',
+        info: 'border-transparent bg-info text-info-foreground',
+      }[variant],
     );
   }
 }

@@ -18,7 +18,8 @@ import { cn } from '../cn';
   template: `
     <div
       data-slot="progress-indicator"
-      class="h-full w-full flex-1 bg-primary transition-transform"
+      class="h-full w-full flex-1 transition-transform"
+      [class]="indicatorClass()"
       [style.transform]="'translateX(-' + (100 - percent()) + '%)'"
     ></div>
   `,
@@ -34,6 +35,17 @@ import { cn } from '../cn';
 export class Progress {
   readonly value = input(0, { transform: numberAttribute });
   readonly max = input(100, { transform: numberAttribute });
+  readonly variant = input<'default' | 'success' | 'warning' | 'destructive'>('default');
+
+  protected readonly indicatorClass = computed(
+    () =>
+      ({
+        default: 'bg-primary',
+        success: 'bg-success',
+        warning: 'bg-warning',
+        destructive: 'bg-destructive',
+      })[this.variant()],
+  );
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
