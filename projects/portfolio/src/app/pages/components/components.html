@@ -81,7 +81,7 @@
         aria-describedby="demo-email-error"
         value="not-an-email"
       />
-      <p id="demo-email-error" class="text-sm text-destructive">
+      <p id="demo-email-error" class="text-sm text-danger">
         Enter a valid email address.
       </p>
     </div>
@@ -250,6 +250,48 @@
     <div class="w-64">
       <div xnProgress value="60" aria-label="Tier A build progress"></div>
     </div>
+  </div>
+</section>
+
+<section class="mt-12" aria-labelledby="statics-heading">
+  <h2 id="statics-heading" class="text-lg font-semibold">Spinner, Empty, Groups &amp; Pagination</h2>
+  <div class="mt-3 grid max-w-xl gap-6">
+    <div class="flex items-center gap-3">
+      <span xnSpinner aria-label="Loading example"></span>
+      <span class="text-sm text-muted-foreground">Loading…</span>
+      <div xnButtonGroup aria-label="View density" class="ml-auto">
+        <button xnButton variant="outline" size="sm">Compact</button>
+        <button xnButton variant="outline" size="sm">Cozy</button>
+      </div>
+    </div>
+    <div xnEmpty>
+      <p xnEmptyTitle>No servers yet</p>
+      <p xnEmptyDescription>Create your first game server to see it here.</p>
+    </div>
+    <div xnField>
+      <label xnLabel for="st-domain">Domain</label>
+      <div xnInputGroup>
+        <span xnInputAddon>https://</span>
+        <input xnInput id="st-domain" class="rounded-l-none" value="danleco.dev" />
+      </div>
+      <p xnFieldDescription>Where the portfolio deploys.</p>
+    </div>
+    <nav xnPagination>
+      <ul xnPaginationList>
+        <li><a xnPaginationLink href="/components">‹</a></li>
+        <li><a xnPaginationLink href="/components" aria-current="page">1</a></li>
+        <li><a xnPaginationLink href="/components">2</a></li>
+        <li><a xnPaginationLink href="/components">›</a></li>
+      </ul>
+    </nav>
+    <article xnProse>
+      <h2>Typography</h2>
+      <p>
+        One <code>xnProse</code> wrapper styles plain semantic HTML — headings, lists, quotes and
+        <a href="/components">links</a> — with no per-element classes.
+      </p>
+      <blockquote>Build it, then verify it against the real thing.</blockquote>
+    </article>
   </div>
 </section>
 

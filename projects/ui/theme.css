@@ -28,6 +28,10 @@
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
+  /* Destructive AS TEXT on the page background. --destructive is tuned as a
+     surface (white text on it) and fails 4.5:1 as dark-mode text — this
+     pair is tuned for text and contrast-tested as such. */
+  --danger: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   /* 0.65, not shadcn's 0.922 (1.26:1): an input's border is often its only
      visible boundary, so it needs ≥3:1 (SC 1.4.11). */
@@ -54,6 +58,7 @@
      2.75:1 (needs 4.5:1, SC 1.4.3). Same red family as light mode. */
   --destructive: oklch(0.55 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
+  --danger: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
   /* 36% alpha, not shadcn's 16% (~1.5:1 composited on --background):
      functional boundaries need ≥3:1 (SC 1.4.11). */
@@ -82,6 +87,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-danger: var(--danger);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
