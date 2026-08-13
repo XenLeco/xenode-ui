@@ -356,6 +356,58 @@
       Hover or focus me
     </button>
   </div>
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <button xnButton variant="outline" (click)="alertDlg.showModal()">Alert dialog</button>
+    <button xnButton variant="outline" (click)="sheetDlg.showModal()">Sheet</button>
+    <button xnButton variant="outline" (click)="drawerDlg.showModal()">Drawer</button>
+    <div xnDropdown>
+      <button xnButton variant="outline" ngMenuTrigger [menu]="demoMenu">Menu ▾</button>
+      <div
+        ngMenu
+        xnMenu
+        #demoMenu="ngMenu"
+        aria-label="Server actions"
+        (itemSelected)="onMenuSelect($event); demoMenu.close()"
+      >
+        <ng-template ngMenuContent>
+          <div ngMenuItem xnMenuItem value="restart">Restart server</div>
+          <div ngMenuItem xnMenuItem value="logs">View logs</div>
+          <div ngMenuItem xnMenuItem value="delete" [disabled]="true">Delete (locked)</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <dialog xnAlertDialog #alertDlg aria-labelledby="ad-title">
+    <div xnDialogHeader>
+      <h2 xnDialogTitle id="ad-title">Stop the server?</h2>
+      <p xnDialogDescription>Players will be disconnected. The world is saved first.</p>
+    </div>
+    <div xnDialogFooter>
+      <button xnButton variant="outline" (click)="alertDlg.close()">Cancel</button>
+      <button xnButton variant="destructive" (click)="alertDlg.close()">Stop server</button>
+    </div>
+  </dialog>
+  <dialog xnSheet #sheetDlg aria-labelledby="sheet-title">
+    <div xnDialogHeader>
+      <h2 xnDialogTitle id="sheet-title">Side sheet</h2>
+      <p xnDialogDescription>A native dialog pinned to the edge by margin override.</p>
+    </div>
+    <div xnScrollArea class="max-h-64 flex-1" tabindex="0" aria-label="Sheet content">
+      <p class="text-sm text-muted-foreground">Scrollable content lives here.</p>
+    </div>
+    <div xnDialogFooter>
+      <button xnButton variant="outline" (click)="sheetDlg.close()">Close</button>
+    </div>
+  </dialog>
+  <dialog xnDrawer #drawerDlg aria-labelledby="drawer-title">
+    <div xnDialogHeader>
+      <h2 xnDialogTitle id="drawer-title">Bottom drawer</h2>
+      <p xnDialogDescription>Same platform, different margins.</p>
+    </div>
+    <div xnDialogFooter>
+      <button xnButton variant="outline" (click)="drawerDlg.close()">Close</button>
+    </div>
+  </dialog>
   <dialog xnDialog #confirmDialog aria-labelledby="confirm-title">
     <div xnDialogHeader>
       <h2 xnDialogTitle id="confirm-title">Native dialog</h2>

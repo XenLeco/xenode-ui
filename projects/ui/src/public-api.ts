@@ -40,3 +40,6 @@ export * from './lib/button-group/button-group';
 export * from './lib/input-group/input-group';
 export * from './lib/field/field';
 export * from './lib/pagination/pagination';
+export * from './lib/dialog/dialog-derivatives';
+export * from './lib/scroll-area/scroll-area';
+export * from './lib/dropdown/dropdown';

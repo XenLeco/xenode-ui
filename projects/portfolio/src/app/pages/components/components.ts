@@ -5,6 +5,7 @@ import {
   AccordionPanel,
   AccordionTrigger,
 } from '@angular/aria/accordion';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
 import {
@@ -21,6 +22,7 @@ import {
   Checkbox,
   COLLAPSIBLE,
   DIALOG,
+  DIALOG_DERIVATIVES,
   EMPTY,
   FIELD,
   Input,
@@ -32,6 +34,7 @@ import {
   Progress,
   Prose,
   RADIO_GROUP,
+  ScrollArea,
   Separator,
   Skeleton,
   Spinner,
@@ -44,6 +47,7 @@ import {
   ToggleGroup,
   Tooltip,
   XN_ACCORDION,
+  XN_DROPDOWN,
   XN_TABS,
 } from '@xenode/ui';
 
@@ -97,6 +101,13 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     INPUT_GROUP,
     FIELD,
     PAGINATION,
+    DIALOG_DERIVATIVES,
+    ScrollArea,
+    XN_DROPDOWN,
+    Menu,
+    MenuItem,
+    MenuTrigger,
+    MenuContent,
   ],
   templateUrl: './components.html',
 })
@@ -126,5 +137,9 @@ export class Components {
       title: 'Deploy failed',
       variant: 'destructive',
     });
+  }
+
+  protected onMenuSelect(action: string): void {
+    this.toastService.show(`Menu action: ${action}`, { title: 'Selected' });
   }
 }
