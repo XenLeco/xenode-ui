@@ -18,7 +18,9 @@ describe('Components', () => {
 
     const variantCount = Object.keys(buttonVariantConfig.variants.variant).length;
     const sizeCount = Object.keys(buttonVariantConfig.variants.size).length;
-    const buttons = compiled.querySelectorAll('button[data-slot="button"]');
+    const buttons = compiled.querySelectorAll(
+      'section[aria-labelledby="button-heading"] button[data-slot="button"]',
+    );
     expect(buttons.length).toBe(variantCount * sizeCount + 2);
   });
 
@@ -27,7 +29,10 @@ describe('Components', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     const badgeCount = Object.keys(badgeVariantConfig.variants.variant).length;
-    expect(compiled.querySelectorAll('span[data-slot="badge"]').length).toBe(badgeCount + 1);
+    expect(
+      compiled.querySelectorAll('section[aria-labelledby="badge-heading"] span[data-slot="badge"]')
+        .length,
+    ).toBe(badgeCount + 1);
   });
 
   it('gives every rendered button an accessible name', async () => {
