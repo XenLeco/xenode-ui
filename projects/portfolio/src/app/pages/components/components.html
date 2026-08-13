@@ -63,3 +63,31 @@
     </div>
   </div>
 </section>
+
+<section class="mt-12" aria-labelledby="forms-heading">
+  <h2 id="forms-heading" class="text-lg font-semibold">Label &amp; Input</h2>
+  <div class="mt-3 grid max-w-sm gap-6">
+    <div class="grid gap-2">
+      <label xnLabel for="demo-name">Display name</label>
+      <input xnInput id="demo-name" type="text" placeholder="Dan" />
+    </div>
+    <div class="grid gap-2">
+      <label xnLabel for="demo-email">Email</label>
+      <input
+        xnInput
+        id="demo-email"
+        type="email"
+        aria-invalid="true"
+        aria-describedby="demo-email-error"
+        value="not-an-email"
+      />
+      <p id="demo-email-error" class="text-sm text-destructive">
+        Enter a valid email address.
+      </p>
+    </div>
+    <div class="grid gap-2">
+      <label xnLabel for="demo-locked">Locked field</label>
+      <input xnInput id="demo-locked" type="text" value="read only value" disabled />
+    </div>
+  </div>
+</section>

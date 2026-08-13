@@ -1,6 +1,14 @@
 import { Component } from '@angular/core';
 
-import { Badge, badgeVariantConfig, Button, buttonVariantConfig, CARD } from '@xenode/ui';
+import {
+  Badge,
+  badgeVariantConfig,
+  Button,
+  buttonVariantConfig,
+  CARD,
+  Input,
+  Label,
+} from '@xenode/ui';
 
 type VariantName = keyof typeof buttonVariantConfig.variants.variant;
 type SizeName = keyof typeof buttonVariantConfig.variants.size;
@@ -8,7 +16,7 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
 
 @Component({
   selector: 'app-components',
-  imports: [Button, Badge, CARD],
+  imports: [Button, Badge, CARD, Label, Input],
   templateUrl: './components.html',
 })
 export class Components {
