@@ -1,4 +1,15 @@
-# Manual accessibility checklist — dialog & toast
+# Manual accessibility checklist — dialog, toast & tooltip
+
+## Tooltip (CDK Overlay)
+
+Browser-verified 2026-08-13: shows on hover, positions above with fallback
+below, role=tooltip, aria-describedby linked while visible.
+
+- [ ] Shows on keyboard focus alone (no mouse) — verify by hand
+- [ ] `Esc` hides it (real key needed)
+- [ ] Narrator reads the tooltip text as the control's description
+- [ ] Consumer rule: the trigger has its own accessible name; the tooltip
+      only supplements it
 
 ## Dialog (native <dialog>)
 

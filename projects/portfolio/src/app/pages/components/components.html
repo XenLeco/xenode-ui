@@ -261,6 +261,9 @@
     <button xnButton variant="destructive" (click)="showDestructiveToast()">
       Show destructive toast
     </button>
+    <button xnButton variant="ghost" [xnTooltip]="'Tooltips supplement a label, never replace it'">
+      Hover or focus me
+    </button>
   </div>
   <dialog xnDialog #confirmDialog aria-labelledby="confirm-title">
     <div xnDialogHeader>

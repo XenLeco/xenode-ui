@@ -27,6 +27,7 @@ import {
   TABLE,
   Textarea,
   ToastService,
+  Tooltip,
   XN_ACCORDION,
   XN_TABS,
 } from '@xenode/ui';
@@ -65,6 +66,7 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     AccordionPanel,
     AccordionContent,
     DIALOG,
+    Tooltip,
   ],
   templateUrl: './components.html',
 })

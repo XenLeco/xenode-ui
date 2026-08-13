@@ -24,3 +24,4 @@ export * from './lib/progress/progress';
 export * from './lib/accordion/accordion';
 export * from './lib/dialog/dialog';
 export * from './lib/toast/toast';
+export * from './lib/tooltip/tooltip';

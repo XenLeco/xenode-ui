@@ -5,6 +5,8 @@
  */
 @import 'tailwindcss' source(none);
 @import '../../ui/theme.css';
+/* Structural styles for CDK overlays (tooltip, future dropdown). */
+@import '@angular/cdk/overlay-prebuilt.css';
 
 @source './';
 @source '../../ui/src';
