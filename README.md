@@ -21,9 +21,10 @@ tokens, dark mode via `.dark` class), Vitest, prerendered to static files.
 
 Early, building in public. Working today: light/dark design tokens locked to
 WCAG AA by a contrast test that runs in CI, three-state theme switching under
-a strict hash-based CSP, and the first component — button — with a live
-variant matrix at `/components` generated from the same variants object the
-component uses.
+a strict hash-based CSP, and the Tier A components — button, badge, card,
+label, input, and tabs (styling composed beside `@angular/aria`'s behavior
+layer) — with a live showcase at `/components` generated from the same
+variants objects the components use.
 
 <!-- demo GIF slot -->
 
