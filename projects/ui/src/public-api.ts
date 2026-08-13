@@ -19,3 +19,5 @@ export * from './lib/alert/alert-variants';
 export * from './lib/textarea/textarea';
 export * from './lib/table/table';
 export * from './lib/breadcrumb/breadcrumb';
+export * from './lib/avatar/avatar';
+export * from './lib/progress/progress';

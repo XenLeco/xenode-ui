@@ -4,6 +4,7 @@ import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 import {
   ALERT,
   alertVariantConfig,
+  AVATAR,
   Badge,
   badgeVariantConfig,
   BREADCRUMB,
@@ -13,6 +14,7 @@ import {
   Input,
   Kbd,
   Label,
+  Progress,
   Separator,
   Skeleton,
   TABLE,
@@ -46,6 +48,8 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     Skeleton,
     TABLE,
     Textarea,
+    AVATAR,
+    Progress,
   ],
   templateUrl: './components.html',
 })
