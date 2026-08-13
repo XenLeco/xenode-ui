@@ -1,0 +1,137 @@
+import { Component, inject } from '@angular/core';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
+
+import {
+  Button,
+  DIALOG,
+  DIALOG_DERIVATIVES,
+  DialogClose,
+  ScrollArea,
+  ToastService,
+  XN_DROPDOWN,
+  XN_HOVER_CARD,
+  XN_POPOVER,
+} from '@xenode/ui';
+
+@Component({
+  selector: 'app-docs-overlays',
+  imports: [
+    Button,
+    DIALOG,
+    DIALOG_DERIVATIVES,
+    DialogClose,
+    ScrollArea,
+    XN_DROPDOWN,
+    Menu,
+    MenuItem,
+    MenuTrigger,
+    MenuContent,
+    XN_POPOVER,
+    XN_HOVER_CARD,
+  ],
+  template: `
+    <h1 class="text-2xl font-semibold tracking-tight">Overlays</h1>
+    <p class="mt-2 max-w-prose text-muted-foreground">
+      Dialogs ride the native top layer with starting-style entrance animations; tooltips,
+      popovers and hover cards animate in as their portals mount.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      <button xnButton variant="outline" (click)="dlg.showModal()">Dialog</button>
+      <button xnButton variant="outline" (click)="alertDlg.showModal()">Alert dialog</button>
+      <button xnButton variant="outline" (click)="sheetDlg.showModal()">Sheet</button>
+      <button xnButton variant="outline" (click)="drawerDlg.showModal()">Drawer</button>
+      <div xnDropdown>
+        <button xnButton variant="outline" ngMenuTrigger [menu]="demoMenu">Menu ▾</button>
+        <div
+          ngMenu
+          xnMenu
+          #demoMenu="ngMenu"
+          aria-label="Server actions"
+          (itemSelected)="onMenuSelect($event); demoMenu.close()"
+        >
+          <ng-template ngMenuContent>
+            <div ngMenuItem xnMenuItem value="restart">Restart server</div>
+            <div ngMenuItem xnMenuItem value="logs">View logs</div>
+            <div ngMenuItem xnMenuItem value="delete" [disabled]="true">Delete (locked)</div>
+          </ng-template>
+        </div>
+      </div>
+      <button xnButton variant="outline" [xnPopoverTriggerFor]="pop">Popover</button>
+      <ng-template #pop="xnPopover" xnPopover>
+        <div xnPopoverPanel>
+          <p class="font-medium">Popover</p>
+          <p class="mt-1 text-muted-foreground">Anchored, closes on outside click or Escape.</p>
+        </div>
+      </ng-template>
+      <a
+        href="https://github.com"
+        class="text-sm font-medium underline underline-offset-4"
+        [xnHoverCardTriggerFor]="card"
+        >&#64;danleco</a
+      >
+      <ng-template #card="xnHoverCard" xnHoverCard>
+        <div xnHoverCardPanel>
+          <p class="font-medium">Dan Leco</p>
+          <p class="mt-1 text-muted-foreground">Building xenode-ui in public.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <dialog xnDialog #dlg aria-labelledby="dlg-t">
+      <button xnDialogClose aria-label="Close dialog" (click)="dlg.close()">✕</button>
+      <div xnDialogHeader>
+        <h2 xnDialogTitle id="dlg-t">Native dialog</h2>
+        <p xnDialogDescription>
+          showModal() traps focus, Esc closes, the backdrop fades — platform behavior plus
+          starting-style animation.
+        </p>
+      </div>
+      <div xnDialogFooter>
+        <button xnButton variant="outline" (click)="dlg.close()">Close</button>
+        <button xnButton (click)="dlg.close()">Confirm</button>
+      </div>
+    </dialog>
+
+    <dialog xnAlertDialog #alertDlg aria-labelledby="ad-t">
+      <div xnDialogHeader>
+        <h2 xnDialogTitle id="ad-t">Stop the server?</h2>
+        <p xnDialogDescription>Players will be disconnected. The world is saved first.</p>
+      </div>
+      <div xnDialogFooter>
+        <button xnButton variant="outline" (click)="alertDlg.close()">Cancel</button>
+        <button xnButton variant="destructive" (click)="alertDlg.close()">Stop server</button>
+      </div>
+    </dialog>
+
+    <dialog xnSheet #sheetDlg aria-labelledby="sheet-t">
+      <div xnDialogHeader>
+        <h2 xnDialogTitle id="sheet-t">Side sheet</h2>
+        <p xnDialogDescription>Slides in from the edge it is pinned to.</p>
+      </div>
+      <div xnScrollArea class="max-h-64 flex-1" tabindex="0" aria-label="Sheet content">
+        <p class="text-sm text-muted-foreground">Scrollable content lives here.</p>
+      </div>
+      <div xnDialogFooter>
+        <button xnButton variant="outline" (click)="sheetDlg.close()">Close</button>
+      </div>
+    </dialog>
+
+    <dialog xnDrawer #drawerDlg aria-labelledby="drawer-t">
+      <div xnDialogHeader>
+        <h2 xnDialogTitle id="drawer-t">Bottom drawer</h2>
+        <p xnDialogDescription>Same platform, different margins, upward slide.</p>
+      </div>
+      <div xnDialogFooter>
+        <button xnButton variant="outline" (click)="drawerDlg.close()">Close</button>
+      </div>
+    </dialog>
+  `,
+})
+export class OverlaysDoc {
+  private readonly toastService = inject(ToastService);
+
+  protected onMenuSelect(action: string): void {
+    this.toastService.show(`Menu action: ${action}`, { title: 'Selected' });
+  }
+}

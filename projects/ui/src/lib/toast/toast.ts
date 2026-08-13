@@ -84,7 +84,7 @@ export class Toaster {
 
   protected classFor(variant: ActiveToast['variant']): string {
     return cn(
-      'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border p-4 shadow-lg',
+      'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border p-4 shadow-lg transition-[opacity,translate] duration-200 starting:translate-y-2 starting:opacity-0',
       variant === 'destructive'
         ? 'border-transparent bg-destructive text-destructive-foreground'
         : 'bg-card text-card-foreground',

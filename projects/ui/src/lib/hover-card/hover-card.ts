@@ -46,7 +46,7 @@ export class HoverCardPanel {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'z-50 block w-64 rounded-md border bg-background p-4 text-sm text-foreground shadow-md outline-none',
+      'z-50 block w-64 rounded-md border bg-background p-4 text-sm text-foreground shadow-md outline-none transition-[opacity,scale] duration-150 starting:scale-95 starting:opacity-0',
       this.userClass(),
     ),
   );

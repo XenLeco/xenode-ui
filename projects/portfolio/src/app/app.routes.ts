@@ -15,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'components',
     loadComponent: () => import('./pages/components/components').then((m) => m.Components),
-    title: 'Components — Dan Leco',
+    loadChildren: () => import('./pages/components/docs.routes').then((m) => m.DOCS_ROUTES),
   },
   // Explicit so the prerenderer emits a real 404 page for the CDN to serve;
   // the wildcard below only covers client-side navigation.
