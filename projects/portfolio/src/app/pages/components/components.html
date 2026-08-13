@@ -36,3 +36,13 @@
     </div>
   </div>
 </section>
+
+<section class="mt-12" aria-labelledby="badge-heading">
+  <h2 id="badge-heading" class="text-lg font-semibold">Badge</h2>
+  <div class="mt-3 flex flex-wrap items-center gap-3">
+    @for (variant of badgeVariants; track variant) {
+      <span xnBadge [variant]="variant" class="capitalize">{{ variant }}</span>
+    }
+    <span xnBadge class="rounded-full">override: rounded-full</span>
+  </div>
+</section>

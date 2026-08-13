@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { buttonVariantConfig } from '@xenode/ui';
+import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
 import { Components } from './components';
 
@@ -20,6 +20,14 @@ describe('Components', () => {
     const sizeCount = Object.keys(buttonVariantConfig.variants.size).length;
     const buttons = compiled.querySelectorAll('button[data-slot="button"]');
     expect(buttons.length).toBe(variantCount * sizeCount + 2);
+  });
+
+  it('renders one badge per variant from the shared config, plus the override demo', async () => {
+    const fixture = TestBed.createComponent(Components);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const badgeCount = Object.keys(badgeVariantConfig.variants.variant).length;
+    expect(compiled.querySelectorAll('span[data-slot="badge"]').length).toBe(badgeCount + 1);
   });
 
   it('gives every rendered button an accessible name', async () => {
