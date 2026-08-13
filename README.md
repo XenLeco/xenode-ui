@@ -19,7 +19,11 @@ tokens, dark mode via `.dark` class), Vitest, prerendered to static files.
 
 ## Status
 
-Early. The theming system and first components are being built in public.
+Early, building in public. Working today: light/dark design tokens locked to
+WCAG AA by a contrast test that runs in CI, three-state theme switching under
+a strict hash-based CSP, and the first component — button — with a live
+variant matrix at `/components` generated from the same variants object the
+component uses.
 
 <!-- demo GIF slot -->
 
