@@ -21,15 +21,17 @@ tokens, dark mode via `.dark` class), Vitest, prerendered to static files.
 
 Early, building in public. Working today: light/dark design tokens locked to
 WCAG AA by a contrast test that runs in CI, three-state theme switching under
-a strict hash-based CSP, and **33 component families**: the shadcn core
+a strict hash-based CSP, and **41 component families**: the shadcn core
 (button, badge, card, label, input, textarea, alert, separator, skeleton,
 kbd, table, breadcrumb, avatar, progress, spinner, aspect-ratio, typography,
 empty, button group, input group, field, pagination), behavior composed
 beside `@angular/aria` (tabs, accordion), native-platform controls
 (checkbox, radio group, switch, slider, native select, toggle, collapsible
 on details/summary, dialog on the native element), and overlay pieces
-(toast, tooltip on CDK Overlay) — all on a live showcase at `/components`
-generated from the same variants objects the components use.
+(toast, tooltip/popover/hover-card on CDK Overlay, alert-dialog/sheet/drawer
+on the native dialog, dropdown-menu on `@angular/aria`'s menu, scroll-area,
+scroll-snap carousel) — all on a live showcase at `/components` generated
+from the same variants objects the components use.
 
 <!-- demo GIF slot -->
 
