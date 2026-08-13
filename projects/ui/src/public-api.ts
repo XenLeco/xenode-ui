@@ -43,3 +43,6 @@ export * from './lib/pagination/pagination';
 export * from './lib/dialog/dialog-derivatives';
 export * from './lib/scroll-area/scroll-area';
 export * from './lib/dropdown/dropdown';
+export * from './lib/popover/popover';
+export * from './lib/hover-card/hover-card';
+export * from './lib/carousel/carousel';

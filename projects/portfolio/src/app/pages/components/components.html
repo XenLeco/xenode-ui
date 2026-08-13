@@ -423,6 +423,54 @@
   </dialog>
 </section>
 
+<section class="mt-12" aria-labelledby="float-heading">
+  <h2 id="float-heading" class="text-lg font-semibold">Popover, Hover card &amp; Carousel</h2>
+  <div class="mt-3 flex flex-wrap items-center gap-4">
+    <button xnButton variant="outline" [xnPopoverTriggerFor]="dimensionsPop">Dimensions</button>
+    <ng-template #dimensionsPop="xnPopover" xnPopover>
+      <div xnPopoverPanel>
+        <p class="font-medium">Popover</p>
+        <p class="mt-1 text-muted-foreground">
+          Click-toggled, anchored, closes on outside click or Escape.
+        </p>
+      </div>
+    </ng-template>
+    <a
+      href="https://github.com"
+      class="text-sm font-medium underline underline-offset-4"
+      [xnHoverCardTriggerFor]="profileCard"
+      >&#64;danleco</a
+    >
+    <ng-template #profileCard="xnHoverCard" xnHoverCard>
+      <div xnHoverCardPanel>
+        <p class="font-medium">Dan Leco</p>
+        <p class="mt-1 text-muted-foreground">Building xenode-ui in public.</p>
+      </div>
+    </ng-template>
+  </div>
+  <div xnCarousel class="mt-6 max-w-md">
+    <div xnCarouselViewport tabindex="0" aria-label="Example slides">
+      <div xnCarouselItem>
+        <div class="flex h-32 items-center justify-center bg-muted text-sm">Slide one</div>
+      </div>
+      <div xnCarouselItem>
+        <div class="flex h-32 items-center justify-center bg-secondary text-sm">Slide two</div>
+      </div>
+      <div xnCarouselItem>
+        <div class="flex h-32 items-center justify-center bg-muted text-sm">Slide three</div>
+      </div>
+    </div>
+    <div class="mt-2 flex justify-end gap-2">
+      <button xnButton variant="outline" size="icon" xnCarouselPrev aria-label="Previous slide">
+        ‹
+      </button>
+      <button xnButton variant="outline" size="icon" xnCarouselNext aria-label="Next slide">
+        ›
+      </button>
+    </div>
+  </div>
+</section>
+
 <section class="mt-12" aria-labelledby="breadcrumb-heading">
   <h2 id="breadcrumb-heading" class="text-lg font-semibold">Breadcrumb</h2>
   <nav xnBreadcrumb class="mt-3">

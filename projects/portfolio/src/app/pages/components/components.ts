@@ -46,8 +46,11 @@ import {
   Toggle,
   ToggleGroup,
   Tooltip,
+  CAROUSEL,
   XN_ACCORDION,
   XN_DROPDOWN,
+  XN_HOVER_CARD,
+  XN_POPOVER,
   XN_TABS,
 } from '@xenode/ui';
 
@@ -108,6 +111,9 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
     MenuItem,
     MenuTrigger,
     MenuContent,
+    XN_POPOVER,
+    XN_HOVER_CARD,
+    CAROUSEL,
   ],
   templateUrl: './components.html',
 })
