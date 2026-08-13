@@ -2,23 +2,51 @@ import { Component, signal } from '@angular/core';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
 import {
+  ALERT,
+  alertVariantConfig,
   Badge,
   badgeVariantConfig,
+  BREADCRUMB,
   Button,
   buttonVariantConfig,
   CARD,
   Input,
+  Kbd,
   Label,
+  Separator,
+  Skeleton,
+  TABLE,
+  Textarea,
   XN_TABS,
 } from '@xenode/ui';
 
 type VariantName = keyof typeof buttonVariantConfig.variants.variant;
 type SizeName = keyof typeof buttonVariantConfig.variants.size;
 type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
+type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
 
 @Component({
   selector: 'app-components',
-  imports: [Button, Badge, CARD, Label, Input, XN_TABS, Tabs, TabList, Tab, TabPanel, TabContent],
+  imports: [
+    Button,
+    Badge,
+    CARD,
+    Label,
+    Input,
+    XN_TABS,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanel,
+    TabContent,
+    ALERT,
+    BREADCRUMB,
+    Kbd,
+    Separator,
+    Skeleton,
+    TABLE,
+    Textarea,
+  ],
   templateUrl: './components.html',
 })
 export class Components {
@@ -31,4 +59,8 @@ export class Components {
   ) as BadgeVariantName[];
 
   protected readonly selectedTab = signal<string | undefined>('overview');
+
+  protected readonly alertVariants = Object.keys(
+    alertVariantConfig.variants.variant,
+  ) as AlertVariantName[];
 }
