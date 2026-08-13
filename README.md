@@ -21,7 +21,7 @@ tokens, dark mode via `.dark` class), Vitest, prerendered to static files.
 
 Early, building in public. Working today: light/dark design tokens locked to
 WCAG AA by a contrast test that runs in CI, three-state theme switching under
-a strict hash-based CSP, and **201 components across 60+ families**: the shadcn core
+a strict hash-based CSP, and **226 components across 75+ families**: the shadcn core
 (button, badge, card, label, input, textarea, alert, separator, skeleton,
 kbd, table, breadcrumb, avatar, progress, spinner, aspect-ratio, typography,
 empty, button group, input group, field, pagination), behavior composed
