@@ -9,12 +9,14 @@ import {
   Tooltip,
 } from '@xenode/ui';
 
+import { CodeSnippet } from './code-snippet';
+
 type VariantName = keyof typeof buttonVariantConfig.variants.variant;
 type SizeName = keyof typeof buttonVariantConfig.variants.size;
 
 @Component({
   selector: 'app-docs-buttons',
-  imports: [Button, ButtonGroup, Toggle, ToggleGroup, Tooltip],
+  imports: [Button, ButtonGroup, Toggle, ToggleGroup, Tooltip, CodeSnippet],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Buttons</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -46,6 +48,13 @@ type SizeName = keyof typeof buttonVariantConfig.variants.size;
       </div>
     </section>
 
+    <div class="mt-6 max-w-xl">
+      <app-code-snippet
+        [code]="usageSnippet"
+        label="button usage"
+      />
+    </div>
+
     <section class="mt-10" aria-labelledby="group-heading">
       <h2 id="group-heading" class="text-lg font-semibold">Button group</h2>
       <div xnButtonGroup aria-label="View density" class="mt-3">
@@ -68,4 +77,8 @@ type SizeName = keyof typeof buttonVariantConfig.variants.size;
 export class ButtonsDoc {
   protected readonly variants = Object.keys(buttonVariantConfig.variants.variant) as VariantName[];
   protected readonly sizes = Object.keys(buttonVariantConfig.variants.size) as SizeName[];
+
+  protected readonly usageSnippet = `import { Button } from '@xenode/ui';
+
+<button xnButton variant="success" size="lg">Deploy</button>`;
 }

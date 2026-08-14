@@ -52,4 +52,14 @@ export const DOCS_ROUTES: Routes = [
     loadComponent: () => import('./docs/chat').then((m) => m.ChatDoc),
     title: 'Chat — Dan Leco',
   },
+  {
+    path: 'blocks',
+    loadComponent: () => import('./docs/blocks').then((m) => m.BlocksDoc),
+    title: 'Blocks — Dan Leco',
+  },
+  {
+    path: 'motion',
+    loadComponent: () => import('./docs/motion').then((m) => m.MotionDoc),
+    title: 'Motion — Dan Leco',
+  },
 ];

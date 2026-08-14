@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
+import { XN_UI_VERSION } from '@xenode/ui';
+
 /**
  * Docs shell: sticky category nav + a child outlet. Every category page is
  * its own lazy route so no single page carries the whole library.
@@ -22,6 +24,9 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
               >{{ page.label }}</a
             >
           }
+          <span class="mt-3 px-2 text-xs text-muted-foreground" data-slot="docs-version"
+            >&#64;xenode/ui v{{ version }}</span
+          >
         </nav>
       </aside>
       <div class="min-w-0 flex-1">
@@ -42,5 +47,9 @@ export class Components {
     { path: 'disclosure', label: 'Disclosure & data', exact: false },
     { path: 'typography', label: 'Typography', exact: false },
     { path: 'chat', label: 'Chat', exact: false },
+    { path: 'blocks', label: 'Blocks', exact: false },
+    { path: 'motion', label: 'Motion', exact: false },
   ] as const;
+
+  protected readonly version = XN_UI_VERSION;
 }

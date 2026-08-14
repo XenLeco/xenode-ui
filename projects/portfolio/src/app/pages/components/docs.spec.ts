@@ -4,8 +4,10 @@ import { TestBed } from '@angular/core/testing';
 import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
 import { Components } from './components';
+import { BlocksDoc } from './docs/blocks';
 import { ButtonsDoc } from './docs/buttons';
 import { FormsDoc } from './docs/forms';
+import { MotionDoc } from './docs/motion';
 import { DisclosureDoc } from './docs/disclosure';
 import { DisplayDoc } from './docs/display';
 import { FeedbackDoc } from './docs/feedback';
@@ -19,7 +21,8 @@ describe('Docs shell', () => {
     await fixture.whenStable();
     const nav = (fixture.nativeElement as HTMLElement).querySelector('nav');
     expect(nav?.getAttribute('aria-label')).toBe('Component docs');
-    expect(nav?.querySelectorAll('a').length).toBe(10);
+    expect(nav?.querySelectorAll('a').length).toBe(12);
+    expect(nav?.querySelector('[data-slot="docs-version"]')?.textContent).toContain('v0.1.0');
   });
 });
 
@@ -119,6 +122,29 @@ describe('FormsDoc — aria combobox composition', () => {
     options[0].click();
     await fixture.whenStable();
     expect(compiled.textContent).toContain('Selected: Project Zomboid');
+  });
+});
+
+describe('BlocksDoc', () => {
+  it('renders composed blocks with a copyable snippet', async () => {
+    const fixture = TestBed.createComponent(BlocksDoc);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelectorAll('[data-slot="card"]').length).toBeGreaterThanOrEqual(3);
+    const snippet = compiled.querySelector('[data-slot="code-snippet"]');
+    expect(snippet?.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnCard');
+    expect(snippet?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
+  });
+});
+
+describe('MotionDoc', () => {
+  it('renders one tile per motion preset and the reduced-motion note', async () => {
+    const fixture = TestBed.createComponent(MotionDoc);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.animate-fade-in-up')).toBeTruthy();
+    expect(compiled.querySelector('.animate-slide-in-right')).toBeTruthy();
+    expect(compiled.textContent).toContain('prefers-reduced-motion');
   });
 });
 

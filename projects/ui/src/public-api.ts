@@ -73,3 +73,4 @@ export * from './lib/scrollspy/scrollspy';
 export * from './lib/form-extras/form-extras';
 export * from './lib/action-extras/action-extras';
 export * from './lib/combobox/combobox';
+export * from './lib/version';
