@@ -20,7 +20,17 @@ and shown in the docs shell.
   shake); `::selection` polish.
 - ExampleBox docs pattern: boxed live previews with multi-flavor code tabs
   (Angular / TypeScript / Plain HTML — the HTML flavor generated from the
-  variants function itself).
+  variants function itself), now on every docs page (nine more pages:
+  forms, display, disclosure, navigation, overlays, typography, chat,
+  motion, layout).
+
+### Fixed
+
+- Seven of the ten Motion-page presets never animated: tile classes were
+  built at runtime (`'animate-' + name`), which Tailwind's scanner cannot
+  see, so those utilities were never emitted. Preset class names are now
+  literal strings in source — the rule generalizes: dynamic class
+  construction silently defeats Tailwind.
 
 ### Changed
 

@@ -2,11 +2,11 @@ import { Component, signal } from '@angular/core';
 
 import { Button, Callout, CalloutContent, CalloutTitle } from '@xenode/ui';
 
-import { CodeSnippet } from './code-snippet';
+import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-motion',
-  imports: [Button, Callout, CalloutTitle, CalloutContent, CodeSnippet],
+  imports: [Button, Callout, CalloutTitle, CalloutContent, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Motion</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -17,30 +17,33 @@ import { CodeSnippet } from './code-snippet';
     <button xnButton variant="outline" class="mt-6" (click)="replay()">Replay</button>
 
     <p class="mt-2 text-xs text-muted-foreground">
-      Demo runs each preset at 1.5s with a stagger so it can be inspected — production durations
-      are 0.2–0.5s.
+      Demo runs each preset at 1.5s with a stagger so it can be inspected — production durations are
+      0.2–0.5s.
     </p>
 
     @if (visible()) {
       <div class="mt-4 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
         @for (preset of presets; track preset) {
           <div
-            [class]="'flex h-20 items-center justify-center rounded-lg border bg-card text-xs ' + 'animate-' + preset"
+            [class]="
+              'flex h-20 items-center justify-center rounded-lg border bg-card text-xs ' + preset
+            "
             [style.animation-duration]="'1.5s'"
             [style.animation-delay]="$index * 200 + 'ms'"
           >
-            animate-{{ preset }}
+            {{ preset }}
           </div>
         }
       </div>
     }
 
-    <div class="mt-8 max-w-xl">
-      <app-code-snippet
-        [code]="'<div class=&quot;animate-fade-in-up&quot;>…</div>'"
-        label="motion usage"
-      />
-    </div>
+    <app-example-box title="Motion usage" [tabs]="motionTabs" class="mt-8 block max-w-xl">
+      <div
+        class="flex h-20 w-40 items-center justify-center rounded-lg border bg-card text-xs animate-fade-in-up"
+      >
+        animate-fade-in-up
+      </div>
+    </app-example-box>
 
     <div xnCallout variant="accent" class="mt-8 max-w-xl">
       <p xnCalloutTitle>Reduced motion is respected globally</p>
@@ -55,17 +58,19 @@ import { CodeSnippet } from './code-snippet';
   `,
 })
 export class MotionDoc {
+  // Full class names as literals — Tailwind only emits utilities it finds
+  // whole in source; 'animate-' + name is invisible to the scanner.
   protected readonly presets = [
-    'fade-in',
-    'fade-in-up',
-    'fade-in-down',
-    'zoom-in',
-    'slide-in-left',
-    'slide-in-right',
-    'blur-in',
-    'rise',
-    'pop',
-    'shake',
+    'animate-fade-in',
+    'animate-fade-in-up',
+    'animate-fade-in-down',
+    'animate-zoom-in',
+    'animate-slide-in-left',
+    'animate-slide-in-right',
+    'animate-blur-in',
+    'animate-rise',
+    'animate-pop',
+    'animate-shake',
   ];
 
   protected readonly visible = signal(true);
@@ -74,4 +79,20 @@ export class MotionDoc {
     this.visible.set(false);
     setTimeout(() => this.visible.set(true), 30);
   }
+
+  // Plain HTML is a literal class here — animate-* presets are the public
+  // API, not a computed variants() function, so there's nothing to interpolate.
+  protected readonly motionTabs = [
+    {
+      label: 'Angular',
+      code: `<div class="flex h-20 w-40 items-center justify-center rounded-lg border bg-card text-xs animate-fade-in-up">
+  animate-fade-in-up
+</div>`,
+    },
+    {
+      label: 'Plain HTML',
+      code: `<!-- Works in any framework: Tailwind + theme.css carry the system -->
+<div class="animate-fade-in-up">…</div>`,
+    },
+  ] as const;
 }
