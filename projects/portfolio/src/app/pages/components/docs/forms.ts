@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
+import { Listbox, Option } from '@angular/aria/listbox';
 
 import {
   Checkbox,
+  ComboboxPanel,
+  Dropdown,
   FIELD,
   Input,
   INPUT_GROUP,
@@ -12,6 +16,7 @@ import {
   Slider,
   Switch,
   Textarea,
+  XnListboxOption,
 } from '@xenode/ui';
 
 @Component({
@@ -28,6 +33,14 @@ import {
     Slider,
     NativeSelect,
     INPUT_OTP,
+    Combobox,
+    ComboboxPopup,
+    ComboboxWidget,
+    Listbox,
+    Option,
+    ComboboxPanel,
+    Dropdown,
+    XnListboxOption,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Forms</h1>
@@ -106,6 +119,42 @@ import {
       </div>
 
       <div xnField>
+        <label xnLabel for="f-game-search">Game (combobox)</label>
+        <div xnDropdown class="block w-full">
+          <input
+            xnInput
+            id="f-game-search"
+            ngCombobox
+            #cb="ngCombobox"
+            [(value)]="comboboxQuery"
+            placeholder="Type to filter…"
+            aria-label="Search games"
+          />
+          <ng-template ngComboboxPopup [combobox]="cb">
+            <div
+              xnComboboxPanel
+              ngComboboxWidget
+              ngListbox
+              #lb="ngListbox"
+              [(value)]="comboboxSelection"
+              [activeDescendant]="lb.activeDescendant()"
+              aria-label="Games"
+            >
+              @for (game of filteredGames(); track game) {
+                <div xnListboxOption ngOption [value]="game">{{ game }}</div>
+              } @empty {
+                <div class="px-2 py-1.5 text-sm text-muted-foreground">No matches.</div>
+              }
+            </div>
+          </ng-template>
+        </div>
+        <p xnFieldDescription>
+          Behavior from &#64;angular/aria — arrow keys, typeahead and aria wiring; filtering is app
+          logic. Selected: {{ comboboxSelection().join(', ') || 'none' }}
+        </p>
+      </div>
+
+      <div xnField>
         <span class="text-sm font-medium">Verification code</span>
         <div xnOtpGroup aria-label="Verification code">
           <input xnOtpSlot aria-label="Digit 1" />
@@ -120,4 +169,13 @@ import {
     </div>
   `,
 })
-export class FormsDoc {}
+export class FormsDoc {
+  private readonly games = ['Minecraft', 'Project Zomboid', 'Valheim', 'Palworld', 'Terraria'];
+
+  protected readonly comboboxQuery = signal('');
+  protected readonly comboboxSelection = signal<string[]>([]);
+  protected readonly filteredGames = computed(() => {
+    const query = this.comboboxQuery().trim().toLowerCase();
+    return query ? this.games.filter((g) => g.toLowerCase().includes(query)) : this.games;
+  });
+}

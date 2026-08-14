@@ -5,6 +5,7 @@ import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
 import { Components } from './components';
 import { ButtonsDoc } from './docs/buttons';
+import { FormsDoc } from './docs/forms';
 import { DisclosureDoc } from './docs/disclosure';
 import { DisplayDoc } from './docs/display';
 import { FeedbackDoc } from './docs/feedback';
@@ -45,7 +46,9 @@ describe('ButtonsDoc', () => {
     );
     expect(matrix.length).toBe(variantCount * sizeCount + 3);
 
-    for (const button of compiled.querySelectorAll<HTMLButtonElement>('button[data-slot="button"]')) {
+    for (const button of compiled.querySelectorAll<HTMLButtonElement>(
+      'button[data-slot="button"]',
+    )) {
       const name = button.textContent?.trim() || button.getAttribute('aria-label');
       expect(name, 'button without accessible name').toBeTruthy();
     }
@@ -93,6 +96,29 @@ describe('DisclosureDoc — aria accordion composition', () => {
     await fixture.whenStable();
     expect(trigger?.getAttribute('aria-expanded')).toBe('true');
     expect(panel?.hasAttribute('inert')).toBe(false);
+  });
+});
+
+describe('FormsDoc — aria combobox composition', () => {
+  it('typing filters options and selecting one updates the value', async () => {
+    const fixture = TestBed.createComponent(FormsDoc);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const input = compiled.querySelector<HTMLInputElement>('#f-game-search');
+    if (!input) throw new Error('No combobox input');
+
+    input.focus();
+    input.value = 'zomb';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+
+    const options = compiled.querySelectorAll<HTMLElement>('[data-slot="listbox-option"]');
+    expect(options.length).toBe(1);
+    expect(options[0].textContent).toContain('Project Zomboid');
+
+    options[0].click();
+    await fixture.whenStable();
+    expect(compiled.textContent).toContain('Selected: Project Zomboid');
   });
 });
 
