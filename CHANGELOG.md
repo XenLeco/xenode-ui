@@ -51,6 +51,14 @@ and shown in the docs shell.
 - Docs shell nav is responsive: a scrollable pill row under `sm`, the
   sticky column above — previously the nav was simply hidden on phones
   with no alternative.
+- Adversarial-review fixes: nav focus rings no longer clip against the
+  scroll container (headroom padding on mobile, `overflow-visible` from
+  `sm`); on-blend controls carry `focus-visible:outline-gradient-foreground`
+  (dark `--ring` measures 2.7:1 on the from-endpoint — documented on
+  Surface); the gradient seam's descendant reach is a documented contract
+  with a consumer-side escape hatch; the glass fill's muted-text composite
+  joined the contrast law; a false comment claiming `filter: none` doesn't
+  interpolate was removed along with its needless `brightness-100`.
 
 ## [0.1.0] — 2026-08-14
 

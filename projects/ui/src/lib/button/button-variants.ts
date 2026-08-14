@@ -19,10 +19,8 @@ export const buttonVariantConfig = {
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
       link: 'text-primary underline-offset-4 hover:underline',
-      // brightness-100 is load-bearing: filter:none does not interpolate,
-      // so hover brightness would snap without a resting value.
       gradient:
-        'bg-linear-to-br from-gradient-from to-gradient-to text-gradient-foreground brightness-100 hover:brightness-115',
+        'bg-linear-to-br from-gradient-from to-gradient-to text-gradient-foreground hover:brightness-115',
       glass:
         'border border-foreground/10 bg-foreground/5 text-foreground backdrop-blur-md hover:bg-foreground/10',
     },

@@ -122,17 +122,18 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
           <div class="mt-2 flex flex-wrap gap-3">
             <!-- Stock variants key off mode-flipping tokens; on this
                  mode-invariant dark blend the CTA pins the gradient's own
-                 pair instead — consumer class wins by design. -->
+                 pair instead — consumer class wins by design. Same for the
+                 focus ring: dark --ring is 2.7:1 on the from end. -->
             <button
               xnButton
-              class="bg-gradient-foreground text-gradient-from hover:bg-gradient-foreground/90"
+              class="bg-gradient-foreground text-gradient-from focus-visible:outline-gradient-foreground hover:bg-gradient-foreground/90"
             >
               Get started
             </button>
             <button
               xnButton
               variant="glass"
-              class="border-gradient-foreground/25 text-gradient-foreground"
+              class="border-gradient-foreground/40 text-gradient-foreground focus-visible:outline-gradient-foreground"
             >
               Read the docs
             </button>

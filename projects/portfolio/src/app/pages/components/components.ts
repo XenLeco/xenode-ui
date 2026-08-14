@@ -13,11 +13,14 @@ import { XN_UI_VERSION } from '@xenode/ui';
   template: `
     <div class="flex flex-col gap-6 sm:flex-row sm:gap-8">
       <!-- One nav, two shapes: scrollable pill row on phones, sticky column
-           from sm up. Hiding it on mobile left phones with no navigation. -->
+           from sm up. Hiding it on mobile left phones with no navigation.
+           The mobile padding is focus-ring headroom: a scroll container
+           clips outlines to its padding box (2px ring + 2px offset = 4px
+           per side); sm+ drops the overflow so no headroom is needed. -->
       <aside class="w-full shrink-0 sm:w-40">
         <nav
           aria-label="Component docs"
-          class="-mx-1 flex gap-1 overflow-x-auto px-1 pb-2 sm:sticky sm:top-4 sm:mx-0 sm:flex-col sm:gap-0.5 sm:px-0 sm:pb-0"
+          class="-mx-1 flex gap-1 overflow-x-auto px-1 pt-1 pb-2 sm:sticky sm:top-4 sm:mx-0 sm:flex-col sm:gap-0.5 sm:overflow-visible sm:px-0 sm:pt-0 sm:pb-0"
         >
           @for (page of pages; track page.path) {
             <a

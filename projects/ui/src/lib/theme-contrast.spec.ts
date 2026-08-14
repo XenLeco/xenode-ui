@@ -54,6 +54,7 @@ const TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['secondary-foreground', 'secondary'],
   ['muted-foreground', 'muted'],
   ['muted-foreground', 'background'],
+  ['muted-foreground', 'card'],
   ['accent-foreground', 'accent'],
   ['destructive-foreground', 'destructive'],
   ['danger', 'background'],
@@ -108,6 +109,19 @@ describe('theme.css WCAG contrast', () => {
           expect(contrast(fg, bg), `--${fg} on --${bg}`).toBeGreaterThanOrEqual(3);
         });
       }
+
+      // The glass skin's thinnest margin (4.95:1 light at review time) is a
+      // composite no token pair covers: muted text on the 5%-foreground
+      // tint. Locked here so a future muted-foreground tweak cannot pass
+      // every pair yet sink glass surfaces below AA unnoticed.
+      it('text: --muted-foreground on the glass fill (5% foreground over background) ≥ 4.5:1', () => {
+        const glassFill = compositeOver(
+          resolve('foreground').replace(')', ' / 5%)'),
+          resolve('background'),
+        );
+        const text = compositeOver(resolve('muted-foreground'), formatHex(glassFill));
+        expect(wcagContrast(text, glassFill)).toBeGreaterThanOrEqual(4.5);
+      });
     });
   }
 });

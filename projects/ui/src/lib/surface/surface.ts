@@ -10,6 +10,18 @@ import { cn } from '../cn';
  *
  * The gradient surface restyles nested `*-description` slots through the
  * data-slot seam: muted-foreground text is illegible on the dark blend.
+ *
+ * Two contracts of the gradient skin, both deliberate:
+ * - The seam reaches EVERY descendant description slot, including ones
+ *   inside an opaque island (card, tile) nested on the blend — CSS cannot
+ *   tell "descendant of a nested island" from "descendant of the host".
+ *   Keep islands off the blend, or re-assert a color: repeating the
+ *   `[&_[data-slot$=description]]:text-*` variant on the host wins
+ *   consumer-last through cn().
+ * - Focusable controls resting on the blend must carry
+ *   `focus-visible:outline-gradient-foreground`: the dark-mode --ring grey
+ *   measures 2.7:1 against the from-endpoint (the ring paints on whatever
+ *   is behind the control, and the blend is dark in both modes).
  */
 export const surfaceVariantConfig = {
   variants: {

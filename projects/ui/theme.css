@@ -54,7 +54,10 @@
   --ring: oklch(0.62 0 0);
   /* Blend surface: one dark gradient in BOTH modes — a dark hero panel is
      the brand in light mode too, and one pair of endpoints means one
-     contrast story. White text must clear 4.5:1 on each endpoint. */
+     contrast story for TEXT. White text must clear 4.5:1 on each endpoint.
+     The mode-flipping --ring is the exception: dark-mode ring measures
+     2.7:1 on the from end, so on-blend focus rings must use
+     --gradient-foreground instead (see Surface's JSDoc). */
   --gradient-from: oklch(0.32 0.045 275);
   --gradient-to: oklch(0.16 0.03 300);
   --gradient-foreground: oklch(0.985 0 0);
