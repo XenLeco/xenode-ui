@@ -12,11 +12,13 @@ import {
   ToastService,
 } from '@xenode/ui';
 
+import { ExampleBox } from './example-box';
+
 type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
 
 @Component({
   selector: 'app-docs-feedback',
-  imports: [ALERT, CALLOUT, Banner, BannerAction, Skeleton, Spinner, Button],
+  imports: [ALERT, CALLOUT, Banner, BannerAction, Skeleton, Spinner, Button, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Feedback</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -57,14 +59,14 @@ type AlertVariantName = keyof typeof alertVariantConfig.variants.variant;
       </div>
     </section>
 
-    <section class="mt-10" aria-labelledby="toast-h">
+    <section class="mt-10 max-w-2xl" aria-labelledby="toast-h">
       <h2 id="toast-h" class="text-lg font-semibold">Toast</h2>
-      <div class="mt-3 flex flex-wrap gap-3">
+      <app-example-box title="Toast example" [tabs]="toastTabs" class="mt-3 block">
         <button xnButton variant="secondary" (click)="showToast()">Show toast</button>
         <button xnButton variant="destructive" (click)="showDestructiveToast()">
           Show destructive toast
         </button>
-      </div>
+      </app-example-box>
     </section>
   `,
 })
@@ -74,6 +76,23 @@ export class FeedbackDoc {
   ) as AlertVariantName[];
 
   private readonly toastService = inject(ToastService);
+
+  protected readonly toastTabs = [
+    {
+      label: 'Angular',
+      code: `<button xnButton variant="secondary" (click)="save()">Show toast</button>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { ToastService } from '@xenode/ui';
+
+private readonly toast = inject(ToastService);
+
+protected save(): void {
+  this.toast.show('Changes saved.', { title: 'Saved', variant: 'success' });
+}`,
+    },
+  ] as const;
 
   protected showToast(): void {
     this.toastService.show('Changes saved to the library.', { title: 'Saved' });

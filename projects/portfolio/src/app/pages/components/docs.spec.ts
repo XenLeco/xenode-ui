@@ -131,9 +131,39 @@ describe('BlocksDoc', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('[data-slot="card"]').length).toBeGreaterThanOrEqual(3);
-    const snippet = compiled.querySelector('[data-slot="code-snippet"]');
-    expect(snippet?.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnCard');
-    expect(snippet?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
+    const example = compiled.querySelector('[data-slot="example-code"]');
+    expect(example?.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnCard');
+    expect(example?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
+    expect(
+      compiled.querySelector('[data-slot="example-preview"] [data-slot="card"]'),
+    ).toBeTruthy();
+  });
+});
+
+describe('ExampleBox — code flavors', () => {
+  it('shows the first flavor by default and switches on tab click', async () => {
+    const fixture = TestBed.createComponent(ButtonsDoc);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const box = compiled.querySelector('section[aria-label="Button example"]');
+    if (!box) throw new Error('No example box');
+
+    const tabs = [...box.querySelectorAll<HTMLElement>('[data-slot="tab"]')];
+    expect(tabs.map((t) => t.textContent?.trim())).toEqual([
+      'Angular',
+      'TypeScript',
+      'Plain HTML',
+    ]);
+    expect(box.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnButton');
+
+    tabs[2].click();
+    await fixture.whenStable();
+    const visiblePanel = [...box.querySelectorAll<HTMLElement>('[data-slot="tab-panel"]')].find(
+      (p) => !p.hasAttribute('inert'),
+    );
+    // The Plain HTML flavor is generated from buttonVariants() itself.
+    expect(visiblePanel?.textContent).toContain('bg-success');
+    expect(visiblePanel?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
   });
 });
 

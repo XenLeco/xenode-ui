@@ -4,19 +4,20 @@ import {
   Button,
   ButtonGroup,
   buttonVariantConfig,
+  buttonVariants,
   Toggle,
   ToggleGroup,
   Tooltip,
 } from '@xenode/ui';
 
-import { CodeSnippet } from './code-snippet';
+import { ExampleBox } from './example-box';
 
 type VariantName = keyof typeof buttonVariantConfig.variants.variant;
 type SizeName = keyof typeof buttonVariantConfig.variants.size;
 
 @Component({
   selector: 'app-docs-buttons',
-  imports: [Button, ButtonGroup, Toggle, ToggleGroup, Tooltip, CodeSnippet],
+  imports: [Button, ButtonGroup, Toggle, ToggleGroup, Tooltip, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Buttons</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -48,11 +49,11 @@ type SizeName = keyof typeof buttonVariantConfig.variants.size;
       </div>
     </section>
 
-    <div class="mt-6 max-w-xl">
-      <app-code-snippet
-        [code]="usageSnippet"
-        label="button usage"
-      />
+    <div class="mt-8 max-w-2xl">
+      <app-example-box title="Button example" [tabs]="exampleTabs">
+        <button xnButton variant="success" size="lg">Deploy</button>
+        <button xnButton variant="outline" size="lg">Cancel</button>
+      </app-example-box>
     </div>
 
     <section class="mt-10" aria-labelledby="group-heading">
@@ -78,7 +79,28 @@ export class ButtonsDoc {
   protected readonly variants = Object.keys(buttonVariantConfig.variants.variant) as VariantName[];
   protected readonly sizes = Object.keys(buttonVariantConfig.variants.size) as SizeName[];
 
-  protected readonly usageSnippet = `import { Button } from '@xenode/ui';
+  // The Plain HTML flavor is GENERATED from the same variants function the
+  // component uses — the portable snippet cannot drift either.
+  protected readonly exampleTabs = [
+    {
+      label: 'Angular',
+      code: `<button xnButton variant="success" size="lg">Deploy</button>
+<button xnButton variant="outline" size="lg">Cancel</button>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { Button } from '@xenode/ui';
 
-<button xnButton variant="success" size="lg">Deploy</button>`;
+@Component({
+  imports: [Button],
+  templateUrl: './deploy.html',
+})
+export class Deploy {}`,
+    },
+    {
+      label: 'Plain HTML',
+      code: `<!-- Works in any framework: Tailwind + theme.css carry the system -->
+<button class="${buttonVariants({ variant: 'success', size: 'lg' })}">Deploy</button>`,
+    },
+  ] as const;
 }

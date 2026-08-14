@@ -8,7 +8,7 @@ import {
 
 import { Badge, Button, CARD, FIELD, FORM_EXTRAS, Input, Label, XN_ACCORDION } from '@xenode/ui';
 
-import { CodeSnippet } from './code-snippet';
+import { ExampleBox } from './example-box';
 
 const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
   <div xnCardHeader>
@@ -44,7 +44,7 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
     AccordionTrigger,
     AccordionPanel,
     AccordionContent,
-    CodeSnippet,
+    ExampleBox,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Blocks</h1>
@@ -54,7 +54,7 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
 
     <section class="mt-8" aria-labelledby="login-h">
       <h2 id="login-h" class="text-lg font-semibold">Login</h2>
-      <div class="mt-3 grid items-start gap-6 lg:grid-cols-2">
+      <app-example-box title="Login block" [tabs]="loginTabs" class="mt-3 block max-w-2xl">
         <div xnCard class="max-w-sm animate-fade-in-up">
           <div xnCardHeader>
             <h3 xnCardTitle>Sign in</h3>
@@ -91,8 +91,7 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
             <button xnButton type="submit">Sign in</button>
           </form>
         </div>
-        <app-code-snippet [code]="loginSnippet" label="login block markup" />
-      </div>
+      </app-example-box>
     </section>
 
     <section class="mt-12" aria-labelledby="pricing-h">
@@ -155,5 +154,17 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
   `,
 })
 export class BlocksDoc {
-  protected readonly loginSnippet = LOGIN_SNIPPET;
+  protected readonly loginTabs = [
+    { label: 'Angular', code: LOGIN_SNIPPET },
+    {
+      label: 'TypeScript',
+      code: `import { Button, CARD, FIELD, FORM_EXTRAS, Input, Label } from '@xenode/ui';
+
+@Component({
+  imports: [CARD, FIELD, Label, Input, FORM_EXTRAS, Button],
+  templateUrl: './login.html',
+})
+export class Login {}`,
+    },
+  ] as const;
 }
