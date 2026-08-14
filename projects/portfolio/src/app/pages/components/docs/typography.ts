@@ -24,6 +24,34 @@ import { ExampleBox } from './example-box';
           <li>Tokens all the way down</li>
         </ul>
       </article>
+
+      <h3 class="mt-8 text-sm font-medium text-muted-foreground">
+        Rhythm — three controls, everything derives
+      </h3>
+      <p class="mt-1 max-w-prose text-sm text-muted-foreground">
+        <code class="font-mono text-xs">--prose-size</code>,
+        <code class="font-mono text-xs">--prose-leading</code> and
+        <code class="font-mono text-xs">--prose-flow</code> set the base; heading sizes, list
+        indents and block gaps follow. Override per context with a class.
+      </p>
+      <div class="mt-3 grid gap-6 sm:grid-cols-2">
+        <article xnProse class="rounded-lg border p-4">
+          <h3>Default rhythm</h3>
+          <p>Compact reading text for docs and cards.</p>
+          <ul>
+            <li>0.875rem base</li>
+            <li>1.25em flow</li>
+          </ul>
+        </article>
+        <article xnProse class="rounded-lg border p-4 [--prose-flow:1.75em] [--prose-size:1.05rem]">
+          <h3>Article rhythm</h3>
+          <p>Larger type, airier flow — one class each.</p>
+          <ul>
+            <li>1.05rem base</li>
+            <li>1.75em flow</li>
+          </ul>
+        </article>
+      </div>
     </section>
 
     <section class="mt-10" aria-labelledby="code-h">

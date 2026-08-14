@@ -1,4 +1,14 @@
-import { Directive, ElementRef, computed, inject, input } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  type OnDestroy,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  numberAttribute,
+  signal,
+} from '@angular/core';
 
 import { cn } from '../cn';
 
@@ -100,29 +110,78 @@ export class MessageStatus {
 }
 
 /**
- * Scroll container for a message list. Call scrollToBottom() after
- * appending (the consumer owns the list state, so it owns the moment).
+ * Streaming-aware scroll container for a message list. The rules, in
+ * order of importance:
+ *
+ * - Follow only while the reader is following: content growth (streamed
+ *   chunks, appended turns — watched via MutationObserver) keeps the
+ *   newest message in view ONLY while the reader is at the live edge.
+ * - Scrolling away is the hold signal: nothing moves until the reader
+ *   returns or asks to (`scrollToBottom()` — wire it to a jump-to-latest
+ *   affordance shown when `atLiveEdge()` is false).
+ * - Follow is instant, jump is smooth: smooth scrolling chases and lags
+ *   behind rapid stream chunks.
+ *
+ * Scroll position is the only signal read; text selection or keyboard
+ * focus do not (yet) hold the stream.
  */
 @Directive({
   selector: '[xnMessageScroller]',
   exportAs: 'xnMessageScroller',
-  host: { 'data-slot': 'message-scroller', '[class]': 'classes()' },
+  host: {
+    'data-slot': 'message-scroller',
+    '[class]': 'classes()',
+    '(scroll)': 'onScroll()',
+  },
 })
-export class MessageScroller {
+export class MessageScroller implements OnDestroy {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  /** Distance from the bottom (px) that still counts as the live edge. */
+  readonly edgeThreshold = input(48, { transform: numberAttribute });
+
+  private readonly atEdge = signal(true);
+  /** True while the reader is pinned to the newest message. */
+  readonly atLiveEdge = this.atEdge.asReadonly();
+
+  private observer: MutationObserver | undefined;
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'flex flex-col gap-3 overflow-y-auto [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]',
+      'flex flex-col gap-3 overflow-y-auto scroll-fade-y [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]',
       this.userClass(),
     ),
   );
 
-  scrollToBottom(): void {
+  constructor() {
+    // Observers only exist in the browser; prerendered pages skip this.
+    afterNextRender(() => {
+      this.observer = new MutationObserver(() => {
+        if (this.atEdge()) this.scrollToBottom('instant');
+      });
+      this.observer.observe(this.elementRef.nativeElement, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
+
+  protected onScroll(): void {
     const el = this.elementRef.nativeElement;
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    this.atEdge.set(el.scrollHeight - el.scrollTop - el.clientHeight <= this.edgeThreshold());
+  }
+
+  scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
+    const el = this.elementRef.nativeElement;
+    el.scrollTo?.({ top: el.scrollHeight, behavior });
+    this.atEdge.set(true);
   }
 }
 

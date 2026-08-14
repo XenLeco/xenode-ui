@@ -78,7 +78,11 @@ describe('Wave-6 statics', () => {
       '1 / 1',
     );
 
-    expect(el.querySelector('[data-slot="prose"]')?.classList).toContain('[&_h2]:text-xl');
+    // Prose rhythm derives from three custom properties (the typeset model).
+    expect(el.querySelector('[data-slot="prose"]')?.classList).toContain(
+      '[&_h2]:text-[calc(var(--prose-size)*1.5)]',
+    );
+    expect(el.querySelector('[data-slot="prose"]')?.classList).toContain('[--prose-flow:1.25em]');
     expect(el.querySelector('[data-slot="empty-description"]')?.classList).toContain(
       'text-muted-foreground',
     );

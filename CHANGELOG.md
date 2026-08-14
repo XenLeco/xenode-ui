@@ -42,6 +42,22 @@ and shown in the docs shell.
 - Bento grew up: `hero` footprint (full-width 2-row banner), `tone` input
   sharing the Surface vocabulary, taller rows; the Blocks demo is now an
   8-tile mosaic led by a gradient hero.
+- Streaming-aware MessageScroller (referencing shadcn's message-scroller):
+  follows content growth only at the live edge, holds the reader's place
+  when they scroll away, exposes `atLiveEdge()` for a jump-to-latest
+  affordance; follow is instant, jump is smooth. Live demo on the Chat
+  page.
+- Prose rhythm is now three custom properties (the typeset model):
+  `--prose-size`, `--prose-leading`, `--prose-flow` — heading sizes, list
+  indents and block gaps all derive. Set `[--prose-size:1em]` to follow
+  the surrounding container.
+- `scroll-fade-x`/`scroll-fade-y` utilities: masked edges for scroll
+  containers (static masks; scroll-driven variants wait on browser
+  support). Applied to the message scroller and the mobile docs nav.
+- Docs anatomy (referencing shadcn's): an "On this page" rail harvested
+  from the rendered page's own `h2[id]` elements (cannot drift), and
+  prev/next page navigation derived from the shell's pages array; router
+  anchor scrolling enabled for fragment links.
 
 ### Changed
 
