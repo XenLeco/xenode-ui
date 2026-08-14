@@ -127,6 +127,12 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
 
+  /* Easing vocabulary — ease-out-expo for entrances, ease-fluid for
+     sheet-like travel, ease-snappy for small state flips. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+
   /* Motion presets — used as animate-fade-in, animate-fade-in-up, etc. */
   --animate-fade-in: xn-fade-in 0.3s ease-out both;
   --animate-fade-in-up: xn-fade-in-up 0.4s ease-out both;
@@ -134,6 +140,13 @@
   --animate-slide-in-left: xn-slide-in-left 0.3s ease-out both;
   --animate-slide-in-right: xn-slide-in-right 0.3s ease-out both;
   --animate-shimmer: xn-shimmer 1.8s linear infinite;
+  /* Use-case presets: hero media, dropdown-ish reveals, card entrances,
+     counter changes, invalid-input attention. */
+  --animate-blur-in: xn-blur-in 0.5s var(--ease-out-expo) both;
+  --animate-fade-in-down: xn-fade-in-down 0.3s var(--ease-out-expo) both;
+  --animate-rise: xn-rise 0.5s var(--ease-out-expo) both;
+  --animate-pop: xn-pop 0.3s var(--ease-snappy);
+  --animate-shake: xn-shake 0.25s ease-in-out 2;
 
   @keyframes xn-fade-in {
     from {
@@ -172,6 +185,38 @@
       background-position: -200% 0;
     }
   }
+  @keyframes xn-blur-in {
+    from {
+      opacity: 0;
+      filter: blur(8px);
+    }
+  }
+  @keyframes xn-fade-in-down {
+    from {
+      opacity: 0;
+      translate: 0 -0.75rem;
+    }
+  }
+  @keyframes xn-rise {
+    from {
+      opacity: 0;
+      translate: 0 1.5rem;
+      scale: 0.98;
+    }
+  }
+  @keyframes xn-pop {
+    40% {
+      scale: 1.15;
+    }
+  }
+  @keyframes xn-shake {
+    25% {
+      translate: -0.25rem 0;
+    }
+    75% {
+      translate: 0.25rem 0;
+    }
+  }
 }
 
 @layer base {
@@ -191,6 +236,11 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
   }
 
   /* Motion is an accessibility surface: when the OS asks for reduced

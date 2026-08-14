@@ -6,7 +6,19 @@ import {
   AccordionTrigger,
 } from '@angular/aria/accordion';
 
-import { Badge, Button, CARD, FIELD, FORM_EXTRAS, Input, Label, XN_ACCORDION } from '@xenode/ui';
+import {
+  Badge,
+  BENTO,
+  Button,
+  CARD,
+  FIELD,
+  FORM_EXTRAS,
+  Input,
+  Label,
+  MOCKUPS,
+  RadialProgress,
+  XN_ACCORDION,
+} from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
 
@@ -45,6 +57,9 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
     AccordionPanel,
     AccordionContent,
     ExampleBox,
+    BENTO,
+    MOCKUPS,
+    RadialProgress,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Blocks</h1>
@@ -92,6 +107,33 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
           </form>
         </div>
       </app-example-box>
+    </section>
+
+    <section class="mt-12" aria-labelledby="bento-h">
+      <h2 id="bento-h" class="text-lg font-semibold">Bento</h2>
+      <div xnBento class="mt-3">
+        <div xnBentoItem size="large" class="animate-rise">
+          <span xnBentoTitle>Live console</span>
+          <pre xnTerminal aria-label="Console example"><span xnTerminalLine>start minecraft</span><span
+            xnTerminalLine kind="output">world loaded in 0.28s</span></pre>
+          <span xnBentoDescription>SignalR streaming behind a bounded channel.</span>
+        </div>
+        <div xnBentoItem class="animate-rise [animation-delay:60ms]">
+          <span xnBentoTitle>Players</span>
+          <span class="text-3xl font-semibold">7</span>
+          <span xnBentoDescription>online now</span>
+        </div>
+        <div xnBentoItem class="animate-rise [animation-delay:120ms]">
+          <span xnBentoTitle>Storage</span>
+          <span xnRadialProgress value="70" aria-label="Storage used">70%</span>
+        </div>
+        <div xnBentoItem size="wide" class="animate-rise [animation-delay:180ms]">
+          <span xnBentoTitle>
+            Accessible by proof <span xnBadge variant="success" class="ml-1">AA</span>
+          </span>
+          <span xnBentoDescription>Every token pair locked by a contrast test in CI.</span>
+        </div>
+      </div>
     </section>
 
     <section class="mt-12" aria-labelledby="pricing-h">

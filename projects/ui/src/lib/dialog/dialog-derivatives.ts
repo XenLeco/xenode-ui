@@ -23,7 +23,7 @@ export class AlertDialog {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-auto w-full max-w-md scale-95 gap-4 rounded-lg border bg-background p-6 text-foreground opacity-0 shadow-lg transition-[opacity,scale,display,overlay] transition-discrete duration-200 open:grid open:scale-100 open:opacity-100 backdrop:bg-black/50 starting:open:scale-95 starting:open:opacity-0',
+      'm-auto w-full max-w-md scale-[0.97] gap-4 rounded-lg border bg-background p-6 text-foreground opacity-0 shadow-lg transition-[opacity,scale,display,overlay] transition-discrete duration-300 ease-out-expo open:grid open:scale-100 open:opacity-100 backdrop:bg-black/50 starting:open:scale-[0.97] starting:open:opacity-0',
       this.userClass(),
     ),
   );
@@ -44,7 +44,7 @@ export class Sheet {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-0 h-dvh max-h-none w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 open:flex open:translate-x-0 open:flex-col backdrop:bg-black/50',
+      'm-0 h-dvh max-h-none w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:translate-x-0 open:flex-col backdrop:bg-black/50',
       this.side() === 'right'
         ? 'ml-auto translate-x-full border-l starting:open:translate-x-full'
         : 'mr-auto -translate-x-full border-r starting:open:-translate-x-full',
@@ -66,7 +66,7 @@ export class Drawer {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-0 mt-auto max-h-[80dvh] w-full max-w-none translate-y-full gap-4 rounded-t-lg border-t bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 open:flex open:translate-y-0 open:flex-col backdrop:bg-black/50 starting:open:translate-y-full',
+      'm-0 mt-auto max-h-[80dvh] w-full max-w-none translate-y-full gap-4 rounded-t-lg border-t bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:translate-y-0 open:flex-col backdrop:bg-black/50 starting:open:translate-y-full',
       this.userClass(),
     ),
   );

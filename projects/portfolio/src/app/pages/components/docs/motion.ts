@@ -16,11 +16,18 @@ import { CodeSnippet } from './code-snippet';
 
     <button xnButton variant="outline" class="mt-6" (click)="replay()">Replay</button>
 
+    <p class="mt-2 text-xs text-muted-foreground">
+      Demo runs each preset at 1.5s with a stagger so it can be inspected — production durations
+      are 0.2–0.5s.
+    </p>
+
     @if (visible()) {
       <div class="mt-4 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-3">
         @for (preset of presets; track preset) {
           <div
             [class]="'flex h-20 items-center justify-center rounded-lg border bg-card text-xs ' + 'animate-' + preset"
+            [style.animation-duration]="'1.5s'"
+            [style.animation-delay]="$index * 200 + 'ms'"
           >
             animate-{{ preset }}
           </div>
@@ -51,9 +58,14 @@ export class MotionDoc {
   protected readonly presets = [
     'fade-in',
     'fade-in-up',
+    'fade-in-down',
     'zoom-in',
     'slide-in-left',
     'slide-in-right',
+    'blur-in',
+    'rise',
+    'pop',
+    'shake',
   ];
 
   protected readonly visible = signal(true);

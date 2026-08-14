@@ -49,7 +49,7 @@ export class XnMenu {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'absolute top-full left-0 z-50 mt-1 min-w-40 rounded-md border bg-background p-1 text-foreground shadow-md transition-[opacity,translate,display] transition-discrete duration-150 starting:-translate-y-1 starting:opacity-0 [&[inert]]:hidden',
+      'absolute top-full left-0 z-50 mt-1 min-w-40 rounded-md border bg-background p-1 text-foreground shadow-md transition-[opacity,translate,scale,display] transition-discrete duration-200 ease-out-expo starting:-translate-y-2 starting:scale-[0.98] starting:opacity-0 [&[inert]]:hidden',
       this.userClass(),
     ),
   );

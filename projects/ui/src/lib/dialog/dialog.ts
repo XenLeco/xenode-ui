@@ -36,7 +36,7 @@ export class Dialog {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-auto w-full max-w-lg scale-95 gap-4 rounded-lg border bg-background p-6 text-foreground opacity-0 shadow-lg transition-[opacity,scale,display,overlay] transition-discrete duration-200 open:grid open:scale-100 open:opacity-100 backdrop:bg-black/50 backdrop:opacity-0 backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-200 open:backdrop:opacity-100 starting:open:scale-95 starting:open:opacity-0 starting:open:backdrop:opacity-0',
+      'm-auto w-full max-w-lg scale-[0.97] gap-4 rounded-lg border bg-background p-6 text-foreground opacity-0 shadow-lg transition-[opacity,scale,display,overlay] transition-discrete duration-300 ease-out-expo open:grid open:scale-100 open:opacity-100 backdrop:bg-black/50 backdrop:backdrop-blur-sm backdrop:opacity-0 backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:backdrop:opacity-100 starting:open:scale-[0.97] starting:open:opacity-0 starting:open:backdrop:opacity-0',
       this.userClass(),
     ),
   );

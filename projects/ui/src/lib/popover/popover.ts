@@ -46,7 +46,7 @@ export class PopoverPanel {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'z-50 block w-72 rounded-md border bg-background p-4 text-sm text-foreground shadow-md outline-none transition-[opacity,scale] duration-150 starting:scale-95 starting:opacity-0',
+      'z-50 block w-72 rounded-md border bg-background p-4 text-sm text-foreground shadow-md outline-none transition-[opacity,scale] duration-200 ease-out-expo starting:scale-[0.97] starting:opacity-0',
       this.userClass(),
     ),
   );
