@@ -20,6 +20,8 @@ import {
   XnListboxOption,
 } from '@xenode/ui';
 
+import { ExampleBox } from './example-box';
+
 @Component({
   selector: 'app-docs-forms',
   imports: [
@@ -43,6 +45,7 @@ import {
     Dropdown,
     SelectTrigger,
     XnListboxOption,
+    ExampleBox,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Forms</h1>
@@ -195,6 +198,17 @@ import {
         <p xnFieldDescription>Typing advances; pasting a code fills every slot.</p>
       </div>
     </div>
+
+    <section class="mt-10" aria-labelledby="field-example-h">
+      <h2 id="field-example-h" class="text-lg font-semibold">Field example</h2>
+      <app-example-box title="Field example" [tabs]="fieldTabs" class="mt-3 block max-w-2xl">
+        <div xnField class="w-full max-w-xs">
+          <label xnLabel for="f-example-username">Username</label>
+          <input xnInput id="f-example-username" type="text" placeholder="dan" />
+          <p xnFieldDescription>Lowercase letters, numbers and hyphens only.</p>
+        </div>
+      </app-example-box>
+    </section>
   `,
 })
 export class FormsDoc {
@@ -209,4 +223,27 @@ export class FormsDoc {
     const query = this.comboboxQuery().trim().toLowerCase();
     return query ? this.games.filter((g) => g.toLowerCase().includes(query)) : this.games;
   });
+
+  // No Plain HTML flavor: [xnInput]/[xnField] carry no exported variants
+  // function, so there is nothing to generate that snippet from.
+  protected readonly fieldTabs = [
+    {
+      label: 'Angular',
+      code: `<div xnField>
+  <label xnLabel for="username">Username</label>
+  <input xnInput id="username" type="text" placeholder="dan" />
+  <p xnFieldDescription>Lowercase letters, numbers and hyphens only.</p>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { FIELD, Input, Label } from '@xenode/ui';
+
+@Component({
+  imports: [FIELD, Label, Input],
+  templateUrl: './username-field.html',
+})
+export class UsernameField {}`,
+    },
+  ] as const;
 }

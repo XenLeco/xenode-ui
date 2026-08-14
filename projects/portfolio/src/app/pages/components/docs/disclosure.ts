@@ -16,6 +16,8 @@ import {
   XN_ACCORDION,
 } from '@xenode/ui';
 
+import { ExampleBox } from './example-box';
+
 @Component({
   selector: 'app-docs-disclosure',
   imports: [
@@ -30,6 +32,7 @@ import {
     CAROUSEL,
     TABLE,
     SortHeader,
+    ExampleBox,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Disclosure &amp; data</h1>
@@ -67,6 +70,24 @@ import {
       </div>
     </section>
 
+    <div class="mt-8 max-w-xl">
+      <app-example-box title="Accordion example" [tabs]="accordionExampleTabs" class="block">
+        <div ngAccordionGroup xnAccordion class="w-full">
+          <div xnAccordionItem>
+            <h3 class="flex">
+              <button ngAccordionTrigger xnAccordionTrigger [panel]="exFaq">
+                What ships in v0.1.0?
+                <span data-chevron aria-hidden="true">⌄</span>
+              </button>
+            </h3>
+            <div ngAccordionPanel xnAccordionPanel #exFaq="ngAccordionPanel">
+              <ng-template ngAccordionContent>237 components across ~80 families.</ng-template>
+            </div>
+          </div>
+        </div>
+      </app-example-box>
+    </div>
+
     <section class="mt-10" aria-labelledby="coll-h">
       <h2 id="coll-h" class="text-lg font-semibold">Collapsible</h2>
       <details xnCollapsible class="mt-3 max-w-xl">
@@ -82,7 +103,9 @@ import {
     <section class="mt-10" aria-labelledby="resize-h">
       <h2 id="resize-h" class="text-lg font-semibold">Resizable &amp; scroll area</h2>
       <div xnResizableGroup class="mt-3 h-32 max-w-xl overflow-hidden rounded-lg border">
-        <div xnResizablePanel class="p-3 text-sm">Drag the handle — or focus it and use arrows.</div>
+        <div xnResizablePanel class="p-3 text-sm">
+          Drag the handle — or focus it and use arrows.
+        </div>
         <div xnResizableHandle aria-label="Resize panels"></div>
         <div xnResizablePanel>
           <div xnScrollArea class="h-full p-3" tabindex="0" aria-label="Scrollable log">
@@ -110,8 +133,20 @@ import {
           </div>
         </div>
         <div class="mt-2 flex justify-end gap-2">
-          <button xnCarouselPrev aria-label="Previous slide" class="cursor-pointer rounded-md border px-2 py-0.5">‹</button>
-          <button xnCarouselNext aria-label="Next slide" class="cursor-pointer rounded-md border px-2 py-0.5">›</button>
+          <button
+            xnCarouselPrev
+            aria-label="Previous slide"
+            class="cursor-pointer rounded-md border px-2 py-0.5"
+          >
+            ‹
+          </button>
+          <button
+            xnCarouselNext
+            aria-label="Next slide"
+            class="cursor-pointer rounded-md border px-2 py-0.5"
+          >
+            ›
+          </button>
         </div>
       </div>
     </section>
@@ -144,4 +179,41 @@ import {
     </section>
   `,
 })
-export class DisclosureDoc {}
+export class DisclosureDoc {
+  // No Plain HTML flavor: accordion is @angular/aria composition, not a
+  // variants function — there is nothing to generate a portable snippet from.
+  protected readonly accordionExampleTabs = [
+    {
+      label: 'Angular',
+      code: `<div ngAccordionGroup xnAccordion>
+  <div xnAccordionItem>
+    <h3 class="flex">
+      <button ngAccordionTrigger xnAccordionTrigger [panel]="faq">
+        What ships in v0.1.0?
+        <span data-chevron aria-hidden="true">⌄</span>
+      </button>
+    </h3>
+    <div ngAccordionPanel xnAccordionPanel #faq="ngAccordionPanel">
+      <ng-template ngAccordionContent>237 components across ~80 families.</ng-template>
+    </div>
+  </div>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import {
+  AccordionContent,
+  AccordionGroup,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@angular/aria/accordion';
+import { XN_ACCORDION } from '@xenode/ui';
+
+@Component({
+  imports: [XN_ACCORDION, AccordionGroup, AccordionTrigger, AccordionPanel, AccordionContent],
+  templateUrl: './changelog.html',
+})
+export class Changelog {}`,
+    },
+  ] as const;
+}

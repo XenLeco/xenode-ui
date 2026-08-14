@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 
-import { Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
+import { Kbd, Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
+
+import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-typography',
-  imports: [Prose, TEXT_BLOCKS, SITE],
+  imports: [Prose, TEXT_BLOCKS, SITE, Kbd, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Typography &amp; page shells</h1>
 
@@ -34,6 +36,18 @@ import { Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
         Inline code like <code xnInlineCode>cn()</code> and links via
         <a xnLink href="/components">xnLink</a>.
       </p>
+
+      <app-example-box
+        title="Text primitives example"
+        [tabs]="textTabs"
+        class="mt-4 block max-w-2xl"
+      >
+        <p class="text-sm">
+          Press <kbd xnKbd>Ctrl</kbd> + <kbd xnKbd>K</kbd> for the command palette, or read the
+          <a xnLink href="/components">docs</a> and copy <code xnInlineCode>cn()</code> from the
+          source.
+        </p>
+      </app-example-box>
     </section>
 
     <section class="mt-10" aria-labelledby="shell-h">
@@ -63,4 +77,25 @@ import { Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
     </section>
   `,
 })
-export class TypographyDoc {}
+export class TypographyDoc {
+  protected readonly textTabs = [
+    {
+      label: 'Angular',
+      code: `<p class="text-sm">
+  Press <kbd xnKbd>Ctrl</kbd> + <kbd xnKbd>K</kbd> for the command palette, or read the
+  <a xnLink href="/components">docs</a> and copy <code xnInlineCode>cn()</code> from the
+  source.
+</p>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { InlineCode, Kbd, Link } from '@xenode/ui';
+
+@Component({
+  imports: [InlineCode, Kbd, Link],
+  templateUrl: './shortcut.html',
+})
+export class Shortcut {}`,
+    },
+  ] as const;
+}

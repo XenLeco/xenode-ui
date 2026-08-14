@@ -1,17 +1,25 @@
 import { Component, signal } from '@angular/core';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
-import {
-  BREADCRUMB,
-  NAV_MENU,
-  PAGINATION,
-  SIDEBAR,
-  XN_TABS,
-} from '@xenode/ui';
+import { BREADCRUMB, NAV_MENU, PAGINATION, SIDEBAR, XN_TABS } from '@xenode/ui';
+
+import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-navigation',
-  imports: [XN_TABS, Tabs, TabList, Tab, TabPanel, TabContent, BREADCRUMB, PAGINATION, NAV_MENU, SIDEBAR],
+  imports: [
+    XN_TABS,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanel,
+    TabContent,
+    BREADCRUMB,
+    PAGINATION,
+    NAV_MENU,
+    SIDEBAR,
+    ExampleBox,
+  ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Navigation</h1>
 
@@ -63,6 +71,22 @@ import {
           <li><a xnPaginationLink href="/components/navigation">›</a></li>
         </ul>
       </nav>
+
+      <app-example-box
+        title="Breadcrumb example"
+        [tabs]="breadcrumbTabs"
+        class="mt-4 block max-w-2xl"
+      >
+        <nav xnBreadcrumb>
+          <ol xnBreadcrumbList>
+            <li xnBreadcrumbItem><a xnBreadcrumbLink href="/">Home</a></li>
+            <li xnBreadcrumbSeparator>/</li>
+            <li xnBreadcrumbItem><a xnBreadcrumbLink href="/components">Components</a></li>
+            <li xnBreadcrumbSeparator>/</li>
+            <li xnBreadcrumbItem><span xnBreadcrumbPage>Navigation</span></li>
+          </ol>
+        </nav>
+      </app-example-box>
     </section>
 
     <section class="mt-10" aria-labelledby="navmenu-h">
@@ -93,7 +117,9 @@ import {
                 <span xnSidebarGroupLabel>Servers</span>
                 <ul xnSidebarMenu>
                   <li xnSidebarMenuItem>
-                    <a xnSidebarMenuButton href="/components/navigation" aria-current="page">Minecraft</a>
+                    <a xnSidebarMenuButton href="/components/navigation" aria-current="page"
+                      >Minecraft</a
+                    >
                   </li>
                   <li xnSidebarMenuItem>
                     <a xnSidebarMenuButton href="/components/navigation">Zomboid</a>
@@ -119,4 +145,29 @@ import {
 })
 export class NavigationDoc {
   protected readonly selectedTab = signal<string | undefined>('overview');
+
+  protected readonly breadcrumbTabs = [
+    {
+      label: 'Angular',
+      code: `<nav xnBreadcrumb>
+  <ol xnBreadcrumbList>
+    <li xnBreadcrumbItem><a xnBreadcrumbLink href="/">Home</a></li>
+    <li xnBreadcrumbSeparator>/</li>
+    <li xnBreadcrumbItem><a xnBreadcrumbLink href="/components">Components</a></li>
+    <li xnBreadcrumbSeparator>/</li>
+    <li xnBreadcrumbItem><span xnBreadcrumbPage>Navigation</span></li>
+  </ol>
+</nav>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { BREADCRUMB } from '@xenode/ui';
+
+@Component({
+  imports: [BREADCRUMB],
+  templateUrl: './breadcrumb.html',
+})
+export class BreadcrumbExample {}`,
+    },
+  ] as const;
 }

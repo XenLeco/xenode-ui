@@ -1,18 +1,12 @@
 import { Component } from '@angular/core';
 
-import {
-  Badge,
-  Button,
-  CAROUSEL,
-  LAYOUT,
-  SIDEBAR,
-  SITE,
-  STAT,
-} from '@xenode/ui';
+import { Badge, Button, CAROUSEL, LAYOUT, SIDEBAR, SITE, STAT } from '@xenode/ui';
+
+import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-layout',
-  imports: [LAYOUT, SITE, SIDEBAR, CAROUSEL, STAT, Button, Badge],
+  imports: [LAYOUT, SITE, SIDEBAR, CAROUSEL, STAT, Button, Badge, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Layout</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -68,8 +62,20 @@ import {
                   </div>
                 </div>
                 <div class="mt-2 flex justify-end gap-2">
-                  <button xnCarouselPrev aria-label="Previous slide" class="cursor-pointer rounded-md border px-2 py-0.5">‹</button>
-                  <button xnCarouselNext aria-label="Next slide" class="cursor-pointer rounded-md border px-2 py-0.5">›</button>
+                  <button
+                    xnCarouselPrev
+                    aria-label="Previous slide"
+                    class="cursor-pointer rounded-md border px-2 py-0.5"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    xnCarouselNext
+                    aria-label="Next slide"
+                    class="cursor-pointer rounded-md border px-2 py-0.5"
+                  >
+                    ›
+                  </button>
                 </div>
               </div>
             </div>
@@ -83,7 +89,9 @@ import {
                     <span xnSidebarGroupLabel>Servers</span>
                     <ul xnSidebarMenu>
                       <li xnSidebarMenuItem>
-                        <a xnSidebarMenuButton href="/components/layout" aria-current="page">Minecraft</a>
+                        <a xnSidebarMenuButton href="/components/layout" aria-current="page"
+                          >Minecraft</a
+                        >
                       </li>
                       <li xnSidebarMenuItem>
                         <a xnSidebarMenuButton href="/components/layout">Zomboid</a>
@@ -126,6 +134,52 @@ import {
         </footer>
       </div>
     </div>
+
+    <section class="mt-10" aria-labelledby="scaffold-h">
+      <h2 id="scaffold-h" class="text-lg font-semibold">Page scaffold</h2>
+      <app-example-box title="Page scaffold" [tabs]="scaffoldTabs" class="mt-3 block max-w-xl">
+        <div xnPageLayout class="min-h-40 w-full overflow-hidden rounded-md border">
+          <header xnPageHeader class="static">
+            <div xnContainer size="sm" class="flex items-center justify-between py-2 text-sm">
+              <span class="font-semibold">xenode</span>
+              <button xnButton size="sm" variant="outline">Sign in</button>
+            </div>
+          </header>
+          <main xnPageMain>
+            <div xnContainer size="sm" class="py-4 text-sm text-muted-foreground">Page content</div>
+          </main>
+        </div>
+      </app-example-box>
+    </section>
   `,
 })
-export class LayoutDoc {}
+export class LayoutDoc {
+  protected readonly scaffoldTabs = [
+    {
+      label: 'Angular',
+      code: `<div xnPageLayout class="min-h-40 w-full overflow-hidden rounded-md border">
+  <header xnPageHeader class="static">
+    <div xnContainer size="sm" class="flex items-center justify-between py-2 text-sm">
+      <span class="font-semibold">xenode</span>
+      <button xnButton size="sm" variant="outline">Sign in</button>
+    </div>
+  </header>
+  <main xnPageMain>
+    <div xnContainer size="sm" class="py-4 text-sm text-muted-foreground">
+      Page content
+    </div>
+  </main>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { LAYOUT } from '@xenode/ui';
+
+@Component({
+  imports: [LAYOUT],
+  templateUrl: './scaffold.html',
+})
+export class Scaffold {}`,
+    },
+  ] as const;
+}

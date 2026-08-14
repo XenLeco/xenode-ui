@@ -18,6 +18,8 @@ import {
   XnListboxOption,
 } from '@xenode/ui';
 
+import { ExampleBox } from './example-box';
+
 @Component({
   selector: 'app-docs-overlays',
   imports: [
@@ -41,6 +43,7 @@ import {
     ComboboxPanel,
     XnListboxOption,
     Input,
+    ExampleBox,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Overlays</h1>
@@ -91,6 +94,32 @@ import {
         </div>
       </ng-template>
     </div>
+
+    <section class="mt-10" aria-labelledby="dropdown-example-h">
+      <h2 id="dropdown-example-h" class="text-lg font-semibold">Dropdown menu example</h2>
+      <app-example-box
+        title="Dropdown menu example"
+        [tabs]="dropdownTabs"
+        class="mt-3 block max-w-2xl"
+      >
+        <div xnDropdown>
+          <button xnButton variant="outline" ngMenuTrigger [menu]="exampleMenu">Menu ▾</button>
+          <div
+            ngMenu
+            xnMenu
+            #exampleMenu="ngMenu"
+            aria-label="Server actions"
+            (itemSelected)="onMenuSelect($event); exampleMenu.close()"
+          >
+            <ng-template ngMenuContent>
+              <div ngMenuItem xnMenuItem value="restart">Restart server</div>
+              <div ngMenuItem xnMenuItem value="logs">View logs</div>
+              <div ngMenuItem xnMenuItem value="delete" [disabled]="true">Delete (locked)</div>
+            </ng-template>
+          </div>
+        </div>
+      </app-example-box>
+    </section>
 
     <dialog xnDialog #commandDlg aria-label="Command palette" class="max-w-md p-2">
       <div class="grid gap-1">
@@ -180,6 +209,43 @@ export class OverlaysDoc {
   private readonly toastService = inject(ToastService);
 
   private readonly commands = ['Restart server', 'View logs', 'Toggle theme', 'Deploy portfolio'];
+
+  protected readonly dropdownTabs = [
+    {
+      label: 'Angular',
+      code: `<div xnDropdown>
+  <button xnButton variant="outline" ngMenuTrigger [menu]="exampleMenu">Menu ▾</button>
+  <div
+    ngMenu
+    xnMenu
+    #exampleMenu="ngMenu"
+    aria-label="Server actions"
+    (itemSelected)="onMenuSelect($event); exampleMenu.close()"
+  >
+    <ng-template ngMenuContent>
+      <div ngMenuItem xnMenuItem value="restart">Restart server</div>
+      <div ngMenuItem xnMenuItem value="logs">View logs</div>
+      <div ngMenuItem xnMenuItem value="delete" [disabled]="true">Delete (locked)</div>
+    </ng-template>
+  </div>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { XN_DROPDOWN } from '@xenode/ui';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
+
+@Component({
+  imports: [XN_DROPDOWN, Menu, MenuContent, MenuItem, MenuTrigger],
+  templateUrl: './server-menu.html',
+})
+export class ServerMenu {
+  onMenuSelect(action: string): void {
+    // restart, logs, delete…
+  }
+}`,
+    },
+  ] as const;
 
   protected readonly commandQuery = signal('');
   protected readonly commandSelection = signal<string[]>([]);

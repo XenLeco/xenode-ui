@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 
 import { AVATAR, CHAT } from '@xenode/ui';
 
+import { ExampleBox } from './example-box';
+
 @Component({
   selector: 'app-docs-chat',
-  imports: [CHAT, AVATAR],
+  imports: [CHAT, AVATAR, ExampleBox],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Chat</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -59,6 +61,31 @@ import { AVATAR, CHAT } from '@xenode/ui';
       </button>
     </section>
 
+    <section class="mt-10 max-w-md" aria-labelledby="example-h">
+      <h2 id="example-h" class="text-lg font-semibold">Message example</h2>
+      <app-example-box title="Message example" [tabs]="exampleTabs" class="mt-3 block">
+        <div class="flex w-full flex-col gap-3">
+          <div xnMessage>
+            <span xnMessageAvatar>
+              <span xnAvatar><span xnAvatarFallback>DL</span></span>
+            </span>
+            <div xnMessageBody>
+              <div xnBubbleGroup>
+                <div xnBubble>Server is up — want to hop on?</div>
+              </div>
+            </div>
+          </div>
+          <div xnMessage class="flex-row-reverse">
+            <div xnMessageBody class="items-end">
+              <div xnBubbleGroup class="items-end">
+                <div xnBubble variant="sent">On my way!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-example-box>
+    </section>
+
     <section class="mt-10 max-w-md" aria-labelledby="q-h">
       <h2 id="q-h" class="text-lg font-semibold">Questionnaire</h2>
       <div xnQuestionnaire class="mt-3">
@@ -81,4 +108,39 @@ import { AVATAR, CHAT } from '@xenode/ui';
     </section>
   `,
 })
-export class ChatDoc {}
+export class ChatDoc {
+  protected readonly exampleTabs = [
+    {
+      label: 'Angular',
+      code: `<div class="flex w-full flex-col gap-3">
+  <div xnMessage>
+    <span xnMessageAvatar>
+      <span xnAvatar><span xnAvatarFallback>DL</span></span>
+    </span>
+    <div xnMessageBody>
+      <div xnBubbleGroup>
+        <div xnBubble>Server is up — want to hop on?</div>
+      </div>
+    </div>
+  </div>
+  <div xnMessage class="flex-row-reverse">
+    <div xnMessageBody class="items-end">
+      <div xnBubbleGroup class="items-end">
+        <div xnBubble variant="sent">On my way!</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { AVATAR, CHAT } from '@xenode/ui';
+
+@Component({
+  imports: [CHAT, AVATAR],
+  templateUrl: './conversation.html',
+})
+export class Conversation {}`,
+    },
+  ] as const;
+}

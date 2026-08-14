@@ -75,13 +75,18 @@ describe('NavigationDoc — aria tabs composition', () => {
     const fixture = TestBed.createComponent(NavigationDoc);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
+    // Scoped to the page's own tabs demo: an ExampleBox further down the page
+    // renders its own aria tabs (data-slot="tab"/"tab-panel"), so unscoped
+    // queries would over-match across both compositions.
+    const tabsSection = compiled.querySelector<HTMLElement>('section[aria-labelledby="tabs-h"]');
+    if (!tabsSection) throw new Error('No tabs section');
 
-    const tabs = compiled.querySelectorAll<HTMLElement>('[data-slot="tab"]');
+    const tabs = tabsSection.querySelectorAll<HTMLElement>('[data-slot="tab"]');
     expect(tabs[0].getAttribute('aria-selected')).toBe('true');
     tabs[1].click();
     await fixture.whenStable();
     expect(tabs[1].getAttribute('aria-selected')).toBe('true');
-    const panels = [...compiled.querySelectorAll<HTMLElement>('[data-slot="tab-panel"]')];
+    const panels = [...tabsSection.querySelectorAll<HTMLElement>('[data-slot="tab-panel"]')];
     expect(panels.filter((p) => p.hasAttribute('inert')).length).toBe(2);
   });
 });
@@ -134,9 +139,7 @@ describe('BlocksDoc', () => {
     const example = compiled.querySelector('[data-slot="example-code"]');
     expect(example?.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnCard');
     expect(example?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
-    expect(
-      compiled.querySelector('[data-slot="example-preview"] [data-slot="card"]'),
-    ).toBeTruthy();
+    expect(compiled.querySelector('[data-slot="example-preview"] [data-slot="card"]')).toBeTruthy();
   });
 });
 
@@ -149,11 +152,7 @@ describe('ExampleBox — code flavors', () => {
     if (!box) throw new Error('No example box');
 
     const tabs = [...box.querySelectorAll<HTMLElement>('[data-slot="tab"]')];
-    expect(tabs.map((t) => t.textContent?.trim())).toEqual([
-      'Angular',
-      'TypeScript',
-      'Plain HTML',
-    ]);
+    expect(tabs.map((t) => t.textContent?.trim())).toEqual(['Angular', 'TypeScript', 'Plain HTML']);
     expect(box.querySelector('[data-slot="code-block"]')?.textContent).toContain('xnButton');
 
     tabs[2].click();

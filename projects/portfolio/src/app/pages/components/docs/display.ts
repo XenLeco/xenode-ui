@@ -5,6 +5,7 @@ import {
   AvatarGroup,
   Badge,
   badgeVariantConfig,
+  badgeVariants,
   EMPTY,
   EmptyIcon,
   ITEM,
@@ -20,6 +21,8 @@ import {
   TEXT_BLOCKS,
   TIMELINE,
 } from '@xenode/ui';
+
+import { ExampleBox } from './example-box';
 
 type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
 
@@ -43,6 +46,7 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
     Progress,
     Meter,
     Output,
+    ExampleBox,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Display</h1>
@@ -57,6 +61,10 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
         <kbd xnKbd>Ctrl</kbd>
         <kbd xnKbd>K</kbd>
       </div>
+      <app-example-box title="Badge example" [tabs]="badgeExampleTabs" class="mt-3 block max-w-2xl">
+        <span xnBadge variant="success">Active</span>
+        <span xnBadge variant="outline">v0.1.0</span>
+      </app-example-box>
     </section>
 
     <section class="mt-10" aria-labelledby="avatar-h">
@@ -99,7 +107,9 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
       <h2 id="item-h" class="text-lg font-semibold">Item &amp; empty state</h2>
       <div class="mt-3 grid max-w-md gap-4">
         <div xnItem class="border">
-          <span xnItemMedia><span xnAvatar><span xnAvatarFallback>MC</span></span></span>
+          <span xnItemMedia
+            ><span xnAvatar><span xnAvatarFallback>MC</span></span></span
+          >
           <div xnItemContent>
             <span xnItemTitle>Minecraft — survival world</span>
             <span xnItemDescription>Running · 3 players online</span>
@@ -163,4 +173,30 @@ export class DisplayDoc {
   protected readonly badgeVariants = Object.keys(
     badgeVariantConfig.variants.variant,
   ) as BadgeVariantName[];
+
+  // The Plain HTML flavor is GENERATED from the same variants function the
+  // component uses — the portable snippet cannot drift either.
+  protected readonly badgeExampleTabs = [
+    {
+      label: 'Angular',
+      code: `<span xnBadge variant="success">Active</span>
+<span xnBadge variant="outline">v0.1.0</span>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { Badge } from '@xenode/ui';
+
+@Component({
+  imports: [Badge],
+  templateUrl: './status.html',
+})
+export class Status {}`,
+    },
+    {
+      label: 'Plain HTML',
+      code: `<!-- Works in any framework: Tailwind + theme.css carry the system -->
+<span class="${badgeVariants({ variant: 'success' })}">Active</span>
+<span class="${badgeVariants({ variant: 'outline' })}">v0.1.0</span>`,
+    },
+  ] as const;
 }
