@@ -32,11 +32,25 @@ and shown in the docs shell.
   literal strings in source — the rule generalizes: dynamic class
   construction silently defeats Tailwind.
 
+- Blend vocabulary: mode-invariant `--gradient-from`/`--gradient-to`/
+  `--gradient-foreground` tokens (one dark blend in both modes, both
+  endpoints contrast-locked at 4.5:1), `gradient` and `glass` variants on
+  button and badge, and a new Surface skin family
+  (`default`/`glass`/`gradient`/`glow`) — a skin, not a layout; cards keep
+  slots. Gradient surfaces restyle nested `*-description` slots through the
+  data-slot seam.
+- Bento grew up: `hero` footprint (full-width 2-row banner), `tone` input
+  sharing the Surface vocabulary, taller rows; the Blocks demo is now an
+  8-tile mosaic led by a gradient hero.
+
 ### Changed
 
 - Overlay motion smoothed: dialogs fade+scale on expo with blurred
   backdrop, sheets/drawers on the fluid curve, menus/popovers on expo,
   tooltips snappy, toasts rise; Motion-page demos slowed 3x for inspection.
+- Docs shell nav is responsive: a scrollable pill row under `sm`, the
+  sticky column above — previously the nav was simply hidden on phones
+  with no alternative.
 
 ## [0.1.0] — 2026-08-14
 

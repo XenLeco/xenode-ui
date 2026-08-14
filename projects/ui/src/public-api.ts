@@ -75,4 +75,5 @@ export * from './lib/action-extras/action-extras';
 export * from './lib/combobox/combobox';
 export * from './lib/layout/layout';
 export * from './lib/bento/bento';
+export * from './lib/surface/surface';
 export * from './lib/version';

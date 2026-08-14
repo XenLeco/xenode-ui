@@ -19,6 +19,12 @@ export const buttonVariantConfig = {
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
       link: 'text-primary underline-offset-4 hover:underline',
+      // brightness-100 is load-bearing: filter:none does not interpolate,
+      // so hover brightness would snap without a resting value.
+      gradient:
+        'bg-linear-to-br from-gradient-from to-gradient-to text-gradient-foreground brightness-100 hover:brightness-115',
+      glass:
+        'border border-foreground/10 bg-foreground/5 text-foreground backdrop-blur-md hover:bg-foreground/10',
     },
     size: {
       xs: 'h-7 px-2 text-xs',
@@ -40,7 +46,7 @@ export const buttonVariants = cva(
   // outline-color, which makes the focus ring fade in from currentColor —
   // ~100ms of invisible ring on light backgrounds. Transition exactly what
   // should animate; the ring must snap.
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,filter] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50',
   buttonVariantConfig,
 );
 

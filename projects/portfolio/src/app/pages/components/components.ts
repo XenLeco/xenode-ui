@@ -11,20 +11,27 @@ import { XN_UI_VERSION } from '@xenode/ui';
   selector: 'app-components',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
-    <div class="flex gap-8">
-      <aside class="hidden w-40 shrink-0 sm:block">
-        <nav aria-label="Component docs" class="sticky top-4 flex flex-col gap-0.5">
+    <div class="flex flex-col gap-6 sm:flex-row sm:gap-8">
+      <!-- One nav, two shapes: scrollable pill row on phones, sticky column
+           from sm up. Hiding it on mobile left phones with no navigation. -->
+      <aside class="w-full shrink-0 sm:w-40">
+        <nav
+          aria-label="Component docs"
+          class="-mx-1 flex gap-1 overflow-x-auto px-1 pb-2 sm:sticky sm:top-4 sm:mx-0 sm:flex-col sm:gap-0.5 sm:px-0 sm:pb-0"
+        >
           @for (page of pages; track page.path) {
             <a
               [routerLink]="page.path"
               routerLinkActive="bg-secondary text-foreground"
               [routerLinkActiveOptions]="{ exact: page.exact }"
               ariaCurrentWhenActive="page"
-              class="rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-[color,background-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              class="rounded-md px-2 py-1.5 text-sm whitespace-nowrap text-muted-foreground transition-[color,background-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >{{ page.label }}</a
             >
           }
-          <span class="mt-3 px-2 text-xs text-muted-foreground" data-slot="docs-version"
+          <span
+            class="hidden px-2 text-xs text-muted-foreground sm:mt-3 sm:block"
+            data-slot="docs-version"
             >&#64;xenode/ui v{{ version }}</span
           >
         </nav>

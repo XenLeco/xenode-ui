@@ -35,3 +35,40 @@ describe('Bento', () => {
     expect(el.querySelector('[data-slot="bento-title"]')?.textContent).toContain('Big');
   });
 });
+
+@Component({
+  imports: [BENTO],
+  template: `
+    <div xnBento>
+      <div xnBentoItem size="hero" tone="gradient">
+        <span xnBentoTitle>Banner</span>
+        <span xnBentoDescription>Full-width blend</span>
+      </div>
+      <div xnBentoItem tone="glass">Frosted</div>
+      <div xnBentoItem tone="glow" class="bg-red-500">Lit</div>
+    </div>
+  `,
+})
+class TonedHost {}
+
+describe('BentoItem sizes and tones', () => {
+  it('hero spans the full lg row and gradient replaces the card skin', async () => {
+    const fixture = TestBed.createComponent(TonedHost);
+    await fixture.whenStable();
+    const items = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
+      '[data-slot="bento-item"]',
+    );
+
+    expect(items[0].classList).toContain('lg:col-span-4');
+    expect(items[0].classList).toContain('row-span-2');
+    expect(items[0].classList).toContain('text-gradient-foreground');
+    expect(items[0].classList).not.toContain('bg-card');
+
+    expect(items[1].classList).toContain('backdrop-blur-md');
+    expect(items[1].classList).not.toContain('bg-card');
+
+    expect(items[2].classList).toContain('border-ring/50');
+    expect(items[2].classList).toContain('bg-red-500');
+    expect(items[2].classList).not.toContain('bg-card');
+  });
+});

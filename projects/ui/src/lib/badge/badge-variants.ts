@@ -16,6 +16,9 @@ export const badgeVariantConfig = {
       warning: 'border-transparent bg-warning text-warning-foreground',
       info: 'border-transparent bg-info text-info-foreground',
       outline: 'text-foreground',
+      gradient:
+        'border-transparent bg-linear-to-br from-gradient-from to-gradient-to text-gradient-foreground',
+      glass: 'border-foreground/10 bg-foreground/5 text-foreground backdrop-blur-md',
     },
   },
   defaultVariants: {

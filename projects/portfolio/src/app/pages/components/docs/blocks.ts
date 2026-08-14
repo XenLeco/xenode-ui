@@ -112,26 +112,71 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
     <section class="mt-12" aria-labelledby="bento-h">
       <h2 id="bento-h" class="text-lg font-semibold">Bento</h2>
       <div xnBento class="mt-3">
-        <div xnBentoItem size="large" class="animate-rise">
+        <div xnBentoItem size="hero" tone="gradient" class="animate-rise justify-center gap-3 p-8">
+          <span xnBentoTitle class="max-w-md text-2xl sm:text-3xl">
+            Run your worlds from one panel
+          </span>
+          <span xnBentoDescription class="max-w-md">
+            Game servers, bots and tunnels behind one dark, honest dashboard.
+          </span>
+          <div class="mt-2 flex flex-wrap gap-3">
+            <!-- Stock variants key off mode-flipping tokens; on this
+                 mode-invariant dark blend the CTA pins the gradient's own
+                 pair instead — consumer class wins by design. -->
+            <button
+              xnButton
+              class="bg-gradient-foreground text-gradient-from hover:bg-gradient-foreground/90"
+            >
+              Get started
+            </button>
+            <button
+              xnButton
+              variant="glass"
+              class="border-gradient-foreground/25 text-gradient-foreground"
+            >
+              Read the docs
+            </button>
+          </div>
+        </div>
+        <div xnBentoItem size="large" class="animate-rise [animation-delay:60ms]">
           <span xnBentoTitle>Live console</span>
-          <pre xnTerminal aria-label="Console example"><span xnTerminalLine>start minecraft</span><span
+          <pre
+            xnTerminal
+            aria-label="Console example"
+          ><span xnTerminalLine>start minecraft</span><span
             xnTerminalLine kind="output">world loaded in 0.28s</span></pre>
           <span xnBentoDescription>SignalR streaming behind a bounded channel.</span>
         </div>
-        <div xnBentoItem class="animate-rise [animation-delay:60ms]">
+        <div xnBentoItem class="animate-rise [animation-delay:120ms]">
           <span xnBentoTitle>Players</span>
           <span class="text-3xl font-semibold">7</span>
           <span xnBentoDescription>online now</span>
         </div>
-        <div xnBentoItem class="animate-rise [animation-delay:120ms]">
+        <div xnBentoItem class="animate-rise [animation-delay:180ms]">
           <span xnBentoTitle>Storage</span>
           <span xnRadialProgress value="70" aria-label="Storage used">70%</span>
         </div>
-        <div xnBentoItem size="wide" class="animate-rise [animation-delay:180ms]">
+        <div xnBentoItem tone="glass" class="animate-rise [animation-delay:240ms]">
+          <span xnBentoTitle>Zero lock-in</span>
+          <span xnBentoDescription>MIT everywhere. Copy the markup, keep the system.</span>
+        </div>
+        <div xnBentoItem tone="glow" class="animate-rise [animation-delay:300ms]">
+          <span xnBentoTitle>Uptime</span>
+          <span class="text-3xl font-semibold">99.98%</span>
+          <span xnBentoDescription>rolling 90 days</span>
+        </div>
+        <div xnBentoItem size="wide" class="animate-rise [animation-delay:360ms]">
           <span xnBentoTitle>
             Accessible by proof <span xnBadge variant="success" class="ml-1">AA</span>
           </span>
           <span xnBentoDescription>Every token pair locked by a contrast test in CI.</span>
+        </div>
+        <div xnBentoItem size="wide" tone="glass" class="animate-rise [animation-delay:420ms]">
+          <span xnBentoTitle>Blend, don't shout</span>
+          <span xnBentoDescription>
+            Glass, gradient and glow tones share one vocabulary with
+            <code class="font-mono text-xs">xnSurface</code>.
+          </span>
         </div>
       </div>
     </section>
@@ -145,7 +190,9 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
             <p xnCardDescription>One node, your own hardware.</p>
           </div>
           <div xnCardContent>
-            <p class="text-3xl font-semibold">€0<span class="text-sm text-muted-foreground">/mo</span></p>
+            <p class="text-3xl font-semibold">
+              €0<span class="text-sm text-muted-foreground">/mo</span>
+            </p>
           </div>
           <div xnCardFooter>
             <button xnButton variant="outline" class="w-full">Self-host</button>
@@ -153,11 +200,15 @@ const LOGIN_SNIPPET = `<div xnCard class="max-w-sm">
         </div>
         <div xnCard class="animate-fade-in-up border-ring [animation-delay:80ms]">
           <div xnCardHeader>
-            <h3 xnCardTitle>Supporter <span xnBadge variant="success" class="ml-1">Popular</span></h3>
+            <h3 xnCardTitle>
+              Supporter <span xnBadge variant="success" class="ml-1">Popular</span>
+            </h3>
             <p xnCardDescription>Same software, plus warm feelings.</p>
           </div>
           <div xnCardContent>
-            <p class="text-3xl font-semibold">€5<span class="text-sm text-muted-foreground">/mo</span></p>
+            <p class="text-3xl font-semibold">
+              €5<span class="text-sm text-muted-foreground">/mo</span>
+            </p>
           </div>
           <div xnCardFooter>
             <button xnButton class="w-full">Sponsor</button>

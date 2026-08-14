@@ -64,6 +64,10 @@ const TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['success-text', 'background'],
   ['warning-text', 'background'],
   ['info-text', 'background'],
+  // A gradient has no single background: text on it must clear 4.5:1 at
+  // BOTH endpoints, which bounds every point between for a same-hue blend.
+  ['gradient-foreground', 'gradient-from'],
+  ['gradient-foreground', 'gradient-to'],
 ];
 
 const NON_TEXT_PAIRS: readonly (readonly [string, string])[] = [
