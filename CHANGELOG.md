@@ -5,6 +5,29 @@ All notable changes to `@xenode/ui`. Format follows
 the version mirrored in `projects/ui/src/lib/version.ts` (`XN_UI_VERSION`)
 and shown in the docs shell.
 
+## [Unreleased]
+
+### Added
+
+- Select (aria's non-editable combobox + `xnSelectTrigger`) and a command
+  palette composition (dialog + combobox; `selectionMode="explicit"` — the
+  follow-focus default auto-selected while typing).
+- Page-scaffold family (`xnContainer`, `xnPageLayout`, `xnPageHeader`,
+  `xnPageMain`, `xnPageSection`) and a full-page Layout docs composition.
+- Bento family (grid, sized tiles, title/description) with staggered rises.
+- Motion vocabulary: easing tokens (`--ease-out-expo`, `--ease-fluid`,
+  `--ease-snappy`) and use-case presets (blur-in, fade-in-down, rise, pop,
+  shake); `::selection` polish.
+- ExampleBox docs pattern: boxed live previews with multi-flavor code tabs
+  (Angular / TypeScript / Plain HTML — the HTML flavor generated from the
+  variants function itself).
+
+### Changed
+
+- Overlay motion smoothed: dialogs fade+scale on expo with blurred
+  backdrop, sheets/drawers on the fluid curve, menus/popovers on expo,
+  tooltips snappy, toasts rise; Motion-page demos slowed 3x for inspection.
+
 ## [0.1.0] — 2026-08-14
 
 First versioned cut: 227 components across 75+ families.
