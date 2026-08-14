@@ -82,8 +82,11 @@ interface TocEntry {
           </nav>
         }
       </div>
-      @if (toc().length > 1) {
-        <aside class="hidden w-44 shrink-0 xl:block">
+      <!-- The rail is harvested client-side (render hooks don't run while
+           prerendering), so its column is reserved unconditionally at xl —
+           otherwise the article visibly narrows when the TOC pops in. -->
+      <aside class="hidden w-44 shrink-0 xl:block">
+        @if (toc().length > 1) {
           <nav aria-label="On this page" class="sticky top-4 flex flex-col gap-0.5" data-slot="docs-toc">
             <span class="px-2 text-xs font-medium">On this page</span>
             @for (entry of toc(); track entry.id) {
@@ -95,8 +98,8 @@ interface TocEntry {
               >
             }
           </nav>
-        </aside>
-      }
+        }
+      </aside>
     </div>
   `,
 })
@@ -144,9 +147,11 @@ export class Components {
 
   constructor() {
     afterEveryRender(() => {
-      const found = Array.from(
-        this.host.nativeElement.querySelectorAll<HTMLElement>('h2[id]'),
-      ).map((heading) => ({ id: heading.id, label: heading.textContent?.trim() ?? '' }));
+      // Closed dialogs and inert panels are in the DOM but unreadable —
+      // their headings would be phantom links that scroll nowhere.
+      const found = Array.from(this.host.nativeElement.querySelectorAll<HTMLElement>('h2[id]'))
+        .filter((heading) => !heading.closest('dialog:not([open]), [inert]'))
+        .map((heading) => ({ id: heading.id, label: heading.textContent?.trim() ?? '' }));
       if (found.map((entry) => entry.id).join('|') !== this.toc().map((entry) => entry.id).join('|')) {
         this.toc.set(found);
       }

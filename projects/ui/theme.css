@@ -14,6 +14,12 @@
  * edges instead of cutting hard. Static masks (both edges, always) — the
  * scroll-position-aware variant needs scroll-driven animations, which
  * are not broadly shippable yet.
+ *
+ * Opt-in by design, never baked into a component's base classes: pair
+ * with ≥1rem padding on the fade axis (the fade zone) or the outermost
+ * content line renders semi-transparent, and tailwind-merge cannot see
+ * that these custom utilities conflict with mask-* classes, so a baked-in
+ * fade would silently defeat a consumer's mask override.
  */
 @utility scroll-fade-x {
   mask-image: linear-gradient(

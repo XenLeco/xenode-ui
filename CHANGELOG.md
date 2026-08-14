@@ -67,6 +67,21 @@ and shown in the docs shell.
 - Docs shell nav is responsive: a scrollable pill row under `sm`, the
   sticky column above — previously the nav was simply hidden on phones
   with no alternative.
+- Adversarial-review fixes (scroller wave): MessageScroller now pins to
+  the newest message on mount (the initial live edge is measured, not
+  assumed — an overflowing history no longer teleports the reader on the
+  first chunk); a smooth jump's mid-flight positions no longer un-pin
+  (wheel/touch/keys end the flight — the reference's user-intent model);
+  `scroll-fade-y` is opt-in rather than baked (tailwind-merge cannot see
+  custom-utility conflicts, so baking it defeated consumer mask
+  overrides); the TOC filters headings inside closed dialogs and inert
+  panels (Overlays had 4 phantom links) and its rail column is reserved
+  to kill a hydration layout shift; chat demos gained `role="log"` and a
+  focus handoff from the unmounting jump button; characterData follow,
+  the exact 48px boundary and flight semantics are now spec-pinned.
+  Known trade-off kept deliberately: `scrollPositionRestoration:
+'enabled'` gives SPA back/forward restore at the cost of native
+  reload-position restore.
 - Adversarial-review fixes: nav focus rings no longer clip against the
   scroll container (headroom padding on mobile, `overflow-visible` from
   `sm`); on-blend controls carry `focus-visible:outline-gradient-foreground`

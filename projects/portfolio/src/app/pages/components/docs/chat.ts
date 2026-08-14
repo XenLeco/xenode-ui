@@ -29,8 +29,9 @@ const STREAM_LINES = [
       <div
         xnMessageScroller
         #scroller="xnMessageScroller"
-        class="mt-3 h-64 rounded-lg border p-4"
+        class="scroll-fade-y mt-3 h-64 rounded-lg border p-4"
         tabindex="0"
+        role="log"
         aria-label="Conversation with Dan"
       >
         <div xnMessage>
@@ -106,8 +107,10 @@ const STREAM_LINES = [
         <div
           xnMessageScroller
           #stream="xnMessageScroller"
-          class="h-64 rounded-lg border p-4"
+          #streamBox
+          class="scroll-fade-y h-64 rounded-lg border p-4"
           tabindex="0"
+          role="log"
           aria-label="Streaming demo"
         >
           <div xnBubbleGroup>
@@ -117,12 +120,14 @@ const STREAM_LINES = [
           </div>
         </div>
         @if (!stream.atLiveEdge()) {
+          <!-- The button unmounts once pinned — hand focus to the scroller
+               so a keyboard user's Tab position survives the jump. -->
           <button
             xnButton
             size="sm"
             variant="secondary"
             class="absolute bottom-3 left-1/2 -translate-x-1/2 shadow-md"
-            (click)="stream.scrollToBottom()"
+            (click)="stream.scrollToBottom(); streamBox.focus()"
           >
             ↓ Latest
           </button>

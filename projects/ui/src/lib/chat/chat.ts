@@ -113,17 +113,24 @@ export class MessageStatus {
  * Streaming-aware scroll container for a message list. The rules, in
  * order of importance:
  *
+ * - Opens at the newest message: pinned to the bottom on mount, so the
+ *   initial `atLiveEdge()` is measured truth, not assumption.
  * - Follow only while the reader is following: content growth (streamed
- *   chunks, appended turns — watched via MutationObserver) keeps the
- *   newest message in view ONLY while the reader is at the live edge.
+ *   chunks and appended turns via childList, in-place text growth via
+ *   characterData — both observed) keeps the newest message in view ONLY
+ *   while the reader is at the live edge.
  * - Scrolling away is the hold signal: nothing moves until the reader
  *   returns or asks to (`scrollToBottom()` — wire it to a jump-to-latest
  *   affordance shown when `atLiveEdge()` is false).
  * - Follow is instant, jump is smooth: smooth scrolling chases and lags
- *   behind rapid stream chunks.
+ *   behind rapid stream chunks. Mid-flight scroll positions of a smooth
+ *   jump are not reader intent and do not un-pin; wheel, touch or keys
+ *   end the flight and hand judgment back to the reader's position.
  *
- * Scroll position is the only signal read; text selection or keyboard
- * focus do not (yet) hold the stream.
+ * Not implemented from the reference semantics: new-turn anchoring (a
+ * fresh turn scrolled to the top of the viewport) and selection-as-hold.
+ * Pair with `scroll-fade-y` + block padding for masked edges (opt-in —
+ * see theme.css).
  */
 @Directive({
   selector: '[xnMessageScroller]',
@@ -132,6 +139,9 @@ export class MessageStatus {
     'data-slot': 'message-scroller',
     '[class]': 'classes()',
     '(scroll)': 'onScroll()',
+    '(wheel)': 'onUserIntent()',
+    '(touchstart)': 'onUserIntent()',
+    '(keydown)': 'onUserIntent()',
   },
 })
 export class MessageScroller implements OnDestroy {
@@ -145,12 +155,13 @@ export class MessageScroller implements OnDestroy {
   readonly atLiveEdge = this.atEdge.asReadonly();
 
   private observer: MutationObserver | undefined;
+  private jumping = false;
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'flex flex-col gap-3 overflow-y-auto scroll-fade-y [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]',
+      'flex flex-col gap-3 overflow-y-auto [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]',
       this.userClass(),
     ),
   );
@@ -158,6 +169,7 @@ export class MessageScroller implements OnDestroy {
   constructor() {
     // Observers only exist in the browser; prerendered pages skip this.
     afterNextRender(() => {
+      this.scrollToBottom('instant');
       this.observer = new MutationObserver(() => {
         if (this.atEdge()) this.scrollToBottom('instant');
       });
@@ -173,13 +185,25 @@ export class MessageScroller implements OnDestroy {
     this.observer?.disconnect();
   }
 
+  protected onUserIntent(): void {
+    this.jumping = false;
+  }
+
   protected onScroll(): void {
     const el = this.elementRef.nativeElement;
-    this.atEdge.set(el.scrollHeight - el.scrollTop - el.clientHeight <= this.edgeThreshold());
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (this.jumping) {
+      // A smooth jump's intermediate positions are the animation, not the
+      // reader — hold the pin until arrival (or a user-intent signal).
+      if (distance <= this.edgeThreshold()) this.jumping = false;
+      return;
+    }
+    this.atEdge.set(distance <= this.edgeThreshold());
   }
 
   scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
     const el = this.elementRef.nativeElement;
+    this.jumping = behavior === 'smooth';
     el.scrollTo?.({ top: el.scrollHeight, behavior });
     this.atEdge.set(true);
   }

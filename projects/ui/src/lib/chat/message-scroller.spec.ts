@@ -76,4 +76,40 @@ describe('MessageScroller', () => {
     expect(scrollTo).toHaveBeenCalledWith({ top: 500, behavior: 'smooth' });
     expect(scroller.atLiveEdge()).toBe(true);
   });
+
+  it('follows in-place text growth (characterData), the streaming case', async () => {
+    const { el, scrollTo, settle } = await setup();
+    const textNode = el.querySelector('p')?.firstChild;
+    if (!textNode) throw new Error('No text node');
+
+    textNode.nodeValue = 'one, then a streamed chunk';
+    await settle();
+    expect(scrollTo).toHaveBeenCalledWith({ top: 500, behavior: 'instant' });
+  });
+
+  it('pins the exact threshold boundary: 48px is the edge, 49px is not', async () => {
+    const { el, scroller } = await setup();
+    el.scrollTop = 352; // 500 - 352 - 100 = 48 — exactly the default threshold
+    el.dispatchEvent(new Event('scroll'));
+    expect(scroller.atLiveEdge()).toBe(true);
+
+    el.scrollTop = 351; // 49 from the bottom — one past the edge
+    el.dispatchEvent(new Event('scroll'));
+    expect(scroller.atLiveEdge()).toBe(false);
+  });
+
+  it('a smooth jump does not un-pin mid-flight; user intent ends the flight', async () => {
+    const { el, scroller } = await setup();
+    el.scrollTop = 0;
+    el.dispatchEvent(new Event('scroll'));
+    scroller.scrollToBottom(); // smooth — flight begins, pin restored
+
+    el.scrollTop = 100; // animation frame far from the bottom
+    el.dispatchEvent(new Event('scroll'));
+    expect(scroller.atLiveEdge(), 'flight position must not un-pin').toBe(true);
+
+    el.dispatchEvent(new Event('wheel')); // the reader takes over
+    el.dispatchEvent(new Event('scroll'));
+    expect(scroller.atLiveEdge(), 'reader intent ends the flight').toBe(false);
+  });
 });
