@@ -6,6 +6,7 @@ import {
   Checkbox,
   ComboboxPanel,
   Dropdown,
+  SelectTrigger,
   FIELD,
   Input,
   INPUT_GROUP,
@@ -40,6 +41,7 @@ import {
     Option,
     ComboboxPanel,
     Dropdown,
+    SelectTrigger,
     XnListboxOption,
   ],
   template: `
@@ -155,6 +157,32 @@ import {
       </div>
 
       <div xnField>
+        <span class="text-sm font-medium" id="f-region-label">Region (custom select)</span>
+        <div xnDropdown class="block w-full">
+          <div ngCombobox #sel="ngCombobox" xnSelectTrigger aria-labelledby="f-region-label">
+            {{ selectedRegion()[0] ?? 'Pick a region…' }}
+            <span data-chevron aria-hidden="true">⌄</span>
+          </div>
+          <ng-template ngComboboxPopup [combobox]="sel">
+            <div
+              xnComboboxPanel
+              ngComboboxWidget
+              ngListbox
+              #rlb="ngListbox"
+              [(value)]="selectedRegion"
+              [activeDescendant]="rlb.activeDescendant()"
+              aria-labelledby="f-region-label"
+            >
+              @for (region of regions; track region) {
+                <div xnListboxOption ngOption [value]="region">{{ region }}</div>
+              }
+            </div>
+          </ng-template>
+        </div>
+        <p xnFieldDescription>The non-editable combobox — aria's custom-select pattern.</p>
+      </div>
+
+      <div xnField>
         <span class="text-sm font-medium">Verification code</span>
         <div xnOtpGroup aria-label="Verification code">
           <input xnOtpSlot aria-label="Digit 1" />
@@ -174,6 +202,9 @@ export class FormsDoc {
 
   protected readonly comboboxQuery = signal('');
   protected readonly comboboxSelection = signal<string[]>([]);
+
+  protected readonly regions = ['eu-west', 'us-east', 'ap-south'];
+  protected readonly selectedRegion = signal<string[]>([]);
   protected readonly filteredGames = computed(() => {
     const query = this.comboboxQuery().trim().toLowerCase();
     return query ? this.games.filter((g) => g.toLowerCase().includes(query)) : this.games;

@@ -1,16 +1,21 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
+import { Listbox, Option } from '@angular/aria/listbox';
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
 
 import {
   Button,
+  ComboboxPanel,
   DIALOG,
   DIALOG_DERIVATIVES,
   DialogClose,
+  Input,
   ScrollArea,
   ToastService,
   XN_DROPDOWN,
   XN_HOVER_CARD,
   XN_POPOVER,
+  XnListboxOption,
 } from '@xenode/ui';
 
 @Component({
@@ -28,12 +33,20 @@ import {
     MenuContent,
     XN_POPOVER,
     XN_HOVER_CARD,
+    Combobox,
+    ComboboxPopup,
+    ComboboxWidget,
+    Listbox,
+    Option,
+    ComboboxPanel,
+    XnListboxOption,
+    Input,
   ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Overlays</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
-      Dialogs ride the native top layer with starting-style entrance animations; tooltips,
-      popovers and hover cards animate in as their portals mount.
+      Dialogs ride the native top layer with starting-style entrance animations; tooltips, popovers
+      and hover cards animate in as their portals mount.
     </p>
 
     <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -57,6 +70,7 @@ import {
           </ng-template>
         </div>
       </div>
+      <button xnButton variant="outline" (click)="commandDlg.showModal()">Command ⌘K</button>
       <button xnButton variant="outline" [xnPopoverTriggerFor]="pop">Popover</button>
       <ng-template #pop="xnPopover" xnPopover>
         <div xnPopoverPanel>
@@ -77,6 +91,40 @@ import {
         </div>
       </ng-template>
     </div>
+
+    <dialog xnDialog #commandDlg aria-label="Command palette" class="max-w-md p-2">
+      <div class="grid gap-1">
+        <input
+          xnInput
+          ngCombobox
+          #cmd="ngCombobox"
+          [(value)]="commandQuery"
+          placeholder="Type a command…"
+          aria-label="Search commands"
+          class="border-0 focus-visible:outline-0"
+        />
+        <ng-template ngComboboxPopup [combobox]="cmd">
+          <div
+            xnComboboxPanel
+            ngComboboxWidget
+            ngListbox
+            #clb="ngListbox"
+            selectionMode="explicit"
+            [(value)]="commandSelection"
+            (valueChange)="runCommand($event); commandDlg.close()"
+            [activeDescendant]="clb.activeDescendant()"
+            aria-label="Commands"
+            class="static mt-0 w-full border-0 shadow-none"
+          >
+            @for (command of filteredCommands(); track command) {
+              <div xnListboxOption ngOption [value]="command">{{ command }}</div>
+            } @empty {
+              <div class="px-2 py-1.5 text-sm text-muted-foreground">No commands.</div>
+            }
+          </div>
+        </ng-template>
+      </div>
+    </dialog>
 
     <dialog xnDialog #dlg aria-labelledby="dlg-t">
       <button xnDialogClose aria-label="Close dialog" (click)="dlg.close()">✕</button>
@@ -131,7 +179,22 @@ import {
 export class OverlaysDoc {
   private readonly toastService = inject(ToastService);
 
+  private readonly commands = ['Restart server', 'View logs', 'Toggle theme', 'Deploy portfolio'];
+
+  protected readonly commandQuery = signal('');
+  protected readonly commandSelection = signal<string[]>([]);
+  protected readonly filteredCommands = computed(() => {
+    const query = this.commandQuery().trim().toLowerCase();
+    return query ? this.commands.filter((c) => c.toLowerCase().includes(query)) : this.commands;
+  });
+
   protected onMenuSelect(action: string): void {
     this.toastService.show(`Menu action: ${action}`, { title: 'Selected' });
+  }
+
+  protected runCommand(selection: string[]): void {
+    if (selection[0]) {
+      this.toastService.show(selection[0], { title: 'Command', variant: 'success' });
+    }
   }
 }
