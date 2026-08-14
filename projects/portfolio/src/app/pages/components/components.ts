@@ -49,6 +49,7 @@ export class Components {
     { path: 'chat', label: 'Chat', exact: false },
     { path: 'blocks', label: 'Blocks', exact: false },
     { path: 'motion', label: 'Motion', exact: false },
+    { path: 'layout', label: 'Layout', exact: false },
   ] as const;
 
   protected readonly version = XN_UI_VERSION;
