@@ -1,7 +1,19 @@
-import { Component, computed, input, linkedSignal, model, numberAttribute } from '@angular/core';
+import {
+  Component,
+  afterNextRender,
+  computed,
+  input,
+  linkedSignal,
+  model,
+  numberAttribute,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { Grid, GridCell, GridRow } from '@angular/aria/grid';
 
 import { cn } from '../cn';
+
+declare const ngDevMode: boolean | undefined;
 
 /**
  * Dates as `YYYY-MM-DD` strings throughout: serializable, timezone-proof
@@ -11,6 +23,8 @@ import { cn } from '../cn';
 const pad = (value: number): string => String(value).padStart(2, '0');
 const toIso = (date: Date): string =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 interface CalendarDay {
   readonly iso: string;
@@ -23,18 +37,25 @@ interface CalendarDay {
 
 /**
  * A month calendar composed on `@angular/aria`'s grid: roving focus,
- * arrow-key navigation (continuous across week boundaries), Home/End, and
- * explicit selection all come from the primitive — nothing hand-rolled
- * (library rule 1). Month paging is buttons only: PageUp/PageDown month
- * keys are not in the grid's vocabulary and will not be hand-rolled.
+ * arrow-key navigation, Home/End and explicit selection all come from the
+ * primitive — nothing hand-rolled (library rule 1). Axis semantics, per
+ * the grid source: `colWrap` governs Left/Right (continuous, so days flow
+ * across week boundaries) and `rowWrap` governs Up/Down (nowrap, so weeks
+ * stop at the month's edges). Month paging is buttons only: PageUp/Down
+ * is not in the grid's vocabulary and will not be hand-rolled.
  *
  * The value is an ISO `YYYY-MM-DD` model. The visible month follows the
  * value when it changes from outside (linkedSignal) but navigates freely
- * in between. `defaultMonth` + `locale` exist so prerendered demos are
- * deterministic; apps can omit both.
+ * in between. A calendar keeps its selection: the grid's toggle/deselect
+ * paths write cell models directly, so this component writes the truth
+ * back whenever they disagree with the value.
  *
- * Out-of-range days (`min`/`max`) and adjacent-month days are disabled
- * but remain focusable (`softDisabled`), per the APG date-grid guidance.
+ * "Today" is marked client-side only — at prerender time it would be the
+ * build date, and an honest absence beats a baked lie. `defaultMonth` +
+ * `locale` exist so prerendered demos are deterministic; apps can omit
+ * both. Out-of-range days (`min`/`max`) and adjacent-month days are
+ * disabled but focusable (`softDisabled`), per the APG date-grid
+ * guidance; the grid's selection layer refuses to commit them.
  */
 @Component({
   selector: 'xn-calendar',
@@ -64,30 +85,28 @@ interface CalendarDay {
         ›
       </button>
     </div>
+    <!-- Visual-only weekday row: day cells carry full-date labels, so
+         header cells would be redundant for readers — and a thead inside
+         role=grid breaks the pattern's authored aria-rowindex (it counts
+         only ngGridRow rows). -->
+    <div aria-hidden="true" data-slot="calendar-weekdays" class="flex gap-0.5 px-0.5 pb-1">
+      @for (weekday of weekdays(); track weekday.long) {
+        <span class="size-9 text-center text-xs leading-9 font-normal text-muted-foreground">
+          {{ weekday.short }}
+        </span>
+      }
+    </div>
     <table
       ngGrid
       enableSelection
       softDisabled
       selectionMode="explicit"
-      rowWrap="continuous"
-      colWrap="nowrap"
+      rowWrap="nowrap"
+      colWrap="continuous"
       data-slot="calendar-grid"
       class="w-full border-separate border-spacing-0.5"
       [attr.aria-label]="monthLabel()"
     >
-      <thead>
-        <tr>
-          @for (weekday of weekdays(); track weekday.long) {
-            <th
-              scope="col"
-              class="size-9 p-0 text-center text-xs font-normal text-muted-foreground"
-              [attr.aria-label]="weekday.long"
-            >
-              {{ weekday.short }}
-            </th>
-          }
-        </tr>
-      </thead>
       <tbody>
         @for (week of weeks(); track week[0].iso) {
           <tr ngGridRow>
@@ -100,6 +119,7 @@ interface CalendarDay {
                 [selectable]="!day.disabled"
                 [selected]="value() === day.iso"
                 (selectedChange)="onSelected(day, $event)"
+                [attr.data-iso]="day.iso"
                 [attr.aria-label]="day.label"
                 [attr.aria-current]="day.today ? 'date' : null"
                 [attr.data-today]="day.today ? '' : null"
@@ -123,7 +143,13 @@ export class Calendar {
   readonly max = input<string | undefined>(undefined);
 
   /** First weekday: 0 = Sunday … 6 = Saturday. Defaults to Monday. */
-  readonly weekStartsOn = input(1, { transform: numberAttribute });
+  readonly weekStartsOn = input(1, {
+    transform: (value: unknown) => {
+      const n = numberAttribute(value);
+      // NaN would build Invalid Dates and throw in Intl.format.
+      return Number.isFinite(n) ? ((n % 7) + 7) % 7 : 1;
+    },
+  });
 
   /** BCP 47 locale for month/weekday labels. */
   readonly locale = input('en-US');
@@ -137,14 +163,28 @@ export class Calendar {
     cn('block w-fit rounded-lg border bg-card p-3 text-card-foreground', this.userClass()),
   );
 
-  private readonly todayIso = toIso(new Date());
+  private readonly cells = viewChildren(GridCell);
+
+  // Anchors the view when nothing else does (a month must exist even at
+  // prerender time); the visible "today" marking waits for the browser.
+  private readonly constructionToday = toIso(new Date());
+  private readonly clientToday = signal<string | undefined>(undefined);
+
+  constructor() {
+    afterNextRender(() => this.clientToday.set(toIso(new Date())));
+  }
 
   // The visible month re-derives when the value changes from outside, but
-  // prev/next navigation writes over it freely until then.
+  // prev/next navigation writes over it freely until then. `||` not `??`:
+  // an empty string must fall through, not become an Invalid Date.
   private readonly view = linkedSignal<{ year: number; month: number }>(() => {
-    const anchor = this.value() ?? this.defaultMonth() ?? this.todayIso;
+    const anchor = this.value() || this.defaultMonth() || this.constructionToday;
     const [year, month] = anchor.split('-').map(Number);
-    return { year, month: month - 1 };
+    if (!Number.isFinite(year) || !Number.isFinite(month)) {
+      const [y, m] = this.constructionToday.split('-').map(Number);
+      return { year: y, month: m - 1 };
+    }
+    return { year, month: Math.min(11, Math.max(0, month - 1)) };
   });
 
   protected readonly monthLabel = computed(() => {
@@ -165,11 +205,27 @@ export class Calendar {
   });
 
   protected readonly weeks = computed(() => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      for (const [name, v] of [
+        ['value', this.value()],
+        ['min', this.min()],
+        ['max', this.max()],
+      ] as const) {
+        if (v && !ISO_DATE.test(v)) {
+          console.warn(
+            `xn-calendar: ${name}="${v}" is not zero-padded YYYY-MM-DD; ` +
+              'comparisons are lexicographic and will silently misbehave.',
+          );
+        }
+      }
+    }
+
     const { year, month } = this.view();
     const first = new Date(year, month, 1);
     const offset = (first.getDay() - this.weekStartsOn() + 7) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const label = new Intl.DateTimeFormat(this.locale(), { dateStyle: 'full' });
+    const today = this.clientToday();
 
     const weeks: CalendarDay[][] = [];
     for (let start = 1 - offset; start <= daysInMonth; start += 7) {
@@ -184,7 +240,7 @@ export class Calendar {
             iso,
             day: date.getDate(),
             inMonth,
-            today: iso === this.todayIso,
+            today: iso === today,
             disabled: !inMonth || (!!min && iso < min) || (!!max && iso > max),
             label: label.format(date),
           };
@@ -201,7 +257,18 @@ export class Calendar {
   }
 
   protected onSelected(day: CalendarDay, selected: boolean): void {
-    // Explicit mode toggles; a calendar keeps its selection — only commits.
-    if (selected) this.value.set(day.iso);
+    if (selected) {
+      this.value.set(day.iso);
+      return;
+    }
+    // The grid's toggle (second activation) and deselectAll (activation on
+    // a softDisabled cell) write cell models directly; the [selected]
+    // binding cannot correct them because its expression value never
+    // changed. A calendar keeps its selection — write the truth back.
+    if (this.value() === day.iso) {
+      this.cells()
+        .find((cell) => cell.element.getAttribute('data-iso') === day.iso)
+        ?.selected.set(true);
+    }
   }
 }

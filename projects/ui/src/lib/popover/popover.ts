@@ -25,7 +25,10 @@ import { cn } from '../cn';
  * </ng-template>
  * ```
  *
- * Non-modal: focus stays where it is, outside click and Escape close.
+ * Non-modal: focus stays where it is on open; outside click and Escape
+ * (from the trigger or anywhere inside the panel) close. Closing returns
+ * focus to the trigger only when focus was inside the panel — otherwise
+ * it stays where the reader left it.
  */
 
 @Directive({ selector: 'ng-template[xnPopover]', exportAs: 'xnPopover' })
@@ -71,6 +74,7 @@ export class PopoverTrigger implements OnDestroy {
   private readonly viewContainerRef = inject(ViewContainerRef);
   private overlayRef: OverlayRef | null = null;
   private outsideClicks: Subscription | null = null;
+  private overlayKeys: Subscription | null = null;
 
   protected toggle(): void {
     if (this.open()) {
@@ -91,18 +95,33 @@ export class PopoverTrigger implements OnDestroy {
     this.outsideClicks = this.overlayRef.outsidePointerEvents().subscribe((event) => {
       if (!this.elementRef.nativeElement.contains(event.target as Node)) this.close();
     });
+    // The trigger's own keydown can't hear Escape once focus moved into
+    // the panel; the overlay's stream can.
+    this.overlayKeys = this.overlayRef.keydownEvents().subscribe((event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.close();
+      }
+    });
     this.open.set(true);
   }
 
   protected close(): void {
+    const focusWasInside =
+      this.overlayRef?.overlayElement.contains(document.activeElement) ?? false;
     this.outsideClicks?.unsubscribe();
     this.outsideClicks = null;
+    this.overlayKeys?.unsubscribe();
+    this.overlayKeys = null;
     this.overlayRef?.detach();
+    // Detaching while focus was inside would drop focus to <body>.
+    if (focusWasInside) this.elementRef.nativeElement.focus();
     this.open.set(false);
   }
 
   ngOnDestroy(): void {
     this.outsideClicks?.unsubscribe();
+    this.overlayKeys?.unsubscribe();
     this.overlayRef?.dispose();
   }
 }

@@ -7,6 +7,32 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Fixed (calendar review)
+
+- Arrow-key axes were inverted: in the grid source `colWrap` governs
+  Left/Right and `rowWrap` governs Up/Down — the opposite of the shipped
+  config, so days would have stopped at week boundaries. Now colWrap
+  continuous / rowWrap nowrap, with the checklist corrected.
+- A second activation of the selected day desynced aria-selected from the
+  value (the grid toggles cell models directly; the binding's expression
+  never changes, so it cannot write back) — the calendar now restores the
+  cell model, also covering the deselect-all side effect of activating a
+  softDisabled day. Regression-tested.
+- Popover: Escape now closes from inside the panel (overlay keydown
+  stream) and closing returns focus to the trigger when focus was inside
+  — previously Escape only worked while focus sat on the trigger.
+- The weekday header left the table: a thead inside role=grid made the
+  pattern's authored aria-rowindex off-by-one against the implicit header
+  row. Day cells carry full-date labels, so the visual row is aria-hidden.
+- "Today" marks client-side only (prerendered HTML carried the build
+  date's aria-current); empty-string values no longer throw mid-render;
+  garbage months clamp; a NaN weekStartsOn falls back; non-padded
+  min/max/value warn in dev mode (lexicographic comparisons need
+  YYYY-MM-DD).
+- Spec grew from 7 to 12 tests: column alignment, leap-year last cell,
+  4-row months, year-boundary paging, roles/roving-tabindex contract,
+  second-activation, empty-value survival.
+
 ### Added
 
 - Calendar (`<xn-calendar>`), composed on `@angular/aria`'s grid — the
