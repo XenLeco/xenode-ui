@@ -3,6 +3,8 @@ import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox'
 import { Listbox, Option } from '@angular/aria/listbox';
 
 import {
+  Button,
+  Calendar,
   Checkbox,
   ComboboxPanel,
   Dropdown,
@@ -13,6 +15,9 @@ import {
   INPUT_OTP,
   Label,
   NativeSelect,
+  Popover,
+  PopoverPanel,
+  PopoverTrigger,
   RADIO_GROUP,
   Slider,
   Switch,
@@ -45,6 +50,11 @@ import { ExampleBox } from './example-box';
     Dropdown,
     SelectTrigger,
     XnListboxOption,
+    Button,
+    Calendar,
+    Popover,
+    PopoverPanel,
+    PopoverTrigger,
     ExampleBox,
   ],
   template: `
@@ -199,6 +209,50 @@ import { ExampleBox } from './example-box';
       </div>
     </div>
 
+    <section class="mt-10" aria-labelledby="calendar-h">
+      <h2 id="calendar-h" class="text-lg font-semibold">Calendar</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        Composed on the aria grid: arrow keys walk days (continuously across week boundaries),
+        Home/End jump the row, Space or Enter selects. Month paging is the buttons.
+      </p>
+      <div class="mt-3 flex flex-wrap items-start gap-6">
+        <xn-calendar [(value)]="calendarValue" defaultMonth="2026-08" min="2026-08-04" />
+        <p class="text-sm text-muted-foreground">
+          Selected: <span class="font-medium text-foreground">{{ calendarValue() ?? 'none' }}</span>
+          <br />
+          (min 2026-08-04 — earlier days are focusable but inert)
+        </p>
+      </div>
+
+      <h3 class="mt-8 text-sm font-medium text-muted-foreground">Date picker</h3>
+      <p class="mt-1 max-w-prose text-sm text-muted-foreground">
+        A composition, not a component: input + popover + calendar.
+      </p>
+      <div class="mt-3 flex items-center gap-2">
+        <input
+          xnInput
+          readonly
+          class="w-44"
+          aria-label="Deploy date"
+          placeholder="Pick a date"
+          [value]="pickerValue() ?? ''"
+        />
+        <button
+          xnButton
+          variant="outline"
+          [xnPopoverTriggerFor]="datePop"
+          aria-label="Open calendar"
+        >
+          📅
+        </button>
+        <ng-template #datePop="xnPopover" xnPopover>
+          <div xnPopoverPanel class="p-0">
+            <xn-calendar [(value)]="pickerValue" defaultMonth="2026-08" class="border-0" />
+          </div>
+        </ng-template>
+      </div>
+    </section>
+
     <section class="mt-10" aria-labelledby="field-example-h">
       <h2 id="field-example-h" class="text-lg font-semibold">Field example</h2>
       <app-example-box title="Field example" [tabs]="fieldTabs" class="mt-3 block max-w-2xl">
@@ -212,6 +266,9 @@ import { ExampleBox } from './example-box';
   `,
 })
 export class FormsDoc {
+  protected readonly calendarValue = signal<string | undefined>('2026-08-14');
+  protected readonly pickerValue = signal<string | undefined>(undefined);
+
   private readonly games = ['Minecraft', 'Project Zomboid', 'Valheim', 'Palworld', 'Terraria'];
 
   protected readonly comboboxQuery = signal('');

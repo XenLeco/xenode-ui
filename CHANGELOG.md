@@ -9,6 +9,19 @@ and shown in the docs shell.
 
 ### Added
 
+- Calendar (`<xn-calendar>`), composed on `@angular/aria`'s grid — the
+  first of the big-four gaps closed. Roving focus, arrow-key day walking
+  (continuous across weeks), Home/End and explicit Space/Enter selection
+  all come from the primitive; nothing hand-rolled. ISO `YYYY-MM-DD`
+  value model (timezone-proof, lexicographically comparable), visible
+  month follows outside value changes via linkedSignal, `min`/`max` and
+  outside days disabled-but-focusable (`softDisabled`, per APG),
+  Intl-driven labels with `locale`/`defaultMonth` inputs for
+  deterministic prerender. Month paging is buttons only — PageUp/Down is
+  not in the grid's vocabulary and stays un-hand-rolled (rule 1). Date
+  picker ships as a documented composition (input + popover + calendar),
+  not a component.
+
 - Select (aria's non-editable combobox + `xnSelectTrigger`) and a command
   palette composition (dialog + combobox; `selectionMode="explicit"` — the
   follow-focus default auto-selected while typing).
