@@ -329,11 +329,12 @@ describe('Mega-wave families', () => {
     expect(trigger?.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('sort header cycles aria-sort via its native button (keyboard-activatable)', async () => {
+  it('sort header cycles aria-sort via its native button, back to unsorted', async () => {
     const { fixture, el } = await render();
     const th = el.querySelector<HTMLElement>('[data-slot="sort-header"]');
     const button = th?.querySelector<HTMLButtonElement>('[data-slot="sort-button"]');
-    expect(th?.getAttribute('aria-sort')).toBe('none');
+    // ARIA 1.2: only the actively sorted header carries the attribute.
+    expect(th?.getAttribute('aria-sort')).toBeNull();
     expect(button?.type, 'activation must live on a real button').toBe('button');
     button?.click();
     await fixture.whenStable();
@@ -341,6 +342,9 @@ describe('Mega-wave families', () => {
     button?.click();
     await fixture.whenStable();
     expect(th?.getAttribute('aria-sort')).toBe('descending');
+    button?.click();
+    await fixture.whenStable();
+    expect(th?.getAttribute('aria-sort'), 'unsorted stays reachable').toBeNull();
   });
 
   it('OTP advances focus on input and distributes a pasted code', async () => {

@@ -153,6 +153,63 @@ describe('DisclosureDoc — data-table recipe', () => {
     expect(section.querySelectorAll('tbody tr').length).toBe(2);
   });
 
+  it('a third sort click restores insertion order', async () => {
+    const { fixture, section } = await render();
+    const nameSort = section.querySelector<HTMLElement>('[data-slot="sort-button"]');
+    for (let i = 0; i < 3; i++) {
+      nameSort?.click();
+      await fixture.whenStable();
+    }
+    expect(firstNameCell(section)).toBe('skyblock-prod');
+  });
+
+  it('sorting does not reset the page', async () => {
+    const { fixture, section } = await render();
+    const next = [...section.querySelectorAll('button')].find((b) =>
+      b.textContent?.includes('Next'),
+    );
+    next?.click();
+    await fixture.whenStable();
+
+    section.querySelector<HTMLElement>('[data-slot="sort-button"]')?.click();
+    await fixture.whenStable();
+    expect(section.querySelector('[data-slot="dt-page"]')?.textContent).toContain('Page 2');
+  });
+
+  it('select-all is disabled on an empty page; selection persists across filters until Clear', async () => {
+    const { fixture, section } = await render();
+    const header = () => section.querySelector<HTMLInputElement>('thead input[type="checkbox"]');
+    const input = section.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!input) throw new Error('No filter input');
+
+    header()?.click(); // select all 5 on page 1
+    await fixture.whenStable();
+    expect(section.querySelector('[data-slot="dt-selected"]')?.textContent).toContain('5 selected');
+
+    input.value = 'zomboid';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+    // Global count with a page-scoped select-all: 1 of the 2 visible rows
+    // was in the original page-1 selection.
+    expect(section.querySelector('[data-slot="dt-selected"]')?.textContent).toContain('5 selected');
+    expect(header()?.indeterminate).toBe(true);
+
+    input.value = 'no-match-at-all';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+    expect(header()?.disabled, 'empty page must not accept a stale checkmark').toBe(true);
+
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+    const clear = [...section.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === 'Clear',
+    );
+    clear?.click();
+    await fixture.whenStable();
+    expect(section.querySelector('[data-slot="dt-selected"]')?.textContent).toContain('0 selected');
+  });
+
   it('select-all goes indeterminate on a partial page selection', async () => {
     const { fixture, section } = await render();
     const header = section.querySelector<HTMLInputElement>('thead input[type="checkbox"]');

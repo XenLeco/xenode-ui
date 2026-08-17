@@ -226,7 +226,8 @@ const SERVERS: readonly ServerRow[] = [
         A recipe, not a component: filtering, sorting, pagination and selection are
         <code class="font-mono text-xs">computed()</code> pipelines over the table primitives — the
         engine is signals. Reach for a headless table library only when you need grouping or
-        virtualization.
+        virtualization. Selection persists across filters and pages — the count is global, and
+        Clear is the way out.
       </p>
       <div class="mt-3 max-w-2xl">
         <div class="flex flex-wrap items-center gap-2 pb-3">
@@ -243,7 +244,7 @@ const SERVERS: readonly ServerRow[] = [
             Columns
           </button>
           <ng-template #colPop="xnPopover" xnPopover>
-            <div xnPopoverPanel class="grid w-44 gap-1">
+            <div xnPopoverPanel class="grid w-44 gap-1" aria-label="Column visibility">
               <label class="flex items-center gap-2 py-0.5 text-sm">
                 <input
                   type="checkbox"
@@ -267,6 +268,9 @@ const SERVERS: readonly ServerRow[] = [
           <span class="ml-auto text-xs text-muted-foreground" data-slot="dt-selected"
             >{{ dtSelected().size }} selected</span
           >
+          @if (dtSelected().size > 0) {
+            <button xnButton variant="ghost" size="sm" (click)="dtClearSelection()">Clear</button>
+          }
         </div>
         <div xnTableContainer>
           <table xnTable>
@@ -275,10 +279,14 @@ const SERVERS: readonly ServerRow[] = [
                 <th xnTableHead scope="col" class="w-10">
                   <!-- indeterminate is a DOM property — the platform's own
                        tri-state, no library code needed. -->
+                  <!-- Disabled on an empty page: a click would set the DOM
+                       property while the false-to-false binding never
+                       rewrites it — a permanently stale checkmark. -->
                   <input
                     type="checkbox"
                     xnCheckbox
                     aria-label="Select all on this page"
+                    [disabled]="dtRows().length === 0"
                     [checked]="dtPageAllSelected()"
                     [indeterminate]="dtPageSomeSelected() && !dtPageAllSelected()"
                     (change)="dtTogglePage($any($event.target).checked)"
@@ -359,16 +367,20 @@ const SERVERS: readonly ServerRow[] = [
           </table>
         </div>
         <div class="flex items-center justify-between pt-3">
-          <span class="text-xs text-muted-foreground" data-slot="dt-page">
+          <span class="text-xs text-muted-foreground" data-slot="dt-page" aria-live="polite">
             Page {{ dtPage() }} of {{ dtPageCount() }} — {{ dtSorted().length }} servers
           </span>
+          <!-- aria-disabled + click guard, not [disabled]: a boundary
+               button that disables itself under focus drops the keyboard
+               user to <body>. -->
           <div class="flex gap-2">
             <button
               xnButton
               variant="outline"
               size="sm"
-              [disabled]="dtPage() === 1"
-              (click)="dtPage.set(dtPage() - 1)"
+              class="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+              [attr.aria-disabled]="dtPage() === 1"
+              (click)="dtPrevPage()"
             >
               Previous
             </button>
@@ -376,8 +388,9 @@ const SERVERS: readonly ServerRow[] = [
               xnButton
               variant="outline"
               size="sm"
-              [disabled]="dtPage() === dtPageCount()"
-              (click)="dtPage.set(dtPage() + 1)"
+              class="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+              [attr.aria-disabled]="dtPage() >= dtPageCount()"
+              (click)="dtNextPage()"
             >
               Next
             </button>
@@ -404,8 +417,13 @@ export class DisclosureDoc {
   );
   protected readonly dtSelected = signal<ReadonlySet<number>>(new Set());
 
+  // Shared normalization: computed memoizes on the RESULT, so a
+  // whitespace-only edit changes dtQuery but not this — and therefore
+  // does not reset the page.
+  private readonly dtQueryNormalized = computed(() => this.dtQuery().trim().toLowerCase());
+
   private readonly dtFiltered = computed(() => {
-    const query = this.dtQuery().trim().toLowerCase();
+    const query = this.dtQueryNormalized();
     if (!query) return this.servers;
     return this.servers.filter(
       (server) =>
@@ -424,7 +442,7 @@ export class DisclosureDoc {
 
   // Re-derives to 1 whenever the filter changes; the pager writes over it.
   protected readonly dtPage = linkedSignal(() => {
-    this.dtQuery();
+    this.dtQueryNormalized();
     return 1;
   });
   protected readonly dtPageCount = computed(() =>
@@ -489,6 +507,25 @@ export class DisclosureDoc {
       }
       return next;
     });
+    // Hiding the sorted column would leave a phantom order no visible
+    // header accounts for.
+    if (!checked && this.dtSort().column === column) {
+      this.dtSort.set({ column: 'name', direction: 'none' });
+    }
+  }
+
+  protected dtClearSelection(): void {
+    this.dtSelected.set(new Set());
+  }
+
+  // Clamped writes make page > pageCount unrepresentable, whatever
+  // dispatches the click.
+  protected dtPrevPage(): void {
+    this.dtPage.set(Math.max(1, this.dtPage() - 1));
+  }
+
+  protected dtNextPage(): void {
+    this.dtPage.set(Math.min(this.dtPageCount(), this.dtPage() + 1));
   }
 
   // No Plain HTML flavor: accordion is @angular/aria composition, not a

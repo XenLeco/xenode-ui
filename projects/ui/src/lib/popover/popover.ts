@@ -25,10 +25,16 @@ import { cn } from '../cn';
  * </ng-template>
  * ```
  *
- * Non-modal: focus stays where it is on open; outside click and Escape
- * (from the trigger or anywhere inside the panel) close. Closing returns
- * focus to the trigger only when focus was inside the panel — otherwise
- * it stays where the reader left it.
+ * Non-modal. On open, focus moves to the panel's first focusable element
+ * IF it has one (interactive panels are unreachable otherwise — the
+ * overlay lives at the end of <body>, far from the trigger in tab
+ * order); read-only panels leave focus untouched. Outside click and
+ * Escape (from the trigger or anywhere inside the panel) close, and
+ * closing returns focus to the trigger only when focus was inside.
+ *
+ * The panel is a labelled non-modal dialog: the trigger advertises
+ * aria-haspopup="dialog", so the panel carries role="dialog" — give it
+ * an aria-label when its content is interactive.
  */
 
 @Directive({ selector: 'ng-template[xnPopover]', exportAs: 'xnPopover' })
@@ -41,6 +47,7 @@ export class Popover {
   selector: '[xnPopoverPanel]',
   host: {
     'data-slot': 'popover',
+    role: 'dialog',
     '[class]': 'classes()',
   },
 })
@@ -103,6 +110,11 @@ export class PopoverTrigger implements OnDestroy {
         this.close();
       }
     });
+    this.overlayRef.overlayElement
+      .querySelector<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )
+      ?.focus();
     this.open.set(true);
   }
 

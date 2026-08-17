@@ -7,6 +7,33 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Fixed (data-table review)
+
+- Popovers with interactive content were keyboard-unreachable: the panel
+  lives at the end of `<body>`, so Tab from the trigger walked the whole
+  page before reaching it. Popover now moves focus to the panel's first
+  focusable element on open (read-only panels are untouched — nothing to
+  focus), and the panel carries the `role="dialog"` its trigger always
+  advertised. Escape/focus-restore already worked.
+- Sort direction is now visible, not just announced: ↕/↑/↓ glyphs on the
+  sort button driven by the th's aria-sort; the cycle gained its third
+  step back to unsorted (matching Material/TanStack/shadcn — insertion
+  order stays reachable) and `aria-sort` is emitted only while active
+  (ARIA 1.2 single-sorted-header). SortButton outside a SortHeader now
+  throws a purposeful error instead of a cryptic NullInjectorError.
+- Recipe hardening: select-all disables on an empty filtered page (a
+  click there set the DOM property while the false→false binding never
+  rewrote it — a permanently stale checkmark); pager buttons use
+  aria-disabled + clamped writes instead of [disabled] (a boundary
+  button that disables itself under focus drops keyboard users to
+  body) with a polite live page readout; hiding the sorted column
+  resets the phantom sort; whitespace edits no longer reset the page
+  (normalization is a shared memoizing computed); Clear-selection
+  affordance + prose documenting that selection is global.
+- Spec grew to pin what the review proved unpinned: sort-does-not-reset-
+  page, cycle-to-none, empty-page select-all, selection persistence
+  through filters until Clear.
+
 ### Added (data-table)
 
 - Data table as a recipe, not a component (big-four #2): filtering,
