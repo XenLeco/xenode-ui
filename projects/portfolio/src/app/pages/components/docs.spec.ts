@@ -1,5 +1,6 @@
 import { provideRouter } from '@angular/router';
-import { TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 
 import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
@@ -290,20 +291,33 @@ describe('ExampleBox — code flavors', () => {
 });
 
 describe('ChartsDoc', () => {
-  it('renders labelled chart figures with deferred placeholders', async () => {
+  it('renders labelled chart figures and ACTUALLY mounts the chart engine', async () => {
+    // Manual defer control: jsdom has no IntersectionObserver, so a
+    // viewport-triggered block pins on its placeholder with a swallowed
+    // error — a test asserting only outside the block cannot fail.
+    TestBed.configureTestingModule({
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+      providers: [provideNoopAnimations()],
+    });
     const fixture = TestBed.createComponent(ChartsDoc);
     await fixture.whenStable();
-    const cards = [
-      ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
-        '[data-slot="chart-card"]',
-      ),
-    ];
+    const el = fixture.nativeElement as HTMLElement;
+    const cards = [...el.querySelectorAll<HTMLElement>('[data-slot="chart-card"]')];
 
     expect(cards.length).toBeGreaterThanOrEqual(3);
     for (const card of cards) {
       expect(card.getAttribute('role')).toBe('figure');
       expect(card.getAttribute('aria-label'), 'charts are not self-labelling').toBeTruthy();
     }
+
+    const deferBlocks = await fixture.getDeferBlocks();
+    expect(deferBlocks.length).toBeGreaterThanOrEqual(3);
+    await deferBlocks[0].render(DeferBlockState.Complete);
+    await fixture.whenStable();
+    expect(
+      el.querySelector('ngx-charts-bar-vertical'),
+      'the chart engine must mount, not just the placeholder',
+    ).toBeTruthy();
   });
 });
 

@@ -55,22 +55,32 @@ const REGIONS = [
       <code class="font-mono text-xs">xnChartCard</code> resolves
       <code class="font-mono text-xs">--chart-1..5</code> to concrete colors at runtime (chart
       engines cannot parse oklch), re-resolves on theme flips, and tokens the axis text and
-      gridlines through CSS. Every chart defers to the viewport — prerender ships placeholders.
+      gridlines through CSS. Charts render client-side only: prerender ships placeholders via
+      <code class="font-mono text-xs">&#64;defer</code> (the engine still travels in the route chunk
+      — module components cannot code-split), and
+      <code class="font-mono text-xs">[animations]</code> binds the card's reduced-motion signal —
+      the CSS motion collapse cannot reach Web Animations or d3 transitions.
     </p>
 
     <section class="mt-8" aria-labelledby="bar-h">
       <h2 id="bar-h" class="text-lg font-semibold">Bar</h2>
       <div xnChartCard #bar="xnChartCard" aria-label="Players per server" class="mt-3 h-72">
-        @defer (on viewport) {
-          <ngx-charts-bar-vertical
-            [scheme]="$any(bar.scheme())"
-            [results]="players"
-            [xAxis]="true"
-            [yAxis]="true"
-          />
-        } @placeholder {
-          <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
-        }
+        <!-- The chart engine measures its PARENT's border-box; this
+             wrapper makes that the card's content box, so axis labels
+             fit instead of being clipped by the frame. -->
+        <div class="h-full w-full">
+          @defer (on viewport) {
+            <ngx-charts-bar-vertical
+              [scheme]="$any(bar.scheme())"
+              [results]="players"
+              [xAxis]="true"
+              [yAxis]="true"
+              [animations]="bar.animations()"
+            />
+          } @placeholder {
+            <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
+          }
+        </div>
       </div>
     </section>
 
@@ -82,17 +92,20 @@ const REGIONS = [
         aria-label="Latency percentiles over the day"
         class="mt-3 h-72"
       >
-        @defer (on viewport) {
-          <ngx-charts-line-chart
-            [scheme]="$any(line.scheme())"
-            [results]="latency"
-            [xAxis]="true"
-            [yAxis]="true"
-            [legend]="true"
-          />
-        } @placeholder {
-          <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
-        }
+        <div class="h-full w-full">
+          @defer (on viewport) {
+            <ngx-charts-line-chart
+              [scheme]="$any(line.scheme())"
+              [results]="latency"
+              [xAxis]="true"
+              [yAxis]="true"
+              [legend]="true"
+              [animations]="line.animations()"
+            />
+          } @placeholder {
+            <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
+          }
+        </div>
       </div>
     </section>
 
@@ -100,16 +113,19 @@ const REGIONS = [
       <h2 id="pie-h" class="text-lg font-semibold">Pie</h2>
       <app-example-box title="Pie chart example" [tabs]="pieTabs" class="mt-3 block max-w-2xl">
         <div xnChartCard #pie="xnChartCard" aria-label="Servers per region" class="h-64 w-full">
-          @defer (on viewport) {
-            <ngx-charts-pie-chart
-              [scheme]="$any(pie.scheme())"
-              [results]="regions"
-              [labels]="true"
-              [doughnut]="true"
-            />
-          } @placeholder {
-            <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
-          }
+          <div class="h-full w-full">
+            @defer (on viewport) {
+              <ngx-charts-pie-chart
+                [scheme]="$any(pie.scheme())"
+                [results]="regions"
+                [labels]="true"
+                [doughnut]="true"
+                [animations]="pie.animations()"
+              />
+            } @placeholder {
+              <div class="h-full w-full animate-pulse rounded-md bg-muted"></div>
+            }
+          </div>
         </div>
       </app-example-box>
     </section>

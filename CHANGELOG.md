@@ -7,6 +7,34 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Fixed (charts review)
+
+- The ChartsDoc smoke test could not fail: jsdom has no
+  IntersectionObserver, so the viewport defer pinned on its placeholder
+  with a swallowed error while the assertions only touched elements
+  outside the block. Rewritten with manual defer control — it now mounts
+  the real engine, and immediately caught a real integration gap
+  (missing animation providers) on its first honest run.
+- Brand law restored: the CSS reduced-motion collapse cannot reach a
+  chart engine's Web Animations and d3 transitions — ChartCard now
+  exposes `animations()` (live `prefers-reduced-motion`) and the docs
+  bind it to every chart's `[animations]`.
+- The bridge observes the ANCESTOR chain, not just documentElement (our
+  own dark variant matches subtree `.dark` wrappers), plus
+  `prefers-color-scheme` changes; unchanged resolutions no longer create
+  a new scheme identity (every html-class mutation was forcing a full
+  chart redraw); alpha survives the oklch converter as 8-digit hex; a
+  public `refresh()` covers out-of-band token mutations.
+- Charts size to the card's CONTENT box via an inner wrapper (the engine
+  measures its parent's border-box — axis labels were rendered into the
+  clipped padding zone), with overflow-hidden as the frame's backstop.
+- A per-bundle `"any"` budget (300kB warn) now watches lazy chunks — the
+  229kB charts chunk was invisible to the initial-only budgets; docs
+  prose no longer implies @defer code-splits module components.
+  `@angular/ssr` pinned exact, completing the family-pin invariant the
+  changelog claimed. Known upstream limit: ngx-charts tooltip placement
+  flips lag one CD under zoneless (bare setTimeout, no markForCheck).
+
 ### Added (charts — the final catalog gap)
 
 - Charts as a composition: ngx-charts@25.0.0 (pinned exact; 25.0.1 was
