@@ -5,6 +5,38 @@ All notable changes to `@xenode/ui`. Format follows
 the version mirrored in `projects/ui/src/lib/version.ts` (`XN_UI_VERSION`)
 and shown in the docs shell.
 
+## [Unreleased]
+
+### Added
+
+- Docs ⌘K search palette: Ctrl/⌘K, the sidebar Search button, or a pill
+  in the phone nav opens a command palette over every docs page and
+  section — the library's own dialog + combobox composition, with
+  xn-highlight painting the match. The hand-maintained index cannot
+  drift: a spec renders every docs page and asserts each entry resolves
+  to that page's own rendered h2 (id, exact text, not buried in a closed
+  dialog or inert panel); selection navigates by router fragment.
+  Escape layers: first press closes the result list, second closes the
+  dialog (platform behavior — on the manual checklist with focus
+  restore, in docs/a11y/search-palette.md).
+
+### Fixed
+
+- Every composed combobox ran its popup listbox in the roving-tabindex
+  DEFAULT, under which the aria pattern intentionally reports NO
+  active-descendant id — roving moves focus, but a combobox keeps focus
+  on the input, so aria-activedescendant stayed permanently null and
+  arrow-key navigation was SILENT for screen readers. Visual navigation
+  and click selection worked, which is why it survived every demo.
+  `focusMode="activedescendant"` on all four composition sites (palette,
+  command demo, game search, custom select) and in the recipe comment,
+  pinned by a spec that arrows and asserts the id lands on the input and
+  names the active option.
+- The keyboard highlight was invisible on top of being silent:
+  XnListboxOption styled only focus/hover/selection, and in
+  activedescendant mode the option never receives focus —
+  data-[active=true] now paints the same accent as focus.
+
 ## [0.2.0] — 2026-08-17
 
 The catalog cut: 263 components across ~91 families — parity-complete

@@ -127,9 +127,7 @@ import { ExampleBox } from './example-box';
     <section class="mt-10" aria-labelledby="tooltip-h">
       <h2 id="tooltip-h" class="text-lg font-semibold">Tooltip</h2>
       <app-example-box title="Tooltip example" [tabs]="tooltipTabs" class="mt-3 block max-w-2xl">
-        <button xnButton variant="outline" [xnTooltip]="'Instant — the default'">
-          No delay
-        </button>
+        <button xnButton variant="outline" [xnTooltip]="'Instant — the default'">No delay</button>
         <button xnButton variant="outline" [xnTooltip]="'Waits before showing'" [showDelay]="400">
           400ms delay
         </button>
@@ -153,6 +151,7 @@ import { ExampleBox } from './example-box';
             ngComboboxWidget
             ngListbox
             #clb="ngListbox"
+            focusMode="activedescendant"
             selectionMode="explicit"
             [(value)]="commandSelection"
             (valueChange)="runCommand($event); commandDlg.close()"

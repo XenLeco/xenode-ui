@@ -35,12 +35,21 @@ export class SelectTrigger {
  * <div xnDropdown class="w-64">
  *   <input xnInput ngCombobox #cb="ngCombobox" [(value)]="query" … />
  *   <ng-template ngComboboxPopup [combobox]="cb">
- *     <div xnComboboxPanel ngComboboxWidget ngListbox #lb="ngListbox" …>
+ *     <div xnComboboxPanel ngComboboxWidget ngListbox #lb="ngListbox"
+ *          focusMode="activedescendant" [activeDescendant]="lb.activeDescendant()" …>
  *       <div xnListboxOption ngOption [value]="…">…</div>
  *     </div>
  *   </ng-template>
  * </div>
  * ```
+ *
+ * `focusMode="activedescendant"` is load-bearing: the listbox default is
+ * roving tabindex, under which the pattern returns NO active-descendant id
+ * (focus is supposed to move instead — but in a combobox it must stay on
+ * the input, so roving leaves aria-activedescendant permanently null and a
+ * screen reader hears nothing while arrowing). The [activeDescendant]
+ * self-feed then hands the listbox's id to the ComboboxWidget input on the
+ * same element, which relays it up to the combobox input's attribute.
  *
  * The trigger styles with xnInput, options with xnListboxOption, the
  * wrapper with xnDropdown — this panel is the only new seam.

@@ -1,9 +1,29 @@
-import { Component, ElementRef, afterEveryRender, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterEveryRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
+import { Listbox, Option } from '@angular/aria/listbox';
 import { filter, map } from 'rxjs';
 
-import { XN_UI_VERSION } from '@xenode/ui';
+import {
+  ComboboxPanel,
+  DIALOG,
+  Highlight,
+  Input,
+  Kbd,
+  XN_UI_VERSION,
+  XnListboxOption,
+} from '@xenode/ui';
+
+import { SEARCH_INDEX, searchKey, type SearchEntry } from './docs/search-index';
 
 interface TocEntry {
   readonly id: string;
@@ -21,7 +41,26 @@ interface TocEntry {
  */
 @Component({
   selector: 'app-components',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    DIALOG,
+    Input,
+    Kbd,
+    Highlight,
+    ComboboxPanel,
+    XnListboxOption,
+    Combobox,
+    ComboboxPopup,
+    ComboboxWidget,
+    Listbox,
+    Option,
+  ],
+  host: {
+    '(document:keydown.control.k)': 'onSearchShortcut($event)',
+    '(document:keydown.meta.k)': 'onSearchShortcut($event)',
+  },
   template: `
     <div class="flex flex-col gap-6 sm:flex-row sm:gap-8">
       <!-- One nav, two shapes: scrollable pill row on phones, sticky column
@@ -31,10 +70,28 @@ interface TocEntry {
            per side); sm+ drops the overflow so no headroom is needed. The
            fade zone lives in the padding so the first pill stays crisp. -->
       <aside class="w-full shrink-0 sm:w-40">
+        <!-- ⌘K trigger. From sm up it is a field-shaped button above the
+             column; on phones (no command key) it joins the pill row. -->
+        <button
+          type="button"
+          data-slot="docs-search-trigger"
+          class="mb-2 hidden w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-input px-2.5 py-1.5 text-sm text-muted-foreground transition-[color,border-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:flex"
+          (click)="openSearch()"
+        >
+          Search docs… <kbd xnKbd aria-hidden="true">⌘K</kbd>
+        </button>
         <nav
           aria-label="Component docs"
           class="scroll-fade-x -mx-4 flex gap-1 overflow-x-auto px-4 pt-1 pb-2 sm:sticky sm:top-4 sm:mx-0 sm:mask-none sm:flex-col sm:gap-0.5 sm:overflow-visible sm:px-0 sm:pt-0 sm:pb-0"
         >
+          <button
+            type="button"
+            data-slot="docs-search-trigger-mobile"
+            class="cursor-pointer rounded-md border border-input px-2 py-1.5 text-sm whitespace-nowrap text-muted-foreground transition-[color,border-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:hidden"
+            (click)="openSearch()"
+          >
+            Search…
+          </button>
           @for (page of pages; track page.path) {
             <a
               [routerLink]="page.path"
@@ -104,6 +161,56 @@ interface TocEntry {
           </nav>
         }
       </aside>
+
+      <dialog xnDialog #searchDlg aria-label="Search docs" class="max-w-md p-2">
+        <div class="grid gap-1">
+          <input
+            xnInput
+            ngCombobox
+            #search="ngCombobox"
+            [(value)]="searchQuery"
+            placeholder="Search components…"
+            aria-label="Search docs"
+            class="border-0 focus-visible:outline-0"
+          />
+          <ng-template ngComboboxPopup [combobox]="search">
+            <div
+              xnComboboxPanel
+              ngComboboxWidget
+              ngListbox
+              #slb="ngListbox"
+              focusMode="activedescendant"
+              selectionMode="explicit"
+              [(value)]="searchSelection"
+              (valueChange)="goTo($event); searchDlg.close()"
+              [activeDescendant]="slb.activeDescendant()"
+              aria-label="Docs sections"
+              class="static mt-0 max-h-80 w-full border-0 shadow-none"
+            >
+              @for (entry of results(); track key(entry)) {
+                <div
+                  xnListboxOption
+                  ngOption
+                  [value]="key(entry)"
+                  class="flex items-center gap-1.5"
+                >
+                  <xn-highlight
+                    class="shrink-0 text-muted-foreground"
+                    [text]="entry.pageLabel"
+                    [query]="searchQuery()"
+                  />
+                  @if (entry.anchor) {
+                    <span aria-hidden="true" class="text-muted-foreground/60">›</span>
+                    <xn-highlight [text]="entry.label" [query]="searchQuery()" />
+                  }
+                </div>
+              } @empty {
+                <div class="px-2 py-1.5 text-sm text-muted-foreground">No matches.</div>
+              }
+            </div>
+          </ng-template>
+        </div>
+      </dialog>
     </div>
   `,
 })
@@ -131,6 +238,42 @@ export class Components {
   protected readonly version = XN_UI_VERSION;
 
   protected readonly toc = signal<readonly TocEntry[]>([]);
+
+  private readonly searchDialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDlg');
+  protected readonly searchQuery = signal('');
+  protected readonly searchSelection = signal<string[]>([]);
+  protected readonly key = searchKey;
+
+  protected readonly results = computed<readonly SearchEntry[]>(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) return SEARCH_INDEX;
+    return SEARCH_INDEX.filter((entry) =>
+      `${entry.pageLabel} ${entry.label}`.toLowerCase().includes(query),
+    );
+  });
+
+  protected openSearch(): void {
+    // Fresh search each time — a stale query from the last visit would
+    // filter the list before the user has typed anything.
+    this.searchQuery.set('');
+    this.searchSelection.set([]);
+    this.searchDialog().nativeElement.showModal();
+  }
+
+  protected onSearchShortcut(event: Event): void {
+    // preventDefault: Ctrl/⌘K focuses the browser's own address bar.
+    event.preventDefault();
+    this.openSearch();
+  }
+
+  protected goTo(selection: readonly string[]): void {
+    const entry = SEARCH_INDEX.find((candidate) => searchKey(candidate) === selection[0]);
+    if (!entry) return;
+    void this.router.navigate(
+      entry.page ? ['/components', entry.page] : ['/components'],
+      entry.anchor ? { fragment: entry.anchor } : {},
+    );
+  }
 
   private readonly url = toSignal(
     this.router.events.pipe(

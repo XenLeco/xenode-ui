@@ -42,8 +42,12 @@ export class XnListboxOption {
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
+    // data-[active=true] styles the keyboard highlight for composed
+    // comboboxes (focusMode="activedescendant"): focus stays on the input
+    // there, so focus: styling never fires on the option — without this,
+    // arrowing moves an invisible cursor.
     cn(
-      'flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-secondary aria-selected:font-medium aria-disabled:pointer-events-none aria-disabled:opacity-50',
+      'flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground aria-selected:bg-secondary aria-selected:font-medium aria-disabled:pointer-events-none aria-disabled:opacity-50',
       this.userClass(),
     ),
   );

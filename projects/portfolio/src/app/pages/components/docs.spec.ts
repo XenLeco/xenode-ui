@@ -1,6 +1,7 @@
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
@@ -25,6 +26,79 @@ describe('Docs shell', () => {
     expect(nav?.getAttribute('aria-label')).toBe('Component docs');
     expect(nav?.querySelectorAll('a').length).toBe(14);
     expect(nav?.querySelector('[data-slot="docs-version"]')?.textContent).toContain('v0.2.0');
+  });
+
+  it('renders the search triggers and the palette dialog', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(Components);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('[data-slot="docs-search-trigger"]')?.textContent).toContain(
+      'Search docs',
+    );
+    expect(compiled.querySelector('[data-slot="docs-search-trigger-mobile"]')).toBeTruthy();
+    const dialog = compiled.querySelector('dialog[aria-label="Search docs"]');
+    expect(dialog, 'palette dialog missing').toBeTruthy();
+    expect(dialog?.hasAttribute('open')).toBe(false);
+  });
+});
+
+describe('Docs shell — search palette', () => {
+  // The palette lives behind showModal(), which jsdom does not implement,
+  // so filtering and navigation are exercised on the component contract
+  // directly; the composition itself (dialog + combobox) is the same one
+  // the Overlays page demos and tests through the DOM.
+  interface PaletteContract {
+    searchQuery: { set(value: string): void };
+    results(): readonly { page: string; anchor: string; label: string }[];
+    goTo(selection: readonly string[]): void;
+  }
+
+  const render = async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(Components);
+    await fixture.whenStable();
+    return {
+      fixture,
+      palette: fixture.componentInstance as unknown as PaletteContract,
+      router: TestBed.inject(Router),
+    };
+  };
+
+  it('an empty query lists the full index; typing narrows it', async () => {
+    const { fixture, palette } = await render();
+    const total = palette.results().length;
+    expect(total).toBeGreaterThan(50);
+
+    palette.searchQuery.set('split');
+    await fixture.whenStable();
+    const results = palette.results();
+    expect(results.length).toBe(1);
+    expect(results[0].label).toBe('Split button');
+  });
+
+  it('matches against the page label too', async () => {
+    const { fixture, palette } = await render();
+    palette.searchQuery.set('disclosure');
+    await fixture.whenStable();
+    expect(palette.results().length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('selecting a section navigates to its page with the anchor as fragment', async () => {
+    const { palette, router } = await render();
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    palette.goTo(['buttons#split-heading']);
+    expect(navigate).toHaveBeenCalledWith(['/components', 'buttons'], {
+      fragment: 'split-heading',
+    });
+
+    palette.goTo(['#']);
+    expect(navigate).toHaveBeenCalledWith(['/components'], {});
+
+    navigate.mockClear();
+    palette.goTo(['no-such#entry']);
+    expect(navigate, 'unknown keys must not navigate').not.toHaveBeenCalled();
   });
 });
 
@@ -251,6 +325,33 @@ describe('FormsDoc — aria combobox composition', () => {
     options[0].click();
     await fixture.whenStable();
     expect(compiled.textContent).toContain('Selected: Project Zomboid');
+  });
+
+  it('arrowing exposes aria-activedescendant on the input', async () => {
+    // Pins focusMode="activedescendant" on the popup listbox: the roving
+    // default returns NO active-descendant id (focus is supposed to move,
+    // but a combobox keeps focus on the input), so arrowing looked fine
+    // visually while a screen reader heard nothing.
+    const fixture = TestBed.createComponent(FormsDoc);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const input = compiled.querySelector<HTMLInputElement>('#f-game-search');
+    if (!input) throw new Error('No combobox input');
+    const arrowDown = () =>
+      input.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }),
+      );
+
+    input.focus();
+    arrowDown(); // closed -> expands
+    await fixture.whenStable();
+    expect(input.getAttribute('aria-expanded')).toBe('true');
+
+    arrowDown(); // expanded -> relayed to the listbox, activates option 1
+    await fixture.whenStable();
+    const active = input.getAttribute('aria-activedescendant');
+    expect(active, 'no active-descendant id — arrowing is silent for AT').toBeTruthy();
+    expect(compiled.querySelector(`[id="${active}"]`)?.getAttribute('data-active')).toBe('true');
   });
 });
 

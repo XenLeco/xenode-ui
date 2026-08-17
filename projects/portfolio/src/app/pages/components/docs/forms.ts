@@ -166,6 +166,7 @@ import { ExampleBox } from './example-box';
               ngComboboxWidget
               ngListbox
               #lb="ngListbox"
+              focusMode="activedescendant"
               [(value)]="comboboxSelection"
               [activeDescendant]="lb.activeDescendant()"
               aria-label="Games"
@@ -197,6 +198,7 @@ import { ExampleBox } from './example-box';
               ngComboboxWidget
               ngListbox
               #rlb="ngListbox"
+              focusMode="activedescendant"
               [(value)]="selectedRegion"
               [activeDescendant]="rlb.activeDescendant()"
               aria-labelledby="f-region-label"
@@ -271,11 +273,10 @@ import { ExampleBox } from './example-box';
     <section class="mt-10" aria-labelledby="number-h">
       <h2 id="number-h" class="text-lg font-semibold">Number input</h2>
       <p class="mt-2 max-w-prose text-sm text-muted-foreground">
-        <code>xnNumberInput</code> hides the native spinner cross-browser (arrow-key stepping
-        keeps working even where the hack doesn't land); <code>xn-number-field</code> adds real
-        +/- buttons that clamp through the value model. The buttons go
-        <code>aria-disabled</code>, never <code>disabled</code>, at the boundary — a focused
-        button never loses focus.
+        <code>xnNumberInput</code> hides the native spinner cross-browser (arrow-key stepping keeps
+        working even where the hack doesn't land); <code>xn-number-field</code> adds real +/-
+        buttons that clamp through the value model. The buttons go <code>aria-disabled</code>, never
+        <code>disabled</code>, at the boundary — a focused button never loses focus.
       </p>
       <div class="mt-3 flex flex-wrap items-end gap-6">
         <div xnField class="w-32">
