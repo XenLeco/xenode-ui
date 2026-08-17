@@ -64,7 +64,7 @@ import { ExampleBox } from './example-box';
           <section xnPageSection class="border-b">
             <div xnContainer>
               <section xnHero class="items-center py-6 text-center">
-                <span xnBadge variant="info">v0.1.0</span>
+                <span xnBadge variant="info">v0.2.0</span>
                 <h2 xnHeroTitle class="text-3xl">Run game servers like a grown-up</h2>
                 <p xnHeroSubtitle class="mx-auto">
                   Dark-first, token-driven, accessible by default.
@@ -248,9 +248,9 @@ import { ExampleBox } from './example-box';
     <section class="mt-10" aria-labelledby="burger-h">
       <h2 id="burger-h" class="text-lg font-semibold">Burger</h2>
       <p class="mt-1 max-w-prose text-sm text-muted-foreground">
-        Three lines from one button, no child spans: the middle line is the button's own
-        background clipped to a thin content box, the outer two are pseudo-elements that rotate
-        into an X when <code class="font-mono text-xs">aria-expanded</code> flips.
+        Three lines from one button, no child spans: the middle line is the button's own background
+        clipped to a thin content box, the outer two are pseudo-elements that rotate into an X when
+        <code class="font-mono text-xs">aria-expanded</code> flips.
       </p>
       <app-example-box title="Burger example" [tabs]="burgerTabs" class="mt-3 block max-w-xs">
         <button
@@ -295,10 +295,14 @@ import { ExampleBox } from './example-box';
     <section class="mt-10" aria-labelledby="speed-dial-h">
       <h2 id="speed-dial-h" class="text-lg font-semibold">Speed dial</h2>
       <p class="mt-1 max-w-prose text-sm text-muted-foreground">
-        A trigger that discloses stacked actions above it — Escape and an outside click both
-        close it, the same host-listener contract as the nav panels.
+        A trigger that discloses stacked actions above it — Escape and an outside click both close
+        it, the same host-listener contract as the nav panels.
       </p>
-      <app-example-box title="Speed dial example" [tabs]="speedDialTabs" class="mt-3 block max-w-xs">
+      <app-example-box
+        title="Speed dial example"
+        [tabs]="speedDialTabs"
+        class="mt-3 block max-w-xs"
+      >
         <div class="relative flex h-40 w-full items-end justify-center">
           <div xnSpeedDial>
             <button xnSpeedDialTrigger aria-label="Create">+</button>

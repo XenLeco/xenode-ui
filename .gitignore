@@ -26,7 +26,6 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
@@ -38,6 +37,12 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+
+# Secrets ladder: env vars live in a gitignored .env; only the committed
+# .env.example (placeholders) documents the expected keys.
+.env
+.env.*
+!.env.example
 
 # System files
 .DS_Store

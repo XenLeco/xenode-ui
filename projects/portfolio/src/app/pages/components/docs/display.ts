@@ -67,7 +67,7 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
       </div>
       <app-example-box title="Badge example" [tabs]="badgeExampleTabs" class="mt-3 block max-w-2xl">
         <span xnBadge variant="success">Active</span>
-        <span xnBadge variant="outline">v0.1.0</span>
+        <span xnBadge variant="outline">v0.2.0</span>
       </app-example-box>
     </section>
 
@@ -175,9 +175,9 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
     <section class="mt-10" aria-labelledby="image-h">
       <h2 id="image-h" class="text-lg font-semibold">Image</h2>
       <p class="mt-2 max-w-prose text-sm text-muted-foreground">
-        A failed load hides the broken-image glyph so <code>bg-muted</code> reads as an
-        intentional placeholder — <code>alt</code> stays the accessible name either way.
-        <code>fit</code> maps to <code>object-*</code> classes.
+        A failed load hides the broken-image glyph so <code>bg-muted</code> reads as an intentional
+        placeholder — <code>alt</code> stays the accessible name either way. <code>fit</code> maps
+        to <code>object-*</code> classes.
       </p>
       <div class="mt-3 flex flex-wrap items-center gap-4">
         <img
@@ -224,7 +224,7 @@ export class DisplayDoc {
     {
       label: 'Angular',
       code: `<span xnBadge variant="success">Active</span>
-<span xnBadge variant="outline">v0.1.0</span>`,
+<span xnBadge variant="outline">v0.2.0</span>`,
     },
     {
       label: 'TypeScript',
@@ -240,7 +240,7 @@ export class Status {}`,
       label: 'Plain HTML',
       code: `<!-- Works in any framework: Tailwind + theme.css carry the system -->
 <span class="${badgeVariants({ variant: 'success' })}">Active</span>
-<span class="${badgeVariants({ variant: 'outline' })}">v0.1.0</span>`,
+<span class="${badgeVariants({ variant: 'outline' })}">v0.2.0</span>`,
     },
   ] as const;
 }

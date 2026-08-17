@@ -118,7 +118,7 @@ const SERVERS: readonly ServerRow[] = [
           <div xnAccordionItem>
             <h3 class="flex">
               <button ngAccordionTrigger xnAccordionTrigger [panel]="exFaq">
-                What ships in v0.1.0?
+                What ships in v0.2.0?
                 <span data-chevron aria-hidden="true">⌄</span>
               </button>
             </h3>
@@ -226,8 +226,8 @@ const SERVERS: readonly ServerRow[] = [
         A recipe, not a component: filtering, sorting, pagination and selection are
         <code class="font-mono text-xs">computed()</code> pipelines over the table primitives — the
         engine is signals. Reach for a headless table library only when you need grouping or
-        virtualization. Selection persists across filters and pages — the count is global, and
-        Clear is the way out.
+        virtualization. Selection persists across filters and pages — the count is global, and Clear
+        is the way out.
       </p>
       <div class="mt-3 max-w-2xl">
         <div class="flex flex-wrap items-center gap-2 pb-3">
@@ -449,10 +449,7 @@ export class DisclosureDoc {
     Math.max(1, Math.ceil(this.dtSorted().length / this.dtPageSize)),
   );
   protected readonly dtRows = computed(() =>
-    this.dtSorted().slice(
-      (this.dtPage() - 1) * this.dtPageSize,
-      this.dtPage() * this.dtPageSize,
-    ),
+    this.dtSorted().slice((this.dtPage() - 1) * this.dtPageSize, this.dtPage() * this.dtPageSize),
   );
 
   protected readonly dtPageAllSelected = computed(
@@ -537,7 +534,7 @@ export class DisclosureDoc {
   <div xnAccordionItem>
     <h3 class="flex">
       <button ngAccordionTrigger xnAccordionTrigger [panel]="faq">
-        What ships in v0.1.0?
+        What ships in v0.2.0?
         <span data-chevron aria-hidden="true">⌄</span>
       </button>
     </h3>

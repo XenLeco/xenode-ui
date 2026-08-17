@@ -5,7 +5,10 @@ All notable changes to `@xenode/ui`. Format follows
 the version mirrored in `projects/ui/src/lib/version.ts` (`XN_UI_VERSION`)
 and shown in the docs shell.
 
-## [Unreleased]
+## [0.2.0] — 2026-08-17
+
+The catalog cut: 263 components across ~91 families — parity-complete
+against live shadcn/ui, Bootstrap 5.3 and daisyUI 5.7. First public push.
 
 ### Fixed (charts review)
 

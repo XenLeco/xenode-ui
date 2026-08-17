@@ -24,7 +24,7 @@ describe('Docs shell', () => {
     const nav = (fixture.nativeElement as HTMLElement).querySelector('nav');
     expect(nav?.getAttribute('aria-label')).toBe('Component docs');
     expect(nav?.querySelectorAll('a').length).toBe(14);
-    expect(nav?.querySelector('[data-slot="docs-version"]')?.textContent).toContain('v0.1.0');
+    expect(nav?.querySelector('[data-slot="docs-version"]')?.textContent).toContain('v0.2.0');
   });
 });
 

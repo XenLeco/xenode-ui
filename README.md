@@ -1,8 +1,6 @@
 # xenode-ui
 
-<!-- badge row — OWNER filled in when the GitHub repo exists -->
-
-[![CI](https://github.com/OWNER/xenode-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/xenode-ui/actions/workflows/ci.yml)
+[![CI](https://github.com/XenLeco/xenode-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/XenLeco/xenode-ui/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A shadcn-style component library for Angular 22 + Tailwind CSS v4, and the
@@ -19,19 +17,20 @@ tokens, dark mode via `.dark` class), Vitest, prerendered to static files.
 
 ## Status
 
-Early, building in public. Working today: light/dark design tokens locked to
-WCAG AA by a contrast test that runs in CI, three-state theme switching under
-a strict hash-based CSP, and **226 components across 75+ families**: the shadcn core
-(button, badge, card, label, input, textarea, alert, separator, skeleton,
-kbd, table, breadcrumb, avatar, progress, spinner, aspect-ratio, typography,
-empty, button group, input group, field, pagination), behavior composed
-beside `@angular/aria` (tabs, accordion), native-platform controls
-(checkbox, radio group, switch, slider, native select, toggle, collapsible
-on details/summary, dialog on the native element), and overlay pieces
-(toast, tooltip/popover/hover-card on CDK Overlay, alert-dialog/sheet/drawer
-on the native dialog, dropdown-menu on `@angular/aria`'s menu, scroll-area,
-scroll-snap carousel) — all on a live showcase at `/components` generated
-from the same variants objects the components use.
+Building in public. The catalog is complete — parity-checked against live
+shadcn/ui, Bootstrap 5.3 and daisyUI 5.7: **263 components across ~91
+families**, every wave adversarially reviewed. Working today: light/dark
+design tokens locked to WCAG AA by a contrast test that runs in CI,
+three-state theme switching under a strict hash-based CSP, the shadcn core,
+behavior composed beside `@angular/aria` (tabs, accordion, dropdown-menu,
+combobox, and a calendar on the grid primitive), native-platform controls
+(checkbox, radio group, switch, slider, native select, collapsible on
+details/summary, dialog and its derivatives on the native element), overlay
+floats on CDK Overlay (tooltip, popover, hover-card), APG disclosure nav
+panels, a signals-based data-table recipe, and charts as a composition —
+ngx-charts renders, the library ships only design tokens and a `ChartCard`
+bridge. All of it on a live docs site at `/components`, generated from the
+same variants objects the components use.
 
 <!-- demo GIF slot -->
 
