@@ -6,8 +6,10 @@ import {
   Badge,
   badgeVariantConfig,
   badgeVariants,
+  Chip,
   EMPTY,
   EmptyIcon,
+  Image,
   ITEM,
   Kbd,
   Meter,
@@ -46,6 +48,8 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
     Progress,
     Meter,
     Output,
+    Image,
+    Chip,
     ExampleBox,
   ],
   template: `
@@ -166,6 +170,46 @@ type BadgeVariantName = keyof typeof badgeVariantConfig.variants.variant;
         <dt xnDescriptionTerm>Framework</dt>
         <dd xnDescriptionDetail>Angular 22, zoneless</dd>
       </dl>
+    </section>
+
+    <section class="mt-10" aria-labelledby="image-h">
+      <h2 id="image-h" class="text-lg font-semibold">Image</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        A failed load hides the broken-image glyph so <code>bg-muted</code> reads as an
+        intentional placeholder — <code>alt</code> stays the accessible name either way.
+        <code>fit</code> maps to <code>object-*</code> classes.
+      </p>
+      <div class="mt-3 flex flex-wrap items-center gap-4">
+        <img
+          xnImage
+          fit="cover"
+          class="size-16"
+          alt=""
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%236366f1'/%3E%3C/svg%3E"
+        />
+        <img
+          xnImage
+          fit="contain"
+          class="size-16 bg-secondary"
+          alt=""
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Crect width='120' height='60' fill='%236366f1'/%3E%3C/svg%3E"
+        />
+        <img xnImage class="size-16" alt="Server banner (broken link)" src="does-not-exist.png" />
+      </div>
+    </section>
+
+    <section class="mt-10" aria-labelledby="chip-h">
+      <h2 id="chip-h" class="text-lg font-semibold">Chip</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        A pill wrapping a native checkbox — the checkbox is the state, styled through
+        <code>:has(:checked)</code> exactly like Segmented's radios.
+      </p>
+      <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Genres">
+        <label xnChip><input type="checkbox" checked /> Roguelike</label>
+        <label xnChip><input type="checkbox" /> Sandbox</label>
+        <label xnChip><input type="checkbox" checked /> Co-op</label>
+        <label xnChip><input type="checkbox" disabled /> Early access</label>
+      </div>
     </section>
   `,
 })

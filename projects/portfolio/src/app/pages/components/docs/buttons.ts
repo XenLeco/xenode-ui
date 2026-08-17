@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
 
 import {
   Button,
@@ -8,6 +9,7 @@ import {
   Toggle,
   ToggleGroup,
   Tooltip,
+  XN_DROPDOWN,
 } from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
@@ -17,7 +19,19 @@ type SizeName = keyof typeof buttonVariantConfig.variants.size;
 
 @Component({
   selector: 'app-docs-buttons',
-  imports: [Button, ButtonGroup, Toggle, ToggleGroup, Tooltip, ExampleBox],
+  imports: [
+    Button,
+    ButtonGroup,
+    Toggle,
+    ToggleGroup,
+    Tooltip,
+    ExampleBox,
+    XN_DROPDOWN,
+    Menu,
+    MenuContent,
+    MenuItem,
+    MenuTrigger,
+  ],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Buttons</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -62,6 +76,33 @@ type SizeName = keyof typeof buttonVariantConfig.variants.size;
         <button xnButton variant="outline" size="sm">Compact</button>
         <button xnButton variant="outline" size="sm">Cozy</button>
         <button xnButton variant="outline" size="sm">Comfortable</button>
+      </div>
+    </section>
+
+    <section class="mt-10" aria-labelledby="split-heading">
+      <h2 id="split-heading" class="text-lg font-semibold">Split button</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        A composition, not a component: the button group joins the primary action to a menu
+        trigger — menus are right here, these are commands.
+      </p>
+      <div xnButtonGroup aria-label="Deploy actions" class="mt-3">
+        <button xnButton>Deploy</button>
+        <button
+          xnButton
+          variant="outline"
+          ngMenuTrigger
+          [menu]="splitMenu"
+          aria-label="More deploy actions"
+        >
+          ▾
+        </button>
+      </div>
+      <div ngMenu xnMenu #splitMenu="ngMenu">
+        <ng-template ngMenuContent>
+          <div ngMenuItem xnMenuItem value="staging">Deploy to staging</div>
+          <div ngMenuItem xnMenuItem value="canary">Deploy canary</div>
+          <div ngMenuItem xnMenuItem value="rollback">Roll back</div>
+        </ng-template>
       </div>
     </section>
 

@@ -11,10 +11,12 @@ import {
   SelectTrigger,
   FIELD,
   Input,
+  InputColor,
   INPUT_GROUP,
   INPUT_OTP,
   Label,
   NativeSelect,
+  NUMBER_INPUT,
   Popover,
   PopoverPanel,
   PopoverTrigger,
@@ -41,6 +43,8 @@ import { ExampleBox } from './example-box';
     Slider,
     NativeSelect,
     INPUT_OTP,
+    NUMBER_INPUT,
+    InputColor,
     Combobox,
     ComboboxPopup,
     ComboboxWidget,
@@ -101,6 +105,17 @@ import { ExampleBox } from './example-box';
       <div class="flex items-center gap-2">
         <input xnCheckbox type="checkbox" id="f-terms" checked />
         <label xnLabel for="f-terms">Accept the license</label>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <input xnCheckbox type="checkbox" id="f-terms-partial" [indeterminate]="true" />
+          <label xnLabel for="f-terms-partial">Select all games</label>
+        </div>
+        <p class="text-xs text-muted-foreground">
+          Indeterminate is a DOM property, not an attribute — bind it with
+          <code>[indeterminate]</code>; assistive tech still reports it as "partially checked".
+        </p>
       </div>
 
       <fieldset xnRadioGroup>
@@ -253,6 +268,60 @@ import { ExampleBox } from './example-box';
       </div>
     </section>
 
+    <section class="mt-10" aria-labelledby="number-h">
+      <h2 id="number-h" class="text-lg font-semibold">Number input</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        <code>xnNumberInput</code> hides the native spinner cross-browser (arrow-key stepping
+        keeps working even where the hack doesn't land); <code>xn-number-field</code> adds real
+        +/- buttons that clamp through the value model. The buttons go
+        <code>aria-disabled</code>, never <code>disabled</code>, at the boundary — a focused
+        button never loses focus.
+      </p>
+      <div class="mt-3 flex flex-wrap items-end gap-6">
+        <div xnField class="w-32">
+          <label xnLabel for="f-qty-plain">Quantity</label>
+          <input xnNumberInput type="number" id="f-qty-plain" min="0" max="10" value="3" />
+        </div>
+        <div xnField>
+          <span class="text-sm font-medium">Players</span>
+          <xn-number-field
+            [(value)]="playerCount"
+            [min]="1"
+            [max]="8"
+            ariaLabel="Player count"
+            decrementLabel="Fewer players"
+            incrementLabel="More players"
+          />
+          <p xnFieldDescription>{{ playerCount() }} selected (min 1, max 8)</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10" aria-labelledby="color-h">
+      <h2 id="color-h" class="text-lg font-semibold">Color input</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        A swatch well around the native color picker — the OS dialog stays native; pair it with a
+        text readout since the swatch alone carries no readable value.
+      </p>
+      <div class="mt-3 flex items-center gap-2">
+        <input
+          xnInputColor
+          type="color"
+          id="f-accent"
+          aria-label="Accent color"
+          [value]="accentColor()"
+          (input)="accentColor.set($any($event.target).value)"
+        />
+        <input
+          xnInput
+          readonly
+          class="w-28"
+          aria-label="Accent color value"
+          [value]="accentColor()"
+        />
+      </div>
+    </section>
+
     <section class="mt-10" aria-labelledby="field-example-h">
       <h2 id="field-example-h" class="text-lg font-semibold">Field example</h2>
       <app-example-box title="Field example" [tabs]="fieldTabs" class="mt-3 block max-w-2xl">
@@ -268,6 +337,9 @@ import { ExampleBox } from './example-box';
 export class FormsDoc {
   protected readonly calendarValue = signal<string | undefined>('2026-08-14');
   protected readonly pickerValue = signal<string | undefined>(undefined);
+
+  protected readonly playerCount = signal(4);
+  protected readonly accentColor = signal('#6366f1');
 
   private readonly games = ['Minecraft', 'Project Zomboid', 'Valheim', 'Palworld', 'Terraria'];
 

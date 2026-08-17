@@ -7,6 +7,31 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Added (parity sweep — 19 items from the reference gap scan)
+
+- Forms: NumberInput (native number input, spinners hidden via
+  appearance) + NumberField (stepper with aria-disabled boundary buttons
+  and blur-time clamping), Chip (native checkbox in a pill,
+  `:has(:checked)` state, alt-text checkmark), Image (fallback-to-muted
+  on error, `fit` input, `exportAs` failed signal), InputColor (styled
+  native picker well); indeterminate checkbox documented as the DOM
+  property it is.
+- Feedback/overlays: Toaster `position` input (four corners, entrance
+  direction follows), Tooltip `showDelay` + surface-matched arrow,
+  dismissible Callout (`xnCalloutDismiss`, purposeful DI error),
+  RadialProgress `arc="semi"` gauge, Sheet `side="top"` (the Bootstrap
+  offcanvas gap).
+- Site/statics: Join (border-radius joining container), Dock + DockItem
+  (bottom navigation, safe-area padded), Affix (corner-anchored
+  fixed/absolute wrapper, style-binding escape hatch), Burger (one
+  element, three CSS bars, animates to an X off aria-expanded),
+  RollingNumber (digit strips, sr-only real value), Highlight (substring
+  matches through the shared Mark styling), SpeedDial (NavPanels dismiss
+  contract on a boolean), MockupPhone (frame for the Dock demo).
+- Split button documented as a composition on the Buttons page — a
+  button group joining the action to a menu trigger (menus are correct
+  there: those are commands, the deliberate contrast with nav panels).
+
 ### Fixed (data-table review)
 
 - Popovers with interactive content were keyboard-unreachable: the panel

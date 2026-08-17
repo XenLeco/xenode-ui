@@ -119,4 +119,42 @@ export class DiffLine {
   );
 }
 
-export const MOCKUPS = [MockupWindow, MockupBar, Terminal, TerminalLine, Diff, DiffLine] as const;
+/** Phone frame: bezel + notch + a screen slot content projects into. */
+@Component({
+  // eslint-disable-next-line @angular-eslint/component-selector -- attribute-selector component
+  selector: 'div[xnMockupPhone]',
+  template: `
+    <span
+      aria-hidden="true"
+      data-slot="mockup-phone-notch"
+      class="absolute top-1.5 left-1/2 z-10 h-4 w-20 -translate-x-1/2 rounded-b-lg bg-foreground"
+    ></span>
+    <div data-slot="mockup-phone-screen" class="size-full overflow-hidden rounded-[2rem] bg-background">
+      <ng-content />
+    </div>
+  `,
+  host: {
+    'data-slot': 'mockup-phone',
+    '[class]': 'classes()',
+  },
+})
+export class MockupPhone {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  readonly userClass = input<string>('', { alias: 'class' });
+  protected readonly classes = computed(() =>
+    cn(
+      'relative mx-auto aspect-[9/19.5] w-64 overflow-hidden rounded-[2.5rem] border-[6px] border-foreground bg-foreground p-1.5 shadow-xl',
+      this.userClass(),
+    ),
+  );
+}
+
+export const MOCKUPS = [
+  MockupWindow,
+  MockupBar,
+  Terminal,
+  TerminalLine,
+  Diff,
+  DiffLine,
+  MockupPhone,
+] as const;

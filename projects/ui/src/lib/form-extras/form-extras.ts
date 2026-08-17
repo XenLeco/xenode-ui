@@ -72,4 +72,32 @@ export class FloatingLabel {
   );
 }
 
-export const FORM_EXTRAS = [PasswordInput, FileInput, FloatingLabel] as const;
+/**
+ * Native color input styled as a small swatch well: the OS/browser color
+ * dialog stays native — only the swatch's own border/corners are
+ * retouched (webkit's shadow-DOM color-swatch pseudo-elements; Firefox's
+ * -moz equivalent) so the swatch doesn't look like a second nested box
+ * inside the well. Safari exposes neither pseudo-element, so it falls
+ * back to the browser's own swatch inside the same bordered well —
+ * graceful degradation, not breakage. Pair with a text readout in the
+ * consumer's markup; the swatch alone carries no readable value.
+ */
+@Directive({
+  selector: 'input[type="color"][xnInputColor]',
+  host: {
+    'data-slot': 'input-color',
+    '[class]': 'classes()',
+  },
+})
+export class InputColor {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  readonly userClass = input<string>('', { alias: 'class' });
+  protected readonly classes = computed(() =>
+    cn(
+      'size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 transition-[border-color] [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch-wrapper]:rounded-sm [&::-webkit-color-swatch-wrapper]:p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50',
+      this.userClass(),
+    ),
+  );
+}
+
+export const FORM_EXTRAS = [PasswordInput, FileInput, FloatingLabel, InputColor] as const;

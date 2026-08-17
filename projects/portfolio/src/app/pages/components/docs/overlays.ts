@@ -12,6 +12,7 @@ import {
   Input,
   ScrollArea,
   ToastService,
+  Tooltip,
   XN_DROPDOWN,
   XN_HOVER_CARD,
   XN_POPOVER,
@@ -43,6 +44,7 @@ import { ExampleBox } from './example-box';
     ComboboxPanel,
     XnListboxOption,
     Input,
+    Tooltip,
     ExampleBox,
   ],
   template: `
@@ -56,6 +58,7 @@ import { ExampleBox } from './example-box';
       <button xnButton variant="outline" (click)="dlg.showModal()">Dialog</button>
       <button xnButton variant="outline" (click)="alertDlg.showModal()">Alert dialog</button>
       <button xnButton variant="outline" (click)="sheetDlg.showModal()">Sheet</button>
+      <button xnButton variant="outline" (click)="topSheetDlg.showModal()">Top</button>
       <button xnButton variant="outline" (click)="drawerDlg.showModal()">Drawer</button>
       <div xnDropdown>
         <button xnButton variant="outline" ngMenuTrigger [menu]="demoMenu">Menu ▾</button>
@@ -118,6 +121,18 @@ import { ExampleBox } from './example-box';
             </ng-template>
           </div>
         </div>
+      </app-example-box>
+    </section>
+
+    <section class="mt-10" aria-labelledby="tooltip-h">
+      <h2 id="tooltip-h" class="text-lg font-semibold">Tooltip</h2>
+      <app-example-box title="Tooltip example" [tabs]="tooltipTabs" class="mt-3 block max-w-2xl">
+        <button xnButton variant="outline" [xnTooltip]="'Instant — the default'">
+          No delay
+        </button>
+        <button xnButton variant="outline" [xnTooltip]="'Waits before showing'" [showDelay]="400">
+          400ms delay
+        </button>
       </app-example-box>
     </section>
 
@@ -194,6 +209,16 @@ import { ExampleBox } from './example-box';
       </div>
     </dialog>
 
+    <dialog xnSheet side="top" #topSheetDlg aria-labelledby="top-sheet-t">
+      <div xnDialogHeader>
+        <h2 xnDialogTitle id="top-sheet-t">Top sheet</h2>
+        <p xnDialogDescription>Same sheet, dropping from the top edge instead.</p>
+      </div>
+      <div xnDialogFooter>
+        <button xnButton variant="outline" (click)="topSheetDlg.close()">Close</button>
+      </div>
+    </dialog>
+
     <dialog xnDrawer #drawerDlg aria-labelledby="drawer-t">
       <div xnDialogHeader>
         <h2 xnDialogTitle id="drawer-t">Bottom drawer</h2>
@@ -244,6 +269,25 @@ export class ServerMenu {
     // restart, logs, delete…
   }
 }`,
+    },
+  ] as const;
+
+  protected readonly tooltipTabs = [
+    {
+      label: 'Angular',
+      code: `<button xnButton variant="outline" [xnTooltip]="'Waits before showing'" [showDelay]="400">
+  400ms delay
+</button>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { Tooltip } from '@xenode/ui';
+
+@Component({
+  imports: [Tooltip],
+  templateUrl: './toolbar.html',
+})
+export class Toolbar {}`,
     },
   ] as const;
 

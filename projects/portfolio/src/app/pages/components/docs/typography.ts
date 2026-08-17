@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { Kbd, Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
+import { Highlight, Kbd, Prose, SITE, TEXT_BLOCKS } from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-typography',
-  imports: [Prose, TEXT_BLOCKS, SITE, Kbd, ExampleBox],
+  imports: [Prose, TEXT_BLOCKS, SITE, Kbd, ExampleBox, Highlight],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Typography &amp; page shells</h1>
 
@@ -103,9 +103,45 @@ import { ExampleBox } from './example-box';
         </footer>
       </div>
     </section>
+
+    <section class="mt-10" aria-labelledby="highlight-h">
+      <h2 id="highlight-h" class="text-lg font-semibold">Highlight</h2>
+      <p class="mt-1 max-w-prose text-sm text-muted-foreground">
+        Case-insensitive substring matching on the shared <code xnInlineCode>xnMark</code> styling
+        — an empty query renders the text untouched.
+      </p>
+      <app-example-box title="Highlight example" [tabs]="highlightTabs" class="mt-3 block max-w-xl">
+        <p class="text-sm">
+          <xn-highlight
+            text="Dark-first, token-driven, accessible by default."
+            query="token"
+          ></xn-highlight>
+        </p>
+      </app-example-box>
+    </section>
   `,
 })
 export class TypographyDoc {
+  protected readonly highlightTabs = [
+    {
+      label: 'Angular',
+      code: `<xn-highlight
+  text="Dark-first, token-driven, accessible by default."
+  query="token"
+></xn-highlight>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { Highlight } from '@xenode/ui';
+
+@Component({
+  imports: [Highlight],
+  templateUrl: './search-result.html',
+})
+export class SearchResult {}`,
+    },
+  ] as const;
+
   protected readonly textTabs = [
     {
       label: 'Angular',

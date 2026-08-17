@@ -160,6 +160,35 @@ export class SectionDescription {
   );
 }
 
+/**
+ * Three lines, one element, no template: a `<button>` can't host child
+ * spans from a directive, so the middle bar is the button's OWN
+ * background — sized to a thin content box via `box-content` (opting out
+ * of Preflight's border-box just here) and clipped to it with
+ * `bg-clip-content`, while padding supplies the surrounding hit target.
+ * The top/bottom bars are `::before`/`::after`, independently
+ * transformable, so they can rotate into an X; the middle bar can only
+ * ever fade (a transform on the host would drag the pseudo-elements with
+ * it), so it fades via `background-color`, not opacity — opacity on the
+ * host would dim the pseudo-elements too, since they composite as one
+ * layer with their ancestor. The consumer owns the open state: bind
+ * `[attr.aria-expanded]` and toggle it on click.
+ */
+@Directive({
+  selector: 'button[xnBurger]',
+  host: { 'data-slot': 'burger', type: 'button', '[class]': 'classes()' },
+})
+export class Burger {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  readonly userClass = input<string>('', { alias: 'class' });
+  protected readonly classes = computed(() =>
+    cn(
+      "relative inline-block box-content h-0.5 w-5 cursor-pointer bg-foreground bg-clip-content px-2 py-[17px] transition-[background-color] before:absolute before:top-[9px] before:left-1/2 before:h-0.5 before:w-5 before:-translate-x-1/2 before:bg-foreground before:transition-transform before:duration-200 before:content-[''] after:absolute after:bottom-[9px] after:left-1/2 after:h-0.5 after:w-5 after:-translate-x-1/2 after:bg-foreground after:transition-transform after:duration-200 after:content-[''] aria-expanded:bg-transparent aria-expanded:before:translate-y-[8px] aria-expanded:before:rotate-45 aria-expanded:after:-translate-y-[8px] aria-expanded:after:-rotate-45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+      this.userClass(),
+    ),
+  );
+}
+
 export const SITE = [
   Navbar,
   NavbarBrand,
@@ -175,4 +204,5 @@ export const SITE = [
   SectionHeader,
   SectionTitle,
   SectionDescription,
+  Burger,
 ] as const;

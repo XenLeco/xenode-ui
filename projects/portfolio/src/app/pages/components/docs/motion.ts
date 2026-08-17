@@ -1,12 +1,12 @@
 import { Component, signal } from '@angular/core';
 
-import { Button, Callout, CalloutContent, CalloutTitle } from '@xenode/ui';
+import { Button, Callout, CalloutContent, CalloutTitle, RollingNumber } from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
 
 @Component({
   selector: 'app-docs-motion',
-  imports: [Button, Callout, CalloutTitle, CalloutContent, ExampleBox],
+  imports: [Button, Callout, CalloutTitle, CalloutContent, ExampleBox, RollingNumber],
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Motion</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
@@ -55,9 +55,53 @@ import { ExampleBox } from './example-box';
         </p>
       </div>
     </div>
+
+    <section class="mt-10" aria-labelledby="rolling-number-h">
+      <h2 id="rolling-number-h" class="text-lg font-semibold">Rolling number</h2>
+      <p class="mt-1 max-w-prose text-sm text-muted-foreground">
+        Each digit is a 0-9 strip that translates into place. The strips are decoration
+        (aria-hidden); the host carries the real value as sr-only text.
+      </p>
+      <button
+        xnButton
+        variant="outline"
+        class="mt-3"
+        (click)="rollingValue.set(rollingValue() + 137)"
+      >
+        +137
+      </button>
+      <app-example-box
+        title="Rolling number example"
+        [tabs]="rollingNumberTabs"
+        class="mt-3 block max-w-xs"
+      >
+        <xn-rolling-number [value]="rollingValue()" class="text-3xl"></xn-rolling-number>
+      </app-example-box>
+    </section>
   `,
 })
 export class MotionDoc {
+  protected readonly rollingValue = signal(2026);
+
+  protected readonly rollingNumberTabs = [
+    {
+      label: 'Angular',
+      code: `<xn-rolling-number [value]="score()" class="text-3xl"></xn-rolling-number>`,
+    },
+    {
+      label: 'TypeScript',
+      code: `import { RollingNumber } from '@xenode/ui';
+
+@Component({
+  imports: [RollingNumber],
+  templateUrl: './scoreboard.html',
+})
+export class Scoreboard {
+  protected readonly score = signal(0);
+}`,
+    },
+  ] as const;
+
   // Full class names as literals — Tailwind only emits utilities it finds
   // whole in source; 'animate-' + name is invisible to the scanner.
   protected readonly presets = [

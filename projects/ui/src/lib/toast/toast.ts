@@ -1,8 +1,9 @@
-import { Component, Service, computed, inject, signal } from '@angular/core';
+import { Component, Service, computed, inject, input, signal } from '@angular/core';
 
 import { cn } from '../cn';
 
 export type ToastVariant = 'default' | 'destructive' | 'success' | 'warning' | 'info';
+export type ToastPosition = 'bottom-right' | 'bottom-center' | 'top-right' | 'top-center';
 
 export interface ToastOptions {
   title?: string;
@@ -17,6 +18,20 @@ export interface ActiveToast {
   readonly title?: string;
   readonly variant: ToastVariant;
 }
+
+/**
+ * Placement for the fixed stack, one literal string per corner so Tailwind's
+ * source scan finds every class whole. Mobile stays full-bleed (inset-x-4);
+ * sm+ collapses to a right-docked strip (right/left corners) or a
+ * shrink-to-fit centered box (center: inset-x-0 + mx-auto on an explicit
+ * w-fit — the classic centered-fixed-element trick).
+ */
+export const TOAST_POSITION_CLASSES: Record<ToastPosition, string> = {
+  'bottom-right': 'inset-x-4 bottom-4 items-end sm:left-auto sm:right-4',
+  'bottom-center': 'inset-x-4 bottom-4 items-center sm:inset-x-0 sm:mx-auto sm:w-fit',
+  'top-right': 'inset-x-4 top-4 items-end sm:left-auto sm:right-4',
+  'top-center': 'inset-x-4 top-4 items-center sm:inset-x-0 sm:mx-auto sm:w-fit',
+};
 
 /**
  * Holds the active toast list as a signal. The Toaster component renders
@@ -50,16 +65,16 @@ export class ToastService {
 /**
  * Render once, in the app shell. role="status" + aria-live="polite" makes
  * additions announce without interrupting; each toast keeps a real dismiss
- * button so auto-dismiss is a convenience, not the only exit.
+ * button so auto-dismiss is a convenience, not the only exit. `position`
+ * picks the fixed corner; toasts from a bottom corner rise into place
+ * (translate up from below), toasts from a top corner fall into place
+ * (translate down from above) — the entrance direction always matches
+ * which edge the stack is pinned to.
  */
 @Component({
   selector: 'xn-toaster',
   template: `
-    <div
-      role="status"
-      aria-live="polite"
-      class="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col items-end gap-2 sm:left-auto sm:right-4"
-    >
+    <div role="status" aria-live="polite" [class]="containerClasses()">
       @for (toast of service.toasts(); track toast.id) {
         <div data-slot="toast" [class]="classFor(toast.variant)">
           <div class="grid flex-1 gap-0.5">
@@ -84,9 +99,20 @@ export class ToastService {
 export class Toaster {
   protected readonly service = inject(ToastService);
 
+  readonly position = input<ToastPosition>('bottom-right');
+
+  protected readonly containerClasses = computed(() =>
+    cn(
+      'pointer-events-none fixed z-50 flex flex-col gap-2',
+      TOAST_POSITION_CLASSES[this.position()],
+    ),
+  );
+
   protected classFor(variant: ActiveToast['variant']): string {
     return cn(
-      'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border p-4 shadow-lg transition-[opacity,translate,scale] duration-300 ease-out-expo starting:translate-y-3 starting:scale-[0.98] starting:opacity-0',
+      'pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-lg border p-4 shadow-lg transition-[opacity,translate,scale] duration-300 ease-out-expo starting:scale-[0.98] starting:opacity-0',
+      // Rise from a bottom-pinned stack, fall from a top-pinned one.
+      this.position().startsWith('bottom') ? 'starting:translate-y-3' : 'starting:-translate-y-3',
       {
         default: 'bg-card text-card-foreground',
         destructive: 'border-transparent bg-destructive text-destructive-foreground',

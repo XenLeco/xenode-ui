@@ -29,7 +29,13 @@ export class AlertDialog {
   );
 }
 
-/** A side panel. */
+/**
+ * A side panel — or, with `side="top"`, a panel dropping from the top edge.
+ * The left/right pair shares one translate axis (both live under the same
+ * `open:translate-x-0`); top swaps to the other axis, so each side's own
+ * branch carries its own `open:translate-*` alongside its margin, offset
+ * and border rather than sharing one base-level entry.
+ */
 @Directive({
   selector: 'dialog[xnSheet]',
   host: {
@@ -38,16 +44,18 @@ export class AlertDialog {
   },
 })
 export class Sheet {
-  readonly side = input<'right' | 'left'>('right');
+  readonly side = input<'right' | 'left' | 'top'>('right');
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-0 h-dvh max-h-none w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:translate-x-0 open:flex-col backdrop:bg-black/50',
-      this.side() === 'right'
-        ? 'ml-auto translate-x-full border-l starting:open:translate-x-full'
-        : 'mr-auto -translate-x-full border-r starting:open:-translate-x-full',
+      'm-0 h-dvh max-h-none w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:flex-col backdrop:bg-black/50',
+      {
+        right: 'ml-auto translate-x-full border-l open:translate-x-0 starting:open:translate-x-full',
+        left: 'mr-auto -translate-x-full border-r open:translate-x-0 starting:open:-translate-x-full',
+        top: 'mb-auto h-auto max-h-[80dvh] w-full max-w-none -translate-y-full border-b open:translate-y-0 starting:open:-translate-y-full',
+      }[this.side()],
       this.userClass(),
     ),
   );

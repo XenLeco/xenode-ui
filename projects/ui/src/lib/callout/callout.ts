@@ -1,4 +1,4 @@
-import { Directive, computed, input } from '@angular/core';
+import { Directive, computed, inject, input, signal } from '@angular/core';
 
 import { cn } from '../cn';
 
@@ -21,9 +21,19 @@ export const calloutVariantConfig = {
   defaultVariants: { variant: 'default' },
 } as const;
 
-@Directive({ selector: '[xnCallout]', host: { 'data-slot': 'callout', '[class]': 'classes()' } })
+@Directive({
+  selector: '[xnCallout]',
+  host: {
+    'data-slot': 'callout',
+    '[attr.hidden]': "dismissed() ? '' : null",
+    '[class]': 'classes()',
+  },
+})
 export class Callout {
   readonly variant = input<keyof typeof calloutVariantConfig.variants.variant>('default');
+
+  /** Set by a descendant [xnCalloutDismiss]; nothing to opt into otherwise. */
+  readonly dismissed = signal(false);
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
@@ -31,6 +41,45 @@ export class Callout {
     cn(
       'grid gap-1 rounded-lg border px-4 py-3 text-sm',
       calloutVariantConfig.variants.variant[this.variant()],
+      this.userClass(),
+    ),
+  );
+
+  dismiss(): void {
+    this.dismissed.set(true);
+  }
+}
+
+/** The activation half: wires itself to the ancestor callout via DI. */
+@Directive({
+  selector: 'button[xnCalloutDismiss]',
+  host: {
+    'data-slot': 'callout-dismiss',
+    type: 'button',
+    '[attr.aria-label]': 'ariaLabel()',
+    '(click)': 'callout.dismiss()',
+    '[class]': 'classes()',
+  },
+})
+export class CalloutDismiss {
+  readonly ariaLabel = input('Dismiss', { alias: 'aria-label' });
+
+  protected readonly callout = (() => {
+    const callout = inject(Callout, { optional: true });
+    if (!callout) {
+      throw new Error('button[xnCalloutDismiss] must be placed inside a [xnCallout].');
+    }
+    return callout;
+  })();
+
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  readonly userClass = input<string>('', { alias: 'class' });
+  protected readonly classes = computed(() =>
+    cn(
+      // Callout is a CSS grid (title row, content row); without an explicit
+      // justify-self the button would stretch to the full row width like
+      // any other grid item — end-align it to the conventional top corner.
+      'inline-flex size-6 shrink-0 cursor-pointer items-center justify-center justify-self-end rounded-md opacity-70 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
       this.userClass(),
     ),
   );
@@ -122,6 +171,7 @@ export const CALLOUT = [
   Callout,
   CalloutTitle,
   CalloutContent,
+  CalloutDismiss,
   Banner,
   BannerAction,
   Tag,
