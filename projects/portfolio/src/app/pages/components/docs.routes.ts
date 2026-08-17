@@ -58,6 +58,11 @@ export const DOCS_ROUTES: Routes = [
     title: 'Blocks — Dan Leco',
   },
   {
+    path: 'charts',
+    loadComponent: () => import('./docs/charts').then((m) => m.ChartsDoc),
+    title: 'Charts — Dan Leco',
+  },
+  {
     path: 'motion',
     loadComponent: () => import('./docs/motion').then((m) => m.MotionDoc),
     title: 'Motion — Dan Leco',

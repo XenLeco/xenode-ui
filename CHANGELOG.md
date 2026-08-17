@@ -7,6 +7,29 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Added (charts — the final catalog gap)
+
+- Charts as a composition: ngx-charts@25.0.0 (pinned exact; 25.0.1 was
+  3 days old — the cooldown convention, same as aria) renders, the
+  library ships the frame and the palette with ZERO chart imports.
+  `--chart-1..5` tokens in both modes, each ≥3:1 against its background
+  and locked into the contrast law (which grew digit support: the token
+  parser's `[a-z-]` name pattern silently dropped `--chart-1` from the
+  law entirely — a green suite hiding five unmeasured colors).
+- `xnChartCard`: a labelled figure that tokens the chart chrome (axis
+  text, gridlines) via CSS and bridges the palette through `scheme()` —
+  resolved at runtime by a probe element plus an IN-HOUSE oklch→hex
+  converter (Ottosson matrices): modern engines serialize computed oklch
+  AS oklch through every API including canvas fillStyle round-trips, and
+  chart engines' d3-color cannot parse it. Re-resolves on `.dark` flips
+  (MutationObserver); prerender serves a culori-drift-locked dark
+  fallback. New Charts docs route (14th) with every chart in
+  `@defer (on viewport)` — prerender ships placeholders, ngx-charts
+  never executes server-side.
+- The whole Angular runtime family is now pinned exact at 22.1.1
+  (ngx-charts' platform-browser-dynamic peer kept floating individual
+  members to the 4-day-old 22.1.2 — under the cooldown as a set).
+
 ### Fixed (parity sweep review)
 
 - NumberField: blurring a cleared/garbage field now restores the rendered

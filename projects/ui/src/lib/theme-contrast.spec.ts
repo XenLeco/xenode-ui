@@ -22,7 +22,9 @@ const block = (selector: string): Tokens => {
   const match = css.match(new RegExp(`${selector}\\s*\\{([^}]*)\\}`));
   if (!match) throw new Error(`No ${selector} block found in theme.css`);
   const tokens: Tokens = {};
-  for (const [, name, value] of match[1].matchAll(/--([a-z-]+):\s*([^;]+);/g)) {
+  // [a-z0-9-]: token names carry digits (--chart-1) — a name pattern
+  // without them silently drops tokens from the law.
+  for (const [, name, value] of match[1].matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)) {
     tokens[name] = value.trim();
   }
   return tokens;
@@ -74,6 +76,12 @@ const TEXT_PAIRS: readonly (readonly [string, string])[] = [
 const NON_TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['ring', 'background'],
   ['input', 'background'],
+  // Chart marks: the canvas behind a bar/line is usually its only boundary.
+  ['chart-1', 'background'],
+  ['chart-2', 'background'],
+  ['chart-3', 'background'],
+  ['chart-4', 'background'],
+  ['chart-5', 'background'],
 ];
 
 describe('theme.css WCAG contrast', () => {

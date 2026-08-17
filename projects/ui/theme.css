@@ -83,6 +83,16 @@
   /* 0.62, not shadcn's 0.708 (2.58:1): focus indicators need ≥3:1
      (SC 1.4.11). */
   --ring: oklch(0.62 0 0);
+  /* Chart series palette: five distinguishable hues, each ≥3:1 against
+     --background in its mode (SC 1.4.11 — a data mark's only boundary is
+     usually the canvas behind it). Consumed through the ChartCard bridge,
+     which resolves them to rgb at runtime (chart libraries' d3-color does
+     not parse oklch). */
+  --chart-1: oklch(0.55 0.18 265);
+  --chart-2: oklch(0.55 0.14 180);
+  --chart-3: oklch(0.55 0.14 85);
+  --chart-4: oklch(0.55 0.19 25);
+  --chart-5: oklch(0.5 0.12 150);
   /* Blend surface: one dark gradient in BOTH modes — a dark hero panel is
      the brand in light mode too, and one pair of endpoints means one
      contrast story for TEXT. White text must clear 4.5:1 on each endpoint.
@@ -126,6 +136,11 @@
      functional boundaries need ≥3:1 (SC 1.4.11). */
   --input: oklch(1 0 0 / 36%);
   --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.65 0.18 265);
+  --chart-2: oklch(0.7 0.13 180);
+  --chart-3: oklch(0.75 0.14 85);
+  --chart-4: oklch(0.65 0.19 25);
+  --chart-5: oklch(0.68 0.13 150);
   --gradient-from: oklch(0.32 0.045 275);
   --gradient-to: oklch(0.16 0.03 300);
   --gradient-foreground: oklch(0.985 0 0);
@@ -168,6 +183,11 @@
   --color-gradient-from: var(--gradient-from);
   --color-gradient-to: var(--gradient-to);
   --color-gradient-foreground: var(--gradient-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);

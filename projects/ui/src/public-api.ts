@@ -86,4 +86,5 @@ export * from './lib/affix/affix';
 export * from './lib/rolling-number/rolling-number';
 export * from './lib/highlight/highlight';
 export * from './lib/speed-dial/speed-dial';
+export * from './lib/chart/chart';
 export * from './lib/version';

@@ -5,6 +5,7 @@ import { badgeVariantConfig, buttonVariantConfig } from '@xenode/ui';
 
 import { Components } from './components';
 import { BlocksDoc } from './docs/blocks';
+import { ChartsDoc } from './docs/charts';
 import { ButtonsDoc } from './docs/buttons';
 import { FormsDoc } from './docs/forms';
 import { MotionDoc } from './docs/motion';
@@ -21,7 +22,7 @@ describe('Docs shell', () => {
     await fixture.whenStable();
     const nav = (fixture.nativeElement as HTMLElement).querySelector('nav');
     expect(nav?.getAttribute('aria-label')).toBe('Component docs');
-    expect(nav?.querySelectorAll('a').length).toBe(13);
+    expect(nav?.querySelectorAll('a').length).toBe(14);
     expect(nav?.querySelector('[data-slot="docs-version"]')?.textContent).toContain('v0.1.0');
   });
 });
@@ -33,7 +34,7 @@ describe('Overview', () => {
     await fixture.whenStable();
     expect(
       (fixture.nativeElement as HTMLElement).querySelectorAll('a [data-slot="card"]').length,
-    ).toBe(9);
+    ).toBe(10);
   });
 });
 
@@ -285,6 +286,24 @@ describe('ExampleBox — code flavors', () => {
     // The Plain HTML flavor is generated from buttonVariants() itself.
     expect(visiblePanel?.textContent).toContain('bg-success');
     expect(visiblePanel?.querySelector('[data-slot="copy-button"]')).toBeTruthy();
+  });
+});
+
+describe('ChartsDoc', () => {
+  it('renders labelled chart figures with deferred placeholders', async () => {
+    const fixture = TestBed.createComponent(ChartsDoc);
+    await fixture.whenStable();
+    const cards = [
+      ...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
+        '[data-slot="chart-card"]',
+      ),
+    ];
+
+    expect(cards.length).toBeGreaterThanOrEqual(3);
+    for (const card of cards) {
+      expect(card.getAttribute('role')).toBe('figure');
+      expect(card.getAttribute('aria-label'), 'charts are not self-labelling').toBeTruthy();
+    }
   });
 });
 

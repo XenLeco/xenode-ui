@@ -87,7 +87,11 @@ interface TocEntry {
            otherwise the article visibly narrows when the TOC pops in. -->
       <aside class="hidden w-44 shrink-0 xl:block">
         @if (toc().length > 1) {
-          <nav aria-label="On this page" class="sticky top-4 flex flex-col gap-0.5" data-slot="docs-toc">
+          <nav
+            aria-label="On this page"
+            class="sticky top-4 flex flex-col gap-0.5"
+            data-slot="docs-toc"
+          >
             <span class="px-2 text-xs font-medium">On this page</span>
             @for (entry of toc(); track entry.id) {
               <a
@@ -119,6 +123,7 @@ export class Components {
     { path: 'typography', label: 'Typography', exact: false },
     { path: 'chat', label: 'Chat', exact: false },
     { path: 'blocks', label: 'Blocks', exact: false },
+    { path: 'charts', label: 'Charts', exact: false },
     { path: 'motion', label: 'Motion', exact: false },
     { path: 'layout', label: 'Layout', exact: false },
   ] as const;
@@ -136,7 +141,11 @@ export class Components {
   );
 
   protected readonly adjacent = computed(() => {
-    const segment = this.url().split('#')[0].split('?')[0].replace(/^\/components\/?/, '') || '.';
+    const segment =
+      this.url()
+        .split('#')[0]
+        .split('?')[0]
+        .replace(/^\/components\/?/, '') || '.';
     const index = this.pages.findIndex((page) => page.path === segment);
     if (index < 0) return undefined;
     return {
@@ -152,7 +161,12 @@ export class Components {
       const found = Array.from(this.host.nativeElement.querySelectorAll<HTMLElement>('h2[id]'))
         .filter((heading) => !heading.closest('dialog:not([open]), [inert]'))
         .map((heading) => ({ id: heading.id, label: heading.textContent?.trim() ?? '' }));
-      if (found.map((entry) => entry.id).join('|') !== this.toc().map((entry) => entry.id).join('|')) {
+      if (
+        found.map((entry) => entry.id).join('|') !==
+        this.toc()
+          .map((entry) => entry.id)
+          .join('|')
+      ) {
         this.toc.set(found);
       }
     });
