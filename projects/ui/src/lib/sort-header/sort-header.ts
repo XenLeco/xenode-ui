@@ -78,9 +78,11 @@ export class SortButton {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      // The ↕/↑/↓ glyph is the visible sort state (aria-hidden by nature
-      // of ::after); in-aria-* reads the ancestor th's attribute.
-      "inline-flex cursor-pointer items-center gap-1 font-medium select-none after:text-xs after:text-muted-foreground after:content-['↕'] hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring in-aria-[sort=ascending]:underline in-aria-[sort=ascending]:after:content-['↑'] in-aria-[sort=descending]:underline in-aria-[sort=descending]:after:content-['↓']",
+      // The ↕/↑/↓ glyph is the visible sort state; CSS alt text
+      // (content: '…' / '') keeps it OUT of the accessible name — accname
+      // computation includes generated content, and 'Name up arrowhead'
+      // is not a name. in-aria-* reads the ancestor th's attribute.
+      "inline-flex cursor-pointer items-center gap-1 font-medium select-none after:text-xs after:text-muted-foreground after:[content:'↕'_/_''] hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring in-aria-[sort=ascending]:underline in-aria-[sort=ascending]:after:[content:'↑'_/_''] in-aria-[sort=descending]:underline in-aria-[sort=descending]:after:[content:'↓'_/_'']",
       this.userClass(),
     ),
   );

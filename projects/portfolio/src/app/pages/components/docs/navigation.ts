@@ -122,53 +122,59 @@ import { ExampleBox } from './example-box';
       </p>
       <!-- min-height so the absolute panel has room inside the docs page -->
       <div class="mt-3 min-h-72">
+        <!-- Panels live INSIDE their trigger's li so Tab moves from an
+             expanded trigger straight into its panel (SC 2.4.3); the li
+             is unpositioned, so absolute still resolves to the nav. -->
         <nav xnNavPanels aria-label="Product example">
           <ul xnNavMenuList>
             <li xnNavMenuItem>
               <button [xnNavPanelTrigger]="'np-products'">Products</button>
+              <div
+                [xnNavPanel]="'np-products'"
+                class="grid w-max max-w-[calc(100vw-3rem)] grid-cols-1 gap-2 sm:max-w-[calc(100vw-14.5rem)] min-[800px]:w-[36rem] min-[800px]:grid-cols-2"
+              >
+                <a
+                  xnSurface
+                  variant="gradient"
+                  href="/components/blocks"
+                  class="flex flex-col justify-end p-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring min-[800px]:row-span-3"
+                >
+                  <span class="text-base font-semibold">xenode panel</span>
+                  <span class="mt-1 text-gradient-foreground/75">
+                    Game servers, bots and tunnels behind one dashboard.
+                  </span>
+                </a>
+                <a xnNavPanelLink href="/components/buttons">
+                  <span data-slot="nav-panel-link-title">Components</span>
+                  <span data-slot="nav-panel-link-desc">243 primitives, contrast-locked tokens.</span>
+                </a>
+                <a xnNavPanelLink href="/components/blocks">
+                  <span data-slot="nav-panel-link-title">Blocks</span>
+                  <span data-slot="nav-panel-link-desc">Whole sections, copy the markup.</span>
+                </a>
+                <a xnNavPanelLink href="/components/motion">
+                  <span data-slot="nav-panel-link-title">Motion</span>
+                  <span data-slot="nav-panel-link-desc">Entrance presets and easing vocabulary.</span>
+                </a>
+              </div>
             </li>
             <li xnNavMenuItem>
               <button [xnNavPanelTrigger]="'np-resources'">Resources</button>
+              <div [xnNavPanel]="'np-resources'" class="grid w-64 max-w-[calc(100vw-3rem)] gap-1">
+                <a xnNavPanelLink href="/components">
+                  <span data-slot="nav-panel-link-title">Docs</span>
+                  <span data-slot="nav-panel-link-desc">Every family, live and copyable.</span>
+                </a>
+                <a xnNavPanelLink href="/components/typography">
+                  <span data-slot="nav-panel-link-title">Typography</span>
+                  <span data-slot="nav-panel-link-desc">Prose rhythm in three variables.</span>
+                </a>
+              </div>
             </li>
             <li xnNavMenuItem>
               <a xnNavMenuLink href="/components/navigation">Pricing</a>
             </li>
           </ul>
-          <div [xnNavPanel]="'np-products'" class="grid w-[36rem] max-w-[85vw] grid-cols-2 gap-2">
-            <a
-              xnSurface
-              variant="gradient"
-              href="/components/blocks"
-              class="row-span-3 flex flex-col justify-end p-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gradient-foreground"
-            >
-              <span class="text-base font-semibold">xenode panel</span>
-              <span class="mt-1 text-gradient-foreground/75">
-                Game servers, bots and tunnels behind one dashboard.
-              </span>
-            </a>
-            <a xnNavPanelLink href="/components/buttons">
-              <span data-slot="nav-panel-link-title">Components</span>
-              <span data-slot="nav-panel-link-desc">239 primitives, contrast-locked tokens.</span>
-            </a>
-            <a xnNavPanelLink href="/components/blocks">
-              <span data-slot="nav-panel-link-title">Blocks</span>
-              <span data-slot="nav-panel-link-desc">Whole sections, copy the markup.</span>
-            </a>
-            <a xnNavPanelLink href="/components/motion">
-              <span data-slot="nav-panel-link-title">Motion</span>
-              <span data-slot="nav-panel-link-desc">Entrance presets and easing vocabulary.</span>
-            </a>
-          </div>
-          <div [xnNavPanel]="'np-resources'" class="grid w-64 gap-1">
-            <a xnNavPanelLink href="/components">
-              <span data-slot="nav-panel-link-title">Docs</span>
-              <span data-slot="nav-panel-link-desc">Every family, live and copyable.</span>
-            </a>
-            <a xnNavPanelLink href="/components/typography">
-              <span data-slot="nav-panel-link-title">Typography</span>
-              <span data-slot="nav-panel-link-desc">Prose rhythm in three variables.</span>
-            </a>
-          </div>
         </nav>
       </div>
     </section>

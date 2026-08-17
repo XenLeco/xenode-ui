@@ -2,6 +2,8 @@ import { Directive, ElementRef, computed, inject, input, signal } from '@angular
 
 import { cn } from '../cn';
 
+declare const ngDevMode: boolean | undefined;
+
 /** Simple horizontal site navigation; the current link uses aria-current. */
 
 @Directive({
@@ -81,8 +83,11 @@ export const NAV_MENU = [NavMenu, NavMenuList, NavMenuItem, NavMenuLink] as cons
   host: {
     'data-slot': 'nav-panels',
     '[class]': 'classes()',
-    '(keydown.escape)': 'closeFromKeyboard()',
+    '(click)': 'onInsideClick($event)',
+    '(keydown.escape)': 'closeFromKeyboard($event)',
     '(focusout)': 'onFocusOut($event)',
+    // Always attached (a CD schedule per page click); the single-shell-nav
+    // use case makes that cheaper than managed subscribe-while-open.
     '(document:click)': 'onDocumentClick($event)',
   },
 })
@@ -96,6 +101,14 @@ export class NavPanels {
   protected readonly classes = computed(() => cn('relative w-fit', this.userClass()));
 
   toggle(id: string): void {
+    if (
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      !this.elementRef.nativeElement.querySelector(`#${CSS.escape(id)}`)
+    ) {
+      console.warn(
+        `nav[xnNavPanels]: no [xnNavPanel] with id "${id}" — the trigger's aria-controls dangles.`,
+      );
+    }
     this.openPanel.update((open) => (open === id ? undefined : id));
   }
 
@@ -103,14 +116,31 @@ export class NavPanels {
     this.openPanel.set(undefined);
   }
 
-  protected closeFromKeyboard(): void {
+  private openPanelElement(): Element | null {
+    const open = this.openPanel();
+    if (!open) return null;
+    return this.elementRef.nativeElement.querySelector(`#${CSS.escape(open)}`);
+  }
+
+  protected onInsideClick(event: MouseEvent): void {
+    // A panel LINK activation is navigation: close, or an SPA routerLink
+    // changes the route behind a still-open panel (outside-click cannot
+    // see it — the click is inside the host).
+    const link = (event.target as Element | null)?.closest('a');
+    if (link && this.openPanelElement()?.contains(link)) this.close();
+  }
+
+  protected closeFromKeyboard(event: Event): void {
     const open = this.openPanel();
     if (!open) return;
+    // Consuming Escape: without preventDefault, a wrapping <dialog> (a
+    // mobile nav sheet) would close in the same keypress.
+    event.preventDefault();
     // Closing while focus sits inside the panel would drop it to <body>.
-    const host = this.elementRef.nativeElement;
-    const panel = host.querySelector(`#${CSS.escape(open)}`);
-    if (panel?.contains(document.activeElement)) {
-      host.querySelector<HTMLElement>(`[aria-controls="${CSS.escape(open)}"]`)?.focus();
+    if (this.openPanelElement()?.contains(document.activeElement)) {
+      this.elementRef.nativeElement
+        .querySelector<HTMLElement>(`[aria-controls="${CSS.escape(open)}"]`)
+        ?.focus();
     }
     this.close();
   }
@@ -155,7 +185,9 @@ export class NavPanelTrigger {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      "inline-flex h-9 cursor-pointer items-center gap-1 rounded-md px-3 text-sm font-medium text-muted-foreground transition-[color,background-color] after:text-xs after:content-['⌄'] hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-expanded:bg-secondary aria-expanded:text-foreground",
+      // The chevron uses CSS alt text (content: '⌄' / '') so it stays out
+      // of the accessible name — aria-expanded already announces state.
+      "inline-flex h-9 cursor-pointer items-center gap-1 rounded-md px-3 text-sm font-medium text-muted-foreground transition-[color,background-color] after:text-xs after:[content:'⌄'_/_''] hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-expanded:bg-secondary aria-expanded:text-foreground",
       this.userClass(),
     ),
   );
@@ -189,9 +221,11 @@ export class NavPanel {
   protected readonly classes = computed(() =>
     cn(
       // Behavior sets only inert; [&[inert]]:hidden is the styling half.
-      // transition-discrete + starting: ride the display flip (the dialog
-      // entrance lesson).
-      'absolute top-full left-0 z-40 mt-2 w-max max-w-[min(90vw,40rem)] rounded-lg border bg-background p-4 shadow-md transition-[opacity,translate] transition-discrete duration-200 ease-out-expo starting:translate-y-1 starting:opacity-0 [&[inert]]:hidden',
+      // The entrance is @starting-style alone: a previously-unrendered
+      // element transitions from its starting values on the display flip
+      // (no transition-discrete needed — display is not in the list).
+      // The EXIT is instant by design: inert applies display:none.
+      'absolute top-full left-0 z-40 mt-2 w-max max-w-[min(90vw,40rem)] rounded-lg border bg-background p-4 shadow-md transition-[opacity,translate] duration-200 ease-out-expo starting:translate-y-1 starting:opacity-0 [&[inert]]:hidden',
       this.userClass(),
     ),
   );

@@ -34,6 +34,32 @@ and shown in the docs shell.
   page, cycle-to-none, empty-page select-all, selection persistence
   through filters until Clear.
 
+### Fixed (nav panels review)
+
+- Panel-link activation now closes the panel: an SPA routerLink click is
+  inside the host (outside-click can't see it) and keeps focus (focusout
+  never fires), so the route changed behind a still-open panel — the
+  demo's full-reload hrefs had masked it. Non-link clicks inside the
+  panel still keep it open.
+- Escape now consumes the event (preventDefault): without it, a wrapping
+  native dialog — a mobile nav sheet — closed in the same keypress.
+- The chevron (and the sort-header's ↕/↑/↓ glyphs) use CSS alt text
+  (`content: '⌄' / ''`): generated content joins the accessible name,
+  and "Products down arrowhead" is not a name.
+- Demo corrections: panels moved inside their trigger's li (Tab from an
+  expanded trigger now enters its own panel, not the next top-level
+  item); the gradient featured cell's focus ring reverted to
+  `outline-ring` — the ring paints on the panel's background, not the
+  blend, so the on-blend rule did not apply; widths clamped so the panel
+  cannot push a horizontal scrollbar at 640–800px.
+- A trigger pointing at a missing panel id warns in dev mode instead of
+  failing silently with dangling aria-controls.
+- The panel's `transition-discrete` was a no-op (display was never in
+  the transition list) and its comment misattributed the entrance — the
+  entrance is @starting-style alone, the instant exit is documented as
+  intended, and the false mechanism is gone before it entered lore.
+- Six new behavior tests pin all of it (207 total).
+
 ### Added (nav panels)
 
 - Navigation menu with panels (big-four #3): the nav-menu family gains a
