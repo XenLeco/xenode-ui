@@ -75,7 +75,7 @@ export class TooltipContent {
     '(mouseleave)': 'cancelAndHide()',
     '(focus)': 'scheduleShow()',
     '(blur)': 'cancelAndHide()',
-    '(keydown.escape)': 'cancelAndHide()',
+    '(keydown.escape)': 'onEscape($event)',
     '[attr.aria-describedby]': 'visible() ? contentId : null',
   },
 })
@@ -111,6 +111,13 @@ export class Tooltip implements OnDestroy {
   protected cancelAndHide(): void {
     this.clearPendingTimer();
     this.hide();
+  }
+
+  protected onEscape(event: Event): void {
+    // Consume Escape only while showing: dismissing just the tooltip must
+    // not also close a wrapping <dialog> in the same keypress.
+    if (this.visible()) event.preventDefault();
+    this.cancelAndHide();
   }
 
   private show(): void {

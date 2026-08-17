@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+﻿import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { Image } from './image';
@@ -54,17 +54,17 @@ describe('Image', () => {
     if (!img) throw new Error('No image rendered');
 
     expect(img.alt).toBe('Server banner'); // untouched by the failed state
-    expect(img.classList).not.toContain('indent-[999px]');
+    expect(img.classList).not.toContain('indent-[200vw]');
 
     img.dispatchEvent(new Event('error'));
     await fixture.whenStable();
-    expect(img.classList).toContain('indent-[999px]');
+    expect(img.classList).toContain('indent-[200vw]');
     expect(img.classList).toContain('overflow-hidden');
     expect(img.alt).toBe('Server banner'); // still the accessible name
 
     img.dispatchEvent(new Event('load'));
     await fixture.whenStable();
-    expect(img.classList).not.toContain('indent-[999px]');
+    expect(img.classList).not.toContain('indent-[200vw]');
   });
 
   it('exposes `failed` via exportAs so a consumer can wire a custom fallback slot', async () => {

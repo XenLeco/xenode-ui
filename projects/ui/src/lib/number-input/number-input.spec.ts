@@ -142,6 +142,37 @@ describe('NumberField', () => {
     expect(host.value()).toBe(4); // untouched — still the last committed value
   });
 
+  it('blurring a cleared field restores the rendered value, not just the model', async () => {
+    const { el, host, fixture } = await createField();
+    const input = el.querySelector('input');
+    if (!input) throw new Error('No input rendered');
+
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    input.dispatchEvent(new Event('blur'));
+    await fixture.whenStable();
+    // Committing the unchanged model is a no-change signal write — the
+    // [value] binding never re-renders, so the DOM must be written back
+    // directly or the field stays visibly empty over a non-empty model.
+    expect(host.value()).toBe(4);
+    expect(input.value).toBe('4');
+  });
+
+  it('Enter commits and clamps before a form could submit', async () => {
+    const { el, host, fixture } = await createField();
+    const input = el.querySelector('input');
+    if (!input) throw new Error('No input rendered');
+
+    input.value = '99';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await fixture.whenStable();
+    expect(host.value()).toBe(8);
+    expect(input.value).toBe('8');
+  });
+
   it('is axe-clean with its aria-label', async () => {
     const { fixture } = await createField();
     await expectAxeClean(fixture.nativeElement as Element);

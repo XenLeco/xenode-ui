@@ -7,6 +7,31 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Fixed (parity sweep review)
+
+- NumberField: blurring a cleared/garbage field now restores the rendered
+  value — committing the unchanged model is a no-change signal write the
+  [value] binding never re-renders, so the DOM is written back directly;
+  Enter commits and clamps before a form can submit.
+- Sheet: the base's `max-h-none` moved into the side branches —
+  tailwind-merge does not classify it into the max-h group, so it
+  coexisted with top's `max-h-[80dvh]` and won the cascade (a dead cap
+  with a green test asserting the class exists).
+- Focus never strands: dismissing a callout hands focus to the next
+  tabbable after it; SpeedDial's close() restores focus to the trigger on
+  every path including the documented action-handler close; tooltip
+  Escape consumes the event only while visible (a wrapping dialog
+  survives); ButtonGroup adopts Join's focus-within z-lift so a focused
+  button's ring is never painted over by its -1px neighbor.
+- Highlight matches on the ORIGINAL string via case-insensitive regex —
+  toLowerCase can change string length ('İ' → 'i̇'), drifting every index
+  computed on a lowered copy.
+- RollingNumber gains an opt-in `announce` (role=status) so user-triggered
+  values are heard, not just seen; SpeedDial wires aria-controls; the
+  semicircle gauge scales with its host like the full ring; the image
+  fallback indent is viewport-relative (200vw beats any box); the Join
+  demo's select got its name.
+
 ### Added (parity sweep — 19 items from the reference gap scan)
 
 - Forms: NumberInput (native number input, spinners hidden via

@@ -44,16 +44,18 @@ export class Highlight {
     const query = this.query();
     if (!query) return [{ text, match: false }];
 
-    const lowerText = text.toLowerCase();
-    const lowerQuery = query.toLowerCase();
+    // Matching runs on the ORIGINAL string via a case-insensitive regex:
+    // toLowerCase can change string LENGTH ('İ' → 'i̇'), so indices found
+    // in a lowered copy drift against the original.
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(escaped, 'gi');
     const segments: HighlightSegment[] = [];
     let cursor = 0;
-    let index = lowerText.indexOf(lowerQuery, cursor);
-    while (index !== -1) {
-      if (index > cursor) segments.push({ text: text.slice(cursor, index), match: false });
-      segments.push({ text: text.slice(index, index + query.length), match: true });
-      cursor = index + query.length;
-      index = lowerText.indexOf(lowerQuery, cursor);
+    for (const found of text.matchAll(pattern)) {
+      if (found[0].length === 0) break;
+      if (found.index > cursor) segments.push({ text: text.slice(cursor, found.index), match: false });
+      segments.push({ text: found[0], match: true });
+      cursor = found.index + found[0].length;
     }
     if (cursor < text.length) segments.push({ text: text.slice(cursor), match: false });
     return segments;

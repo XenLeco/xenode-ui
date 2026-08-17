@@ -36,6 +36,9 @@ describe('Sheet side="top"', () => {
     expect(top.classList).toContain('max-w-none');
     expect(top.classList).not.toContain('max-w-sm');
     expect(top.classList).toContain('max-h-[80dvh]');
+    // tailwind-merge does NOT classify max-h-none into the max-h group;
+    // if the base leaked it here, the cap would be dead in the cascade.
+    expect(top.classList).not.toContain('max-h-none');
     expect(top.classList).not.toContain('h-dvh');
   });
 

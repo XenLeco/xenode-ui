@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { Affix } from './affix/affix';
@@ -11,7 +11,7 @@ import { MockupPhone } from './mockups/mockups';
 import { NativeSelect } from './native-select/native-select';
 import { RollingNumber } from './rolling-number/rolling-number';
 import { Burger } from './site/site';
-import { SPEED_DIAL } from './speed-dial/speed-dial';
+import { SPEED_DIAL, SpeedDial } from './speed-dial/speed-dial';
 
 /** Render coverage + the logic-bearing behaviors for the site/statics cluster. */
 
@@ -84,6 +84,12 @@ class HighlightMatchHost {}
 class HighlightEmptyHost {}
 
 @Component({
+  imports: [Highlight],
+  template: `<xn-highlight text="İstanbul Serverlist" query="stan"></xn-highlight>`,
+})
+class HighlightUnicodeHost {}
+
+@Component({
   imports: [SPEED_DIAL],
   template: `
     <div xnSpeedDial>
@@ -95,7 +101,9 @@ class HighlightEmptyHost {}
     <button id="outside" type="button">outside</button>
   `,
 })
-class SpeedDialHost {}
+class SpeedDialHost {
+  readonly dial = viewChild.required(SpeedDial);
+}
 
 const SLOTS = [
   'join',
@@ -223,6 +231,17 @@ describe('Highlight', () => {
     expect(el.querySelector('mark')).toBeNull();
     expect(el.textContent?.replace(/\s+/g, ' ').trim()).toBe('Dark-first, token-driven.');
   });
+
+  it('match indices survive characters whose lowercase changes string length', async () => {
+    // 'İ'.toLowerCase() is two code units — index math done on a lowered
+    // copy drifts against the original. Matching runs on the original.
+    const fixture = TestBed.createComponent(HighlightUnicodeHost);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('mark')?.textContent).toBe('stan');
+    expect(el.textContent?.replace(/\s+/g, ' ').trim()).toBe('İstanbul Serverlist');
+  });
 });
 
 describe('SpeedDial', () => {
@@ -286,5 +305,28 @@ describe('SpeedDial', () => {
     trigger.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: outside }));
     await fixture.whenStable();
     expect(actions.hasAttribute('inert')).toBe(true);
+  });
+
+  it('wires the trigger to the actions container via aria-controls', async () => {
+    const { trigger, actions } = await create();
+    expect(actions.id).toBeTruthy();
+    expect(trigger.getAttribute('aria-controls')).toBe(actions.id);
+  });
+
+  it('close() from an action handler restores focus to the trigger', async () => {
+    const { fixture, el, trigger, actions } = await create();
+    trigger.click();
+    await fixture.whenStable();
+
+    const action = actions.querySelector<HTMLElement>('[data-slot="speed-dial-action"]');
+    action?.focus();
+    // The documented consumer pattern: run the command, then close().
+    const dial = el.querySelector('[data-slot="speed-dial"]');
+    void dial; // close via the public API through the host component
+    fixture.componentInstance.dial().close();
+    await fixture.whenStable();
+
+    expect(actions.hasAttribute('inert')).toBe(true);
+    expect(document.activeElement, 'activation close must not strand focus').toBe(trigger);
   });
 });

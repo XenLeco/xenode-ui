@@ -31,6 +31,17 @@ class CustomLabelHost {}
 })
 class OrphanHost {}
 
+@Component({
+  imports: [CALLOUT],
+  template: `
+    <div xnCallout id="note">
+      <button xnCalloutDismiss>✕</button>
+    </div>
+    <button id="after" type="button">next stop</button>
+  `,
+})
+class FocusHost {}
+
 describe('CalloutDismiss', () => {
   async function render() {
     const fixture = TestBed.createComponent(Host);
@@ -69,5 +80,22 @@ describe('CalloutDismiss', () => {
     expect(() => TestBed.createComponent(OrphanHost)).toThrowError(
       /button\[xnCalloutDismiss\] must be placed inside a \[xnCallout\]/,
     );
+  });
+
+  it('hands focus to the next tabbable when dismissing from the keyboard', async () => {
+    const fixture = TestBed.createComponent(FocusHost);
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const button = root.querySelector<HTMLButtonElement>('button[xnCalloutDismiss]');
+    const after = root.querySelector<HTMLElement>('#after');
+
+    button?.focus();
+    button?.click();
+    await fixture.whenStable();
+
+    // Hiding the focused subtree would drop focus to <body> and restart
+    // Tab from the page top.
+    expect(root.querySelector('#note')?.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(after);
   });
 });

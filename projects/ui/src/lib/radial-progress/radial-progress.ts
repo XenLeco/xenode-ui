@@ -72,7 +72,10 @@ export class RadialProgress {
   protected readonly svgClasses = computed(() =>
     cn(
       'absolute',
-      this.arc() === 'semi' ? 'top-0 left-0 size-16 rotate-180' : 'inset-0 -rotate-90',
+      // w-full + aspect-square, not a fixed size: the SVG must track the
+      // host so consumer resizing works on semi exactly like inset-0
+      // makes it work on full.
+      this.arc() === 'semi' ? 'top-0 left-0 aspect-square w-full rotate-180' : 'inset-0 -rotate-90',
     ),
   );
 

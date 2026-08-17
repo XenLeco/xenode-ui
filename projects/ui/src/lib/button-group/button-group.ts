@@ -20,7 +20,10 @@ export class ButtonGroup {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'inline-flex items-center [&>button]:rounded-none [&>button:first-child]:rounded-l-md [&>button:last-child]:rounded-r-md [&>button:not(:first-child)]:-ml-px',
+      // The relative + focus-within z-lift keeps a focused button's ring
+      // above the -ml-px neighbor that would otherwise paint over it —
+      // the same mechanism Join uses.
+      'inline-flex items-center [&>button]:relative [&>button]:rounded-none [&>button:first-child]:rounded-l-md [&>button:last-child]:rounded-r-md [&>button:not(:first-child)]:-ml-px [&>button:focus-within]:z-10',
       this.userClass(),
     ),
   );

@@ -50,10 +50,15 @@ export class Sheet {
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() =>
     cn(
-      'm-0 h-dvh max-h-none w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:flex-col backdrop:bg-black/50',
+      // max-h-none lives in the SIDE branches, not the base: tailwind-merge
+      // does not classify max-h-none into the max-h group, so a base
+      // max-h-none would coexist with top's max-h-[80dvh] and win the
+      // cascade — a dead cap with both classes green in tests.
+      'm-0 h-dvh w-full max-w-sm gap-4 bg-background p-6 text-foreground shadow-lg transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-fluid open:flex open:flex-col backdrop:bg-black/50',
       {
-        right: 'ml-auto translate-x-full border-l open:translate-x-0 starting:open:translate-x-full',
-        left: 'mr-auto -translate-x-full border-r open:translate-x-0 starting:open:-translate-x-full',
+        right:
+          'ml-auto max-h-none translate-x-full border-l open:translate-x-0 starting:open:translate-x-full',
+        left: 'mr-auto max-h-none -translate-x-full border-r open:translate-x-0 starting:open:-translate-x-full',
         top: 'mb-auto h-auto max-h-[80dvh] w-full max-w-none -translate-y-full border-b open:translate-y-0 starting:open:-translate-y-full',
       }[this.side()],
       this.userClass(),

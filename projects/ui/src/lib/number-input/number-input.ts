@@ -75,7 +75,8 @@ export class NumberInput {
       [attr.aria-label]="ariaLabel()"
       [value]="value()"
       (input)="onInput($event)"
-      (blur)="onBlur()"
+      (blur)="onCommitEvent($event)"
+      (keydown.enter)="onCommitEvent($event)"
     />
     <button
       type="button"
@@ -126,16 +127,22 @@ export class NumberField {
 
   // Typing is not clamped live (that would fight a user still keying in a
   // digit); an incomplete/invalid value ("-", "") is left as un-committed
-  // DOM state rather than coerced. onBlur is where an out-of-range value
-  // finally gets pulled back in range, matching what stepUp/stepDown would
-  // have produced.
+  // DOM state rather than coerced. Blur and Enter are where an
+  // out-of-range value finally gets pulled back in range — Enter included
+  // so a form submission never carries an unclamped value.
   protected onInput(event: Event): void {
     const next = (event.target as HTMLInputElement).valueAsNumber;
     if (!Number.isNaN(next)) this.value.set(next);
   }
 
-  protected onBlur(): void {
-    this.commit(this.value());
+  protected onCommitEvent(event: Event): void {
+    const inputEl = event.target as HTMLInputElement;
+    const typed = inputEl.valueAsNumber;
+    this.commit(Number.isNaN(typed) ? this.value() : typed);
+    // The [value] binding diffs the bound VALUE, not the DOM: committing
+    // the unchanged model over a cleared/garbage field is a no-change
+    // signal write that never re-renders — restore the DOM directly.
+    inputEl.value = String(this.value());
   }
 
   private commit(next: number): void {

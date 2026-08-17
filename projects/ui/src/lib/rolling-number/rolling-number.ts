@@ -1,4 +1,4 @@
-import { Component, computed, input, numberAttribute } from '@angular/core';
+import { Component, booleanAttribute, computed, input, numberAttribute } from '@angular/core';
 
 import { cn } from '../cn';
 
@@ -37,7 +37,10 @@ const GLYPHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
         </span>
       }
     </span>
-    <span class="sr-only">{{ value() }}</span>
+    <!-- role=status (implicit aria-live polite + atomic) only when the
+         consumer opts in: a user-triggered score should announce; a
+         scroll-triggered decorative counter should not. -->
+    <span class="sr-only" [attr.role]="announce() ? 'status' : null">{{ value() }}</span>
   `,
   host: {
     'data-slot': 'rolling-number',
@@ -46,6 +49,9 @@ const GLYPHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 })
 export class RollingNumber {
   readonly value = input(0, { transform: numberAttribute });
+
+  /** Announce value changes to assistive tech (aria-live via role=status). */
+  readonly announce = input(false, { transform: booleanAttribute });
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });

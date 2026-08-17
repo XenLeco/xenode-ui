@@ -75,7 +75,7 @@ import { ExampleBox } from './example-box';
         [tabs]="rollingNumberTabs"
         class="mt-3 block max-w-xs"
       >
-        <xn-rolling-number [value]="rollingValue()" class="text-3xl"></xn-rolling-number>
+        <xn-rolling-number [value]="rollingValue()" announce class="text-3xl"></xn-rolling-number>
       </app-example-box>
     </section>
   `,

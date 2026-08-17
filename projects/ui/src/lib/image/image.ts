@@ -37,7 +37,9 @@ export class Image {
     cn(
       'block rounded-md bg-muted',
       { cover: 'object-cover', contain: 'object-contain', fill: 'object-fill' }[this.fit()],
-      this.failed() && 'overflow-hidden indent-[999px] whitespace-nowrap',
+      // 200vw, not a px constant: the indent must exceed the box width,
+      // and no element is wider than twice the viewport.
+      this.failed() && 'overflow-hidden indent-[200vw] whitespace-nowrap',
       this.userClass(),
     ),
   );

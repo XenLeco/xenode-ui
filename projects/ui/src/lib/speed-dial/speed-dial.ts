@@ -2,6 +2,10 @@ import { Directive, ElementRef, computed, inject, input, signal } from '@angular
 
 import { cn } from '../cn';
 
+// Module counter: server and client render the same tree in the same
+// order, so hydration sees matching ids.
+let nextSpeedDialId = 0;
+
 /**
  * A FAB that discloses stacked actions above it. Same host-listener
  * contract as `nav[xnNavPanels]` (Escape + outside click + focusout all
@@ -38,16 +42,36 @@ export class SpeedDial {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly open = signal(false);
+  /** Wired as the actions container's id and the trigger's aria-controls. */
+  readonly actionsId = `xn-speed-dial-actions-${nextSpeedDialId++}`;
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });
   protected readonly classes = computed(() => cn('relative inline-block', this.userClass()));
 
   toggle(): void {
-    this.open.update((open) => !open);
+    if (this.open()) {
+      this.close();
+    } else {
+      this.open.set(true);
+    }
   }
 
   close(): void {
+    // Closing hides the actions container; focus left inside it would
+    // drop to <body>. Every close path restores it — including a consumer
+    // calling close() from an action's own handler, which is the
+    // documented way to dismiss on activation.
+    if (typeof document !== 'undefined') {
+      const actions = this.elementRef.nativeElement.querySelector(
+        '[data-slot="speed-dial-actions"]',
+      );
+      if (actions?.contains(document.activeElement)) {
+        this.elementRef.nativeElement
+          .querySelector<HTMLElement>('[data-slot="speed-dial-trigger"]')
+          ?.focus();
+      }
+    }
     this.open.set(false);
   }
 
@@ -56,11 +80,6 @@ export class SpeedDial {
     // Consuming Escape: without preventDefault, a wrapping <dialog> would
     // close in the same keypress.
     event.preventDefault();
-    if (this.elementRef.nativeElement.contains(document.activeElement)) {
-      this.elementRef.nativeElement
-        .querySelector<HTMLElement>('[data-slot="speed-dial-trigger"]')
-        ?.focus();
-    }
     this.close();
   }
 
@@ -81,6 +100,7 @@ export class SpeedDial {
     'data-slot': 'speed-dial-trigger',
     type: 'button',
     '[attr.aria-expanded]': 'root.open()',
+    '[attr.aria-controls]': 'root.actionsId',
     '(click)': 'root.toggle()',
     '[class]': 'classes()',
   },
@@ -109,6 +129,7 @@ export class SpeedDialTrigger {
   selector: '[xnSpeedDialActions]',
   host: {
     'data-slot': 'speed-dial-actions',
+    '[id]': 'root.actionsId',
     '[attr.inert]': "root.open() ? null : ''",
     '[class]': 'classes()',
   },

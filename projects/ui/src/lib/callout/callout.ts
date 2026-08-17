@@ -1,6 +1,9 @@
-import { Directive, computed, inject, input, signal } from '@angular/core';
+import { Directive, ElementRef, computed, inject, input, signal } from '@angular/core';
 
 import { cn } from '../cn';
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
  * Callout, banner and tag. A callout is a static note block — unlike Alert
@@ -30,6 +33,9 @@ export const calloutVariantConfig = {
   },
 })
 export class Callout {
+  /** Exposed for [xnCalloutDismiss]'s focus hand-off. */
+  readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly variant = input<keyof typeof calloutVariantConfig.variants.variant>('default');
 
   /** Set by a descendant [xnCalloutDismiss]; nothing to opt into otherwise. */
@@ -57,7 +63,7 @@ export class Callout {
     'data-slot': 'callout-dismiss',
     type: 'button',
     '[attr.aria-label]': 'ariaLabel()',
-    '(click)': 'callout.dismiss()',
+    '(click)': 'dismiss()',
     '[class]': 'classes()',
   },
 })
@@ -71,6 +77,23 @@ export class CalloutDismiss {
     }
     return callout;
   })();
+
+  protected dismiss(): void {
+    // Hiding the subtree that contains the focused button would drop
+    // focus to <body> and restart Tab from the page top — hand it to the
+    // next tabbable after the callout so Tab continues from here.
+    const host = this.callout.elementRef.nativeElement;
+    if (host.contains(document.activeElement)) {
+      Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE))
+        .find(
+          (el) =>
+            !host.contains(el) &&
+            !!(host.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING),
+        )
+        ?.focus();
+    }
+    this.callout.dismiss();
+  }
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly userClass = input<string>('', { alias: 'class' });

@@ -197,7 +197,7 @@ import { ExampleBox } from './example-box';
             <button xnButton variant="outline">Month</button>
           </div>
           <div xnJoin>
-            <select xnNativeSelect class="w-28">
+            <select xnNativeSelect class="w-28" aria-label="Protocol">
               <option>https://</option>
               <option>http://</option>
             </select>
