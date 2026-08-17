@@ -107,6 +107,71 @@ describe('DisclosureDoc — aria accordion composition', () => {
   });
 });
 
+describe('DisclosureDoc — data-table recipe', () => {
+  const render = async () => {
+    const fixture = TestBed.createComponent(DisclosureDoc);
+    await fixture.whenStable();
+    const section = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>(
+      'section[aria-labelledby="dt-h"]',
+    );
+    if (!section) throw new Error('No data-table section');
+    return { fixture, section };
+  };
+  const firstNameCell = (section: HTMLElement) =>
+    section.querySelector('tbody tr td:nth-child(2)')?.textContent?.trim();
+
+  it('sorts by name through the header button', async () => {
+    const { fixture, section } = await render();
+    expect(firstNameCell(section)).toBe('skyblock-prod'); // insertion order
+
+    const nameSort = section.querySelector<HTMLElement>('[data-slot="sort-button"]');
+    nameSort?.click();
+    await fixture.whenStable();
+    expect(firstNameCell(section)).toBe('creative-flat'); // ascending
+
+    nameSort?.click();
+    await fixture.whenStable();
+    expect(firstNameCell(section)).toBe('zomboid-main'); // descending
+  });
+
+  it('filtering narrows the rows and resets the page', async () => {
+    const { fixture, section } = await render();
+    const pageInfo = () => section.querySelector('[data-slot="dt-page"]')?.textContent;
+    const next = [...section.querySelectorAll('button')].find((b) =>
+      b.textContent?.includes('Next'),
+    );
+    next?.click();
+    await fixture.whenStable();
+    expect(pageInfo()).toContain('Page 2');
+
+    const input = section.querySelector<HTMLInputElement>('input[type="search"]');
+    if (!input) throw new Error('No filter input');
+    input.value = 'zomboid';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+    expect(pageInfo()).toContain('Page 1');
+    expect(section.querySelectorAll('tbody tr').length).toBe(2);
+  });
+
+  it('select-all goes indeterminate on a partial page selection', async () => {
+    const { fixture, section } = await render();
+    const header = section.querySelector<HTMLInputElement>('thead input[type="checkbox"]');
+    const firstRow = section.querySelector<HTMLInputElement>('tbody input[type="checkbox"]');
+    if (!header || !firstRow) throw new Error('Missing checkboxes');
+
+    firstRow.click();
+    await fixture.whenStable();
+    expect(section.querySelector('[data-slot="dt-selected"]')?.textContent).toContain('1 selected');
+    expect(header.indeterminate).toBe(true);
+
+    header.click();
+    await fixture.whenStable();
+    expect(section.querySelector('[data-slot="dt-selected"]')?.textContent).toContain('5 selected');
+    expect(header.indeterminate).toBe(false);
+    expect(header.checked).toBe(true);
+  });
+});
+
 describe('FormsDoc — aria combobox composition', () => {
   it('typing filters options and selecting one updates the value', async () => {
     const fixture = TestBed.createComponent(FormsDoc);

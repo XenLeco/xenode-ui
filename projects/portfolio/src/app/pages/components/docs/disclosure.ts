@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, linkedSignal, signal } from '@angular/core';
 import {
   AccordionContent,
   AccordionGroup,
@@ -7,16 +7,50 @@ import {
 } from '@angular/aria/accordion';
 
 import {
+  Badge,
+  Button,
   CAROUSEL,
+  Checkbox,
   COLLAPSIBLE,
+  Input,
+  Popover,
+  PopoverPanel,
+  PopoverTrigger,
   RESIZABLE,
   ScrollArea,
+  SortButton,
+  type SortDirection,
   SortHeader,
   TABLE,
   XN_ACCORDION,
 } from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
+
+type SortColumn = 'name' | 'players';
+
+interface ServerRow {
+  readonly id: number;
+  readonly name: string;
+  readonly region: string;
+  readonly status: 'online' | 'offline' | 'updating';
+  readonly players: number;
+}
+
+const SERVERS: readonly ServerRow[] = [
+  { id: 1, name: 'skyblock-prod', region: 'eu-west', status: 'online', players: 42 },
+  { id: 2, name: 'zomboid-main', region: 'eu-west', status: 'online', players: 12 },
+  { id: 3, name: 'valheim-crew', region: 'us-east', status: 'offline', players: 0 },
+  { id: 4, name: 'creative-flat', region: 'eu-west', status: 'online', players: 7 },
+  { id: 5, name: 'terraria-hard', region: 'us-west', status: 'updating', players: 0 },
+  { id: 6, name: 'palworld-test', region: 'us-east', status: 'offline', players: 0 },
+  { id: 7, name: 'skyblock-dev', region: 'eu-west', status: 'online', players: 3 },
+  { id: 8, name: 'minigames-hub', region: 'eu-north', status: 'online', players: 58 },
+  { id: 9, name: 'zomboid-hcore', region: 'us-west', status: 'online', players: 9 },
+  { id: 10, name: 'vanilla-smp', region: 'eu-west', status: 'updating', players: 0 },
+  { id: 11, name: 'modded-create', region: 'us-east', status: 'online', players: 21 },
+  { id: 12, name: 'events-arena', region: 'eu-north', status: 'offline', players: 0 },
+];
 
 @Component({
   selector: 'app-docs-disclosure',
@@ -32,6 +66,14 @@ import { ExampleBox } from './example-box';
     CAROUSEL,
     TABLE,
     SortHeader,
+    SortButton,
+    Badge,
+    Button,
+    Checkbox,
+    Input,
+    Popover,
+    PopoverPanel,
+    PopoverTrigger,
     ExampleBox,
   ],
   template: `
@@ -160,7 +202,7 @@ import { ExampleBox } from './example-box';
           </caption>
           <thead xnTableHeader>
             <tr xnTableRow>
-              <th xnSortHeader>Name</th>
+              <th xnSortHeader><button xnSortButton>Name</button></th>
               <th xnTableHead scope="col">Status</th>
             </tr>
           </thead>
@@ -177,9 +219,278 @@ import { ExampleBox } from './example-box';
         </table>
       </div>
     </section>
+
+    <section class="mt-10" aria-labelledby="dt-h">
+      <h2 id="dt-h" class="text-lg font-semibold">Data table</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        A recipe, not a component: filtering, sorting, pagination and selection are
+        <code class="font-mono text-xs">computed()</code> pipelines over the table primitives — the
+        engine is signals. Reach for a headless table library only when you need grouping or
+        virtualization.
+      </p>
+      <div class="mt-3 max-w-2xl">
+        <div class="flex flex-wrap items-center gap-2 pb-3">
+          <input
+            xnInput
+            type="search"
+            class="w-56"
+            placeholder="Filter by name or region"
+            aria-label="Filter servers"
+            [value]="dtQuery()"
+            (input)="dtQuery.set($any($event.target).value)"
+          />
+          <button xnButton variant="outline" size="sm" [xnPopoverTriggerFor]="colPop">
+            Columns
+          </button>
+          <ng-template #colPop="xnPopover" xnPopover>
+            <div xnPopoverPanel class="grid w-44 gap-1">
+              <label class="flex items-center gap-2 py-0.5 text-sm">
+                <input
+                  type="checkbox"
+                  xnCheckbox
+                  [checked]="dtCols().has('region')"
+                  (change)="dtToggleCol('region', $any($event.target).checked)"
+                />
+                Region
+              </label>
+              <label class="flex items-center gap-2 py-0.5 text-sm">
+                <input
+                  type="checkbox"
+                  xnCheckbox
+                  [checked]="dtCols().has('players')"
+                  (change)="dtToggleCol('players', $any($event.target).checked)"
+                />
+                Players
+              </label>
+            </div>
+          </ng-template>
+          <span class="ml-auto text-xs text-muted-foreground" data-slot="dt-selected"
+            >{{ dtSelected().size }} selected</span
+          >
+        </div>
+        <div xnTableContainer>
+          <table xnTable>
+            <thead xnTableHeader>
+              <tr xnTableRow>
+                <th xnTableHead scope="col" class="w-10">
+                  <!-- indeterminate is a DOM property — the platform's own
+                       tri-state, no library code needed. -->
+                  <input
+                    type="checkbox"
+                    xnCheckbox
+                    aria-label="Select all on this page"
+                    [checked]="dtPageAllSelected()"
+                    [indeterminate]="dtPageSomeSelected() && !dtPageAllSelected()"
+                    (change)="dtTogglePage($any($event.target).checked)"
+                  />
+                </th>
+                <th
+                  xnSortHeader
+                  [direction]="dtDirection('name')"
+                  (directionChange)="dtSetSort('name', $event)"
+                >
+                  <button xnSortButton>Name</button>
+                </th>
+                @if (dtCols().has('region')) {
+                  <th xnTableHead scope="col">Region</th>
+                }
+                <th xnTableHead scope="col">Status</th>
+                @if (dtCols().has('players')) {
+                  <th
+                    xnSortHeader
+                    class="text-right"
+                    [direction]="dtDirection('players')"
+                    (directionChange)="dtSetSort('players', $event)"
+                  >
+                    <button xnSortButton>Players</button>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody xnTableBody>
+              @for (row of dtRows(); track row.id) {
+                <tr
+                  xnTableRow
+                  class="data-[state=selected]:bg-muted"
+                  [attr.data-state]="dtSelected().has(row.id) ? 'selected' : null"
+                >
+                  <td xnTableCell>
+                    <input
+                      type="checkbox"
+                      xnCheckbox
+                      [attr.aria-label]="'Select ' + row.name"
+                      [checked]="dtSelected().has(row.id)"
+                      (change)="dtToggleRow(row.id, $any($event.target).checked)"
+                    />
+                  </td>
+                  <td xnTableCell class="font-medium">{{ row.name }}</td>
+                  @if (dtCols().has('region')) {
+                    <td xnTableCell>{{ row.region }}</td>
+                  }
+                  <td xnTableCell>
+                    <span
+                      xnBadge
+                      [variant]="
+                        row.status === 'online'
+                          ? 'success'
+                          : row.status === 'updating'
+                            ? 'info'
+                            : 'secondary'
+                      "
+                      >{{ row.status }}</span
+                    >
+                  </td>
+                  @if (dtCols().has('players')) {
+                    <td xnTableCell class="text-right tabular-nums">{{ row.players }}</td>
+                  }
+                </tr>
+              } @empty {
+                <tr xnTableRow>
+                  <td
+                    xnTableCell
+                    class="h-24 text-center text-muted-foreground"
+                    [attr.colspan]="3 + dtCols().size"
+                  >
+                    No servers match "{{ dtQuery() }}".
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="flex items-center justify-between pt-3">
+          <span class="text-xs text-muted-foreground" data-slot="dt-page">
+            Page {{ dtPage() }} of {{ dtPageCount() }} — {{ dtSorted().length }} servers
+          </span>
+          <div class="flex gap-2">
+            <button
+              xnButton
+              variant="outline"
+              size="sm"
+              [disabled]="dtPage() === 1"
+              (click)="dtPage.set(dtPage() - 1)"
+            >
+              Previous
+            </button>
+            <button
+              xnButton
+              variant="outline"
+              size="sm"
+              [disabled]="dtPage() === dtPageCount()"
+              (click)="dtPage.set(dtPage() + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   `,
 })
 export class DisclosureDoc {
+  // ——— Data-table engine: each stage is one computed over the previous.
+  // filtered → sorted → (page-clamped) → sliced. State that must reset on
+  // upstream changes is a linkedSignal; everything else derives.
+  private readonly servers: readonly ServerRow[] = SERVERS;
+  private readonly dtPageSize = 5;
+
+  protected readonly dtQuery = signal('');
+  protected readonly dtSort = signal<{ column: SortColumn; direction: SortDirection }>({
+    column: 'name',
+    direction: 'none',
+  });
+  protected readonly dtCols = signal<ReadonlySet<'region' | 'players'>>(
+    new Set(['region', 'players'] as const),
+  );
+  protected readonly dtSelected = signal<ReadonlySet<number>>(new Set());
+
+  private readonly dtFiltered = computed(() => {
+    const query = this.dtQuery().trim().toLowerCase();
+    if (!query) return this.servers;
+    return this.servers.filter(
+      (server) =>
+        server.name.toLowerCase().includes(query) || server.region.toLowerCase().includes(query),
+    );
+  });
+
+  protected readonly dtSorted = computed(() => {
+    const { column, direction } = this.dtSort();
+    if (direction === 'none') return this.dtFiltered();
+    const sign = direction === 'ascending' ? 1 : -1;
+    return [...this.dtFiltered()].sort((a, b) =>
+      column === 'players' ? sign * (a.players - b.players) : sign * a.name.localeCompare(b.name),
+    );
+  });
+
+  // Re-derives to 1 whenever the filter changes; the pager writes over it.
+  protected readonly dtPage = linkedSignal(() => {
+    this.dtQuery();
+    return 1;
+  });
+  protected readonly dtPageCount = computed(() =>
+    Math.max(1, Math.ceil(this.dtSorted().length / this.dtPageSize)),
+  );
+  protected readonly dtRows = computed(() =>
+    this.dtSorted().slice(
+      (this.dtPage() - 1) * this.dtPageSize,
+      this.dtPage() * this.dtPageSize,
+    ),
+  );
+
+  protected readonly dtPageAllSelected = computed(
+    () => this.dtRows().length > 0 && this.dtRows().every((row) => this.dtSelected().has(row.id)),
+  );
+  protected readonly dtPageSomeSelected = computed(() =>
+    this.dtRows().some((row) => this.dtSelected().has(row.id)),
+  );
+
+  protected dtDirection(column: SortColumn): SortDirection {
+    const sort = this.dtSort();
+    return sort.column === column ? sort.direction : 'none';
+  }
+
+  protected dtSetSort(column: SortColumn, direction: SortDirection): void {
+    this.dtSort.set({ column, direction });
+  }
+
+  protected dtToggleRow(id: number, checked: boolean): void {
+    this.dtSelected.update((previous) => {
+      const next = new Set(previous);
+      if (checked) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  }
+
+  protected dtTogglePage(checked: boolean): void {
+    this.dtSelected.update((previous) => {
+      const next = new Set(previous);
+      for (const row of this.dtRows()) {
+        if (checked) {
+          next.add(row.id);
+        } else {
+          next.delete(row.id);
+        }
+      }
+      return next;
+    });
+  }
+
+  protected dtToggleCol(column: 'region' | 'players', checked: boolean): void {
+    this.dtCols.update((previous) => {
+      const next = new Set(previous);
+      if (checked) {
+        next.add(column);
+      } else {
+        next.delete(column);
+      }
+      return next;
+    });
+  }
+
   // No Plain HTML flavor: accordion is @angular/aria composition, not a
   // variants function — there is nothing to generate a portable snippet from.
   protected readonly accordionExampleTabs = [

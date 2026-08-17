@@ -12,7 +12,7 @@ import { Rating } from './rating/rating';
 import { RESIZABLE } from './resizable/resizable';
 import { SIDEBAR } from './sidebar/sidebar';
 import { SITE } from './site/site';
-import { SortHeader } from './sort-header/sort-header';
+import { SortButton, SortHeader } from './sort-header/sort-header';
 import { STAT } from './stat/stat';
 import { STEPPER } from './stepper/stepper';
 import { TEXT_BLOCKS } from './text-blocks/text-blocks';
@@ -43,6 +43,7 @@ import { TIMELINE } from './timeline/timeline';
     RESIZABLE,
     INPUT_OTP,
     SortHeader,
+    SortButton,
     EXTRAS,
   ],
   template: `
@@ -181,7 +182,7 @@ import { TIMELINE } from './timeline/timeline';
     <table>
       <thead>
         <tr>
-          <th xnSortHeader>Name</th>
+          <th xnSortHeader><button xnSortButton>Name</button></th>
         </tr>
       </thead>
     </table>
@@ -328,14 +329,16 @@ describe('Mega-wave families', () => {
     expect(trigger?.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('sort header cycles aria-sort none → ascending → descending', async () => {
+  it('sort header cycles aria-sort via its native button (keyboard-activatable)', async () => {
     const { fixture, el } = await render();
     const th = el.querySelector<HTMLElement>('[data-slot="sort-header"]');
+    const button = th?.querySelector<HTMLButtonElement>('[data-slot="sort-button"]');
     expect(th?.getAttribute('aria-sort')).toBe('none');
-    th?.click();
+    expect(button?.type, 'activation must live on a real button').toBe('button');
+    button?.click();
     await fixture.whenStable();
     expect(th?.getAttribute('aria-sort')).toBe('ascending');
-    th?.click();
+    button?.click();
     await fixture.whenStable();
     expect(th?.getAttribute('aria-sort')).toBe('descending');
   });

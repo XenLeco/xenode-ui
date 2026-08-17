@@ -7,6 +7,22 @@ and shown in the docs shell.
 
 ## [Unreleased]
 
+### Added (data-table)
+
+- Data table as a recipe, not a component (big-four #2): filtering,
+  sorting, pagination, row selection and column visibility are
+  `computed()` pipelines over the existing table/sort-header/checkbox/
+  popover primitives — the engine is signals, zero new dependencies.
+  Select-all uses the native checkbox's `indeterminate` DOM property.
+  TanStack stays the documented scale-up path for grouping/virtualization.
+
+### Changed (breaking, pre-publish)
+
+- SortHeader activation moved to a native inner `button[xnSortButton]`
+  (auto-wired via DI): the th kept `aria-sort` and styling but a th
+  cannot receive focus, so click-only sorting locked keyboard users out.
+  Enter/Space now come free with the platform.
+
 ### Fixed (calendar review)
 
 - Arrow-key axes were inverted: in the grid source `colWrap` governs
