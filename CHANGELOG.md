@@ -34,6 +34,20 @@ and shown in the docs shell.
   page, cycle-to-none, empty-page select-all, selection persistence
   through filters until Clear.
 
+### Added (nav panels)
+
+- Navigation menu with panels (big-four #3): the nav-menu family gains a
+  disclosure tier — `nav[xnNavPanels]` owning single-open state,
+  `button[xnNavPanelTrigger]` with aria-expanded/aria-controls,
+  `[xnNavPanel]` (inert when closed, starting-style entrance riding
+  transition-discrete), and `a[xnNavPanelLink]` block links with
+  title/description slots. Deliberately the APG disclosure-navigation
+  pattern, never `role="menu"` — navigation is links and Tab is the
+  navigation key. Outside click, Escape and tabbing away close; Escape
+  returns focus to the open panel's trigger. Docs demo composes a
+  gradient Surface featured cell (with the documented on-blend focus
+  ring).
+
 ### Added (data-table)
 
 - Data table as a recipe, not a component (big-four #2): filtering,

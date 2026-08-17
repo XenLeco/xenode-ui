@@ -1,7 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { Tab, TabContent, TabList, TabPanel, Tabs } from '@angular/aria/tabs';
 
-import { BREADCRUMB, NAV_MENU, PAGINATION, SIDEBAR, XN_TABS } from '@xenode/ui';
+import {
+  BREADCRUMB,
+  NAV_MENU,
+  NAV_PANELS,
+  PAGINATION,
+  SIDEBAR,
+  Surface,
+  XN_TABS,
+} from '@xenode/ui';
 
 import { ExampleBox } from './example-box';
 
@@ -17,6 +25,8 @@ import { ExampleBox } from './example-box';
     BREADCRUMB,
     PAGINATION,
     NAV_MENU,
+    NAV_PANELS,
+    Surface,
     SIDEBAR,
     ExampleBox,
   ],
@@ -100,6 +110,67 @@ import { ExampleBox } from './example-box';
           <li xnNavMenuItem><a xnNavMenuLink href="/components/navigation">Settings</a></li>
         </ul>
       </nav>
+    </section>
+
+    <section class="mt-10" aria-labelledby="navpanels-h">
+      <h2 id="navpanels-h" class="text-lg font-semibold">Navigation menu with panels</h2>
+      <p class="mt-2 max-w-prose text-sm text-muted-foreground">
+        The APG disclosure-navigation pattern — buttons with
+        <code class="font-mono text-xs">aria-expanded</code> over panels of plain links, never
+        <code class="font-mono text-xs">role="menu"</code>. One panel at a time; outside click,
+        Escape and tabbing away close it.
+      </p>
+      <!-- min-height so the absolute panel has room inside the docs page -->
+      <div class="mt-3 min-h-72">
+        <nav xnNavPanels aria-label="Product example">
+          <ul xnNavMenuList>
+            <li xnNavMenuItem>
+              <button [xnNavPanelTrigger]="'np-products'">Products</button>
+            </li>
+            <li xnNavMenuItem>
+              <button [xnNavPanelTrigger]="'np-resources'">Resources</button>
+            </li>
+            <li xnNavMenuItem>
+              <a xnNavMenuLink href="/components/navigation">Pricing</a>
+            </li>
+          </ul>
+          <div [xnNavPanel]="'np-products'" class="grid w-[36rem] max-w-[85vw] grid-cols-2 gap-2">
+            <a
+              xnSurface
+              variant="gradient"
+              href="/components/blocks"
+              class="row-span-3 flex flex-col justify-end p-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gradient-foreground"
+            >
+              <span class="text-base font-semibold">xenode panel</span>
+              <span class="mt-1 text-gradient-foreground/75">
+                Game servers, bots and tunnels behind one dashboard.
+              </span>
+            </a>
+            <a xnNavPanelLink href="/components/buttons">
+              <span data-slot="nav-panel-link-title">Components</span>
+              <span data-slot="nav-panel-link-desc">239 primitives, contrast-locked tokens.</span>
+            </a>
+            <a xnNavPanelLink href="/components/blocks">
+              <span data-slot="nav-panel-link-title">Blocks</span>
+              <span data-slot="nav-panel-link-desc">Whole sections, copy the markup.</span>
+            </a>
+            <a xnNavPanelLink href="/components/motion">
+              <span data-slot="nav-panel-link-title">Motion</span>
+              <span data-slot="nav-panel-link-desc">Entrance presets and easing vocabulary.</span>
+            </a>
+          </div>
+          <div [xnNavPanel]="'np-resources'" class="grid w-64 gap-1">
+            <a xnNavPanelLink href="/components">
+              <span data-slot="nav-panel-link-title">Docs</span>
+              <span data-slot="nav-panel-link-desc">Every family, live and copyable.</span>
+            </a>
+            <a xnNavPanelLink href="/components/typography">
+              <span data-slot="nav-panel-link-title">Typography</span>
+              <span data-slot="nav-panel-link-desc">Prose rhythm in three variables.</span>
+            </a>
+          </div>
+        </nav>
+      </div>
     </section>
 
     <section class="mt-10" aria-labelledby="sidebar-h">
