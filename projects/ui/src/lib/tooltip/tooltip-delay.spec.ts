@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { purgeOverlays } from '../../testing/overlay';
+
 import { Tooltip, TooltipContent } from './tooltip';
 
 @Component({
@@ -10,12 +12,11 @@ import { Tooltip, TooltipContent } from './tooltip';
 class DelayedHost {}
 
 describe('Tooltip showDelay', () => {
-  afterEach(() => {
-    // CDK appends its overlay container to document.body; keep tests isolated.
-    document.querySelector('.cdk-overlay-container')?.remove();
-  });
+  beforeEach(purgeOverlays);
+  afterEach(purgeOverlays);
 
-  const tooltipEl = () => document.querySelector<HTMLElement>('[data-slot="tooltip"]');
+  const tooltipEl = () =>
+    document.querySelector<HTMLElement>('.cdk-overlay-container [data-slot="tooltip"]');
 
   async function render() {
     const fixture = TestBed.createComponent(DelayedHost);

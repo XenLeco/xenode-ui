@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { purgeOverlays } from '../../testing/overlay';
+
 import { XN_POPOVER } from './popover';
 
 @Component({
@@ -15,11 +17,11 @@ import { XN_POPOVER } from './popover';
 class Host {}
 
 describe('Popover', () => {
-  afterEach(() => {
-    document.querySelector('.cdk-overlay-container')?.remove();
-  });
+  beforeEach(purgeOverlays);
+  afterEach(purgeOverlays);
 
-  const panel = () => document.querySelector<HTMLElement>('[data-slot="popover"]');
+  const panel = () =>
+    document.querySelector<HTMLElement>('.cdk-overlay-container [data-slot="popover"]');
 
   async function render() {
     const fixture = TestBed.createComponent(Host);

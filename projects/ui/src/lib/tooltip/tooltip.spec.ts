@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { purgeOverlays } from '../../testing/overlay';
+
 import { Tooltip } from './tooltip';
 
 @Component({
@@ -10,10 +12,8 @@ import { Tooltip } from './tooltip';
 class Host {}
 
 describe('Tooltip', () => {
-  afterEach(() => {
-    // CDK appends its overlay container to document.body; keep tests isolated.
-    document.querySelector('.cdk-overlay-container')?.remove();
-  });
+  beforeEach(purgeOverlays);
+  afterEach(purgeOverlays);
 
   async function render() {
     const fixture = TestBed.createComponent(Host);
@@ -23,7 +23,8 @@ describe('Tooltip', () => {
     return { fixture, button };
   }
 
-  const tooltipEl = () => document.querySelector<HTMLElement>('[data-slot="tooltip"]');
+  const tooltipEl = () =>
+    document.querySelector<HTMLElement>('.cdk-overlay-container [data-slot="tooltip"]');
 
   it('shows on focus with role=tooltip and links via aria-describedby', async () => {
     const { fixture, button } = await render();

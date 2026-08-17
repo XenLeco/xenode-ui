@@ -10,6 +10,21 @@ and shown in the docs shell.
 The catalog cut: 263 components across ~91 families — parity-complete
 against live shadcn/ui, Bootstrap 5.3 and daisyUI 5.7. First public push.
 
+### Fixed (first CI run)
+
+- The overlay specs were green by worker-assignment luck: the runner may
+  execute several spec files sequentially in ONE worker's shared jsdom
+  document, and on the two-core CI machine the tooltip files landed
+  together — a leaked TooltipContent fixture host from one file (bare
+  `id=""`, outside any overlay container) failed the other's "tooltip is
+  absent" assertions. The cleanup idiom compounded it by removing only
+  the FIRST `.cdk-overlay-container`, stranding the newest. All four
+  overlay specs (tooltip ×2, popover, hover-card) now purge EVERY
+  container in both beforeEach and afterEach (shared
+  `testing/overlay.ts`) and scope panel queries under
+  `.cdk-overlay-container` — a document-global [data-slot] query can
+  match a neighboring file's leak that no container cleanup reaches.
+
 ### Fixed (charts review)
 
 - The ChartsDoc smoke test could not fail: jsdom has no

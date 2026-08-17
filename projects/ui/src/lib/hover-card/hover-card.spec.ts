@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { purgeOverlays } from '../../testing/overlay';
+
 import { XN_HOVER_CARD } from './hover-card';
 
 @Component({
@@ -15,11 +17,11 @@ import { XN_HOVER_CARD } from './hover-card';
 class Host {}
 
 describe('HoverCard', () => {
-  afterEach(() => {
-    document.querySelector('.cdk-overlay-container')?.remove();
-  });
+  beforeEach(purgeOverlays);
+  afterEach(purgeOverlays);
 
-  const panel = () => document.querySelector<HTMLElement>('[data-slot="hover-card"]');
+  const panel = () =>
+    document.querySelector<HTMLElement>('.cdk-overlay-container [data-slot="hover-card"]');
   const settle = () => new Promise((resolve) => setTimeout(resolve, 20));
 
   it('opens on hover and closes on leave (zero delays for the test)', async () => {
