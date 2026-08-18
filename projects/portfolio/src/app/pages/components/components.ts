@@ -2,11 +2,13 @@ import {
   Component,
   ElementRef,
   afterEveryRender,
+  afterNextRender,
   computed,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox';
@@ -16,6 +18,7 @@ import { filter, map } from 'rxjs';
 import {
   ComboboxPanel,
   DIALOG,
+  DialogClose,
   Highlight,
   Input,
   Kbd,
@@ -46,6 +49,7 @@ interface TocEntry {
     RouterLink,
     RouterLinkActive,
     DIALOG,
+    DialogClose,
     Input,
     Kbd,
     Highlight,
@@ -58,8 +62,8 @@ interface TocEntry {
     Option,
   ],
   host: {
-    '(document:keydown.control.k)': 'onSearchShortcut($event)',
-    '(document:keydown.meta.k)': 'onSearchShortcut($event)',
+    '(document:keydown.control.k)': 'onSearchShortcutCtrl($event)',
+    '(document:keydown.meta.k)': 'onSearchShortcutMeta($event)',
   },
   template: `
     <div class="flex flex-col gap-6 sm:flex-row sm:gap-8">
@@ -78,7 +82,7 @@ interface TocEntry {
           class="mb-2 hidden w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-input px-2.5 py-1.5 text-sm text-muted-foreground transition-[color,border-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:flex"
           (click)="openSearch()"
         >
-          Search docs… <kbd xnKbd aria-hidden="true">⌘K</kbd>
+          Search docs… <kbd xnKbd aria-hidden="true">{{ kbdHint() }}</kbd>
         </button>
         <nav
           aria-label="Component docs"
@@ -162,7 +166,20 @@ interface TocEntry {
         }
       </aside>
 
-      <dialog xnDialog #searchDlg aria-label="Search docs" class="max-w-md p-2">
+      <!-- closedby="any" gives backdrop light-dismiss where supported; the
+           ✕ button is the guaranteed pointer/touch exit — on-screen
+           keyboards have no Escape, and a modal with no tappable close is
+           a trap. (close) collapses the combobox so a reopen always
+           presents the same fresh state as the keyboard path. -->
+      <dialog
+        xnDialog
+        #searchDlg
+        closedby="any"
+        aria-label="Search docs"
+        class="max-w-md p-2"
+        (close)="onSearchClosed()"
+      >
+        <button xnDialogClose aria-label="Close search" (click)="searchDlg.close()">✕</button>
         <div class="grid gap-1">
           <input
             xnInput
@@ -171,40 +188,51 @@ interface TocEntry {
             [(value)]="searchQuery"
             placeholder="Search components…"
             aria-label="Search docs"
-            class="border-0 focus-visible:outline-0"
+            class="border-0 pr-8 focus-visible:outline-0"
           />
+          <span class="sr-only" role="status">{{ statusText() }}</span>
           <ng-template ngComboboxPopup [combobox]="search">
-            <div
-              xnComboboxPanel
-              ngComboboxWidget
-              ngListbox
-              #slb="ngListbox"
-              focusMode="activedescendant"
-              selectionMode="explicit"
-              [(value)]="searchSelection"
-              (valueChange)="goTo($event); searchDlg.close()"
-              [activeDescendant]="slb.activeDescendant()"
-              aria-label="Docs sections"
-              class="static mt-0 max-h-80 w-full border-0 shadow-none"
-            >
-              @for (entry of results(); track key(entry)) {
-                <div
-                  xnListboxOption
-                  ngOption
-                  [value]="key(entry)"
-                  class="flex items-center gap-1.5"
-                >
-                  <xn-highlight
-                    class="shrink-0 text-muted-foreground"
-                    [text]="entry.pageLabel"
-                    [query]="searchQuery()"
-                  />
-                  @if (entry.anchor) {
-                    <span aria-hidden="true" class="text-muted-foreground/60">›</span>
-                    <xn-highlight [text]="entry.label" [query]="searchQuery()" />
-                  }
-                </div>
-              } @empty {
+            <!-- The panel wraps a separate listbox element: role=listbox
+                 permits only option/group children, so the empty state
+                 must live beside the listbox, not inside it. -->
+            <div xnComboboxPanel class="static mt-0 max-h-80 w-full border-0 shadow-none">
+              <!-- The aria Listbox host-binds tabindex (0 in this focus
+                   mode) at runtime; the template linter cannot see
+                   through the composed directive. -->
+              <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+              <div
+                ngComboboxWidget
+                ngListbox
+                #slb="ngListbox"
+                focusMode="activedescendant"
+                selectionMode="explicit"
+                [(value)]="searchSelection"
+                (valueChange)="goTo($event); searchDlg.close()"
+                [activeDescendant]="slb.activeDescendant()"
+                (keydown.escape)="onPopupEscape($event)"
+                aria-label="Docs sections"
+                class="flex flex-col gap-0.5"
+              >
+                @for (entry of results(); track key(entry)) {
+                  <div
+                    xnListboxOption
+                    ngOption
+                    [value]="key(entry)"
+                    class="flex items-center gap-1.5"
+                  >
+                    <xn-highlight
+                      class="shrink-0 text-muted-foreground"
+                      [text]="entry.pageLabel"
+                      [query]="searchQuery()"
+                    />
+                    @if (entry.anchor) {
+                      <span aria-hidden="true" class="text-muted-foreground/60">›</span>
+                      <xn-highlight [text]="entry.label" [query]="searchQuery()" />
+                    }
+                  </div>
+                }
+              </div>
+              @if (results().length === 0) {
                 <div class="px-2 py-1.5 text-sm text-muted-foreground">No matches.</div>
               }
             </div>
@@ -239,10 +267,15 @@ export class Components {
 
   protected readonly toc = signal<readonly TocEntry[]>([]);
 
+  private readonly scroller = inject(ViewportScroller);
   private readonly searchDialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDlg');
+  private readonly searchComboboxDir = viewChild.required('search', { read: Combobox });
+  private readonly searchInput = viewChild.required('search', { read: ElementRef });
   protected readonly searchQuery = signal('');
   protected readonly searchSelection = signal<string[]>([]);
   protected readonly key = searchKey;
+  protected readonly isMac = signal(false);
+  protected readonly kbdHint = computed(() => (this.isMac() ? '⌘K' : 'Ctrl K'));
 
   protected readonly results = computed<readonly SearchEntry[]>(() => {
     const query = this.searchQuery().trim().toLowerCase();
@@ -252,16 +285,55 @@ export class Components {
     );
   });
 
+  // Announces result counts to screen readers: an empty result list is
+  // otherwise silent — aria-activedescendant just disappears.
+  protected readonly statusText = computed(() => {
+    const count = this.results().length;
+    return count === 0 ? 'No matches' : `${count} result${count === 1 ? '' : 's'}`;
+  });
+
   protected openSearch(): void {
+    const dialog = this.searchDialog().nativeElement;
+    if (dialog.open) {
+      // Shortcut while open toggles closed (palette convention) instead
+      // of silently wiping the in-progress query.
+      dialog.close();
+      return;
+    }
     // Fresh search each time — a stale query from the last visit would
     // filter the list before the user has typed anything.
     this.searchQuery.set('');
     this.searchSelection.set([]);
-    this.searchDialog().nativeElement.showModal();
+    dialog.showModal();
   }
 
-  protected onSearchShortcut(event: Event): void {
-    // preventDefault: Ctrl/⌘K focuses the browser's own address bar.
+  protected onSearchClosed(): void {
+    // Collapse so the popup subtree unmounts: a pointer selection leaves
+    // the combobox expanded (focus moved INTO the popup, so the input's
+    // focusout never collapses), and the surviving listbox would re-open
+    // announcing the stale active row.
+    this.searchComboboxDir().expanded.set(false);
+  }
+
+  protected onPopupEscape(event: Event): void {
+    // With real focus inside the popup (Tab, or a tap that focused an
+    // option) Escape would reach the dialog unconsumed and close
+    // everything in one press — restore the two-step layering.
+    event.preventDefault();
+    (this.searchInput().nativeElement as HTMLElement).focus();
+    this.searchComboboxDir().expanded.set(false);
+  }
+
+  protected onSearchShortcutCtrl(event: Event): void {
+    // On macOS Ctrl+K is kill-line in every text field — leave it alone;
+    // Mac users have ⌘K.
+    if (this.isMac()) return;
+    event.preventDefault();
+    this.openSearch();
+  }
+
+  protected onSearchShortcutMeta(event: Event): void {
+    // preventDefault: ⌘K focuses the browser's own address bar.
     event.preventDefault();
     this.openSearch();
   }
@@ -269,10 +341,19 @@ export class Components {
   protected goTo(selection: readonly string[]): void {
     const entry = SEARCH_INDEX.find((candidate) => searchKey(candidate) === selection[0]);
     if (!entry) return;
-    void this.router.navigate(
-      entry.page ? ['/components', entry.page] : ['/components'],
-      entry.anchor ? { fragment: entry.anchor } : {},
-    );
+    void this.router
+      .navigate(
+        entry.page ? ['/components', entry.page] : ['/components'],
+        entry.anchor ? { fragment: entry.anchor } : {},
+      )
+      .then((navigated) => {
+        // Selecting the entry for the CURRENT url is a NavigationSkipped:
+        // no Scroll event fires, so the promised jump happens by hand.
+        if (navigated === false) {
+          if (entry.anchor) this.scroller.scrollToAnchor(entry.anchor);
+          else this.scroller.scrollToPosition([0, 0]);
+        }
+      });
   }
 
   private readonly url = toSignal(
@@ -298,6 +379,11 @@ export class Components {
   });
 
   constructor() {
+    afterNextRender(() => {
+      // Prerender says "Ctrl K"; Apple platforms flip to ⌘K after
+      // hydration (a binding update, not a hydration mismatch).
+      this.isMac.set(/Mac|iPhone|iPad/.test(navigator.platform));
+    });
     afterEveryRender(() => {
       // Closed dialogs and inert panels are in the DOM but unreadable —
       // their headings would be phantom links that scroll nowhere.

@@ -5,13 +5,15 @@ import { provideRouter } from '@angular/router';
 
 import { DOCS_ROUTES } from '../docs.routes';
 
-import { SEARCH_INDEX } from './search-index';
+import { SEARCH_INDEX, searchKey } from './search-index';
 
 /**
- * The palette index is hand-maintained; this suite is why it cannot drift.
- * Every entry is resolved against the page it points at, RENDERED: the id
- * must exist, the heading text must match, and the target must not be
- * buried in a closed dialog or inert panel (a link that scrolls nowhere).
+ * The palette index is hand-maintained; this suite is why it cannot drift
+ * — in BOTH directions. Every entry must resolve to a rendered h2 on its
+ * page (id, exact text, not buried in a closed dialog or inert panel),
+ * and every rendered h2 must be indexed: sections get ADDED far more
+ * often than deleted, and an index-only check would let each new section
+ * silently become unfindable.
  */
 describe('SEARCH_INDEX', () => {
   const pagePaths = [...new Set(SEARCH_INDEX.map((entry) => entry.page))];
@@ -29,11 +31,18 @@ describe('SEARCH_INDEX', () => {
     }
   });
 
+  it('never aliases two entries onto one listbox value', () => {
+    // Duplicate keys would link two rows to one selection state and make
+    // goTo resolve whichever comes first.
+    expect(new Set(SEARCH_INDEX.map(searchKey)).size).toBe(SEARCH_INDEX.length);
+  });
+
+  // Every page renders — including zero-section pages like the overview,
+  // whose reverse check proves they really have no anchorable headings.
   for (const path of pagePaths) {
     const entries = SEARCH_INDEX.filter((entry) => entry.page === path && entry.anchor !== '');
-    if (entries.length === 0) continue;
 
-    it(`every anchor on '${path}' is a rendered, reachable h2`, async () => {
+    it(`'${path || 'overview'}' and its index entries match exactly, both directions`, async () => {
       const route = DOCS_ROUTES.find((candidate) => candidate.path === path);
       if (!route?.loadComponent) throw new Error(`No route for '${path}'`);
       const component = await (route.loadComponent as () => Promise<Type<unknown>>)();
@@ -58,6 +67,16 @@ describe('SEARCH_INDEX', () => {
           `#${entry.anchor} on '${path}' is hidden — the palette would scroll nowhere`,
         ).toBeNull();
       }
+
+      // Reverse direction: every reachable rendered h2 must be indexed.
+      const renderedIds = [...host.querySelectorAll('h2[id]')]
+        .filter((heading) => !heading.closest('dialog:not([open]), [inert]'))
+        .map((heading) => heading.id)
+        .sort();
+      expect(
+        renderedIds,
+        `un-indexed section on '${path}' — the palette cannot find it`,
+      ).toEqual(entries.map((entry) => entry.anchor).sort());
     });
   }
 });

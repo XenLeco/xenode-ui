@@ -1,3 +1,4 @@
+import { ViewportScroller } from '@angular/common';
 import { Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
@@ -99,6 +100,36 @@ describe('Docs shell — search palette', () => {
     navigate.mockClear();
     palette.goTo(['no-such#entry']);
     expect(navigate, 'unknown keys must not navigate').not.toHaveBeenCalled();
+  });
+
+  it('scrolls by hand when the router skips a same-URL navigation', async () => {
+    // Selecting the entry for the CURRENT url resolves false with no
+    // Scroll event — the promised jump must still happen. The previous
+    // test's mockResolvedValue(true) could never see this case.
+    const { palette, router } = await render();
+    const scroller = TestBed.inject(ViewportScroller);
+    const toAnchor = vi.spyOn(scroller, 'scrollToAnchor').mockImplementation(() => undefined);
+    const toTop = vi.spyOn(scroller, 'scrollToPosition').mockImplementation(() => undefined);
+    vi.spyOn(router, 'navigate').mockResolvedValue(false);
+
+    palette.goTo(['buttons#split-heading']);
+    await Promise.resolve();
+    expect(toAnchor).toHaveBeenCalledWith('split-heading');
+
+    palette.goTo(['#']);
+    await Promise.resolve();
+    expect(toTop).toHaveBeenCalledWith([0, 0]);
+  });
+
+  it('announces the result count through a status region', async () => {
+    const { fixture, palette } = await render();
+    const status = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('[role="status"]')?.textContent;
+    expect(status()).toMatch(/\d+ results/);
+
+    palette.searchQuery.set('zzz-no-hit');
+    await fixture.whenStable();
+    expect(status()).toBe('No matches');
   });
 });
 

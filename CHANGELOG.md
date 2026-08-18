@@ -35,7 +35,46 @@ and shown in the docs shell.
 - The keyboard highlight was invisible on top of being silent:
   XnListboxOption styled only focus/hover/selection, and in
   activedescendant mode the option never receives focus —
-  data-[active=true] now paints the same accent as focus.
+  data-[active=true] now paints the same accent as focus (now pinned by
+  a class-string spec: the attribute is written by aria, so a behavior
+  test stays green even with the styling deleted).
+
+### Fixed (palette review)
+
+- The modal palette had no pointer/touch exit: on-screen keyboards have
+  no Escape, so a phone user was trapped until they selected something.
+  A ✕ close button is the guaranteed exit; `closedby="any"` adds
+  backdrop light-dismiss where supported (also on the command demo).
+- A pointer selection left the combobox expanded forever — focus moved
+  INTO the popup, so the input's focusout never collapsed it — and the
+  surviving listbox re-opened announcing the stale active row. The
+  dialog's (close) now collapses the combobox, so every reopen presents
+  the keyboard path's fresh state.
+- Escape with real focus inside the popup (Tab, or a tap that focused an
+  option) reached the dialog unconsumed and closed everything in one
+  press. The popup consumes it, refocuses the input, and closes only the
+  list — the documented two-step layering now holds from both places.
+- Selecting the entry for the current URL did nothing: the router skips
+  same-URL navigations, so no Scroll event ever fired — goTo now scrolls
+  by hand when navigation reports skipped. (The docs.spec navigation
+  test mocked router.navigate and could not see this.)
+- Ctrl/⌘K while the palette is open now toggles it closed instead of
+  silently wiping the typed query; Ctrl+K is no longer bound on macOS
+  (kill-line), and the hint renders per platform.
+- Zero results announced nothing while aria-activedescendant silently
+  vanished — a visually-hidden role=status now reads "N results"/"No
+  matches"; the empty-state div also moved OUT of the listbox element
+  (role=listbox permits only option/group children) via a panel/listbox
+  split at all three composition sites.
+- The drift guarantee was one-directional (proven with a planted
+  unindexed h2 that every suite missed): the index spec now also
+  harvests each page's rendered h2 set and requires it to equal the
+  indexed anchors — sections get added far more often than deleted.
+  Plus: a key-uniqueness assertion, and zero-section pages now render in
+  the suite instead of being skipped.
+- Typeahead on the custom select was dead (pre-existing): the aria
+  option's search term comes ONLY from its label input, which no site
+  passed — the region options now carry [label].
 
 ## [0.2.0] — 2026-08-17
 

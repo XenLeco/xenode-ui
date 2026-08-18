@@ -161,19 +161,24 @@ import { ExampleBox } from './example-box';
             aria-label="Search games"
           />
           <ng-template ngComboboxPopup [combobox]="cb">
-            <div
-              xnComboboxPanel
-              ngComboboxWidget
-              ngListbox
-              #lb="ngListbox"
-              focusMode="activedescendant"
-              [(value)]="comboboxSelection"
-              [activeDescendant]="lb.activeDescendant()"
-              aria-label="Games"
-            >
-              @for (game of filteredGames(); track game) {
-                <div xnListboxOption ngOption [value]="game">{{ game }}</div>
-              } @empty {
+            <!-- Separate listbox element: role=listbox only permits
+                 option/group children, so the empty state sits beside it. -->
+            <div xnComboboxPanel>
+              <div
+                ngComboboxWidget
+                ngListbox
+                #lb="ngListbox"
+                focusMode="activedescendant"
+                [(value)]="comboboxSelection"
+                [activeDescendant]="lb.activeDescendant()"
+                aria-label="Games"
+                class="flex flex-col gap-0.5"
+              >
+                @for (game of filteredGames(); track game) {
+                  <div xnListboxOption ngOption [value]="game">{{ game }}</div>
+                }
+              </div>
+              @if (filteredGames().length === 0) {
                 <div class="px-2 py-1.5 text-sm text-muted-foreground">No matches.</div>
               }
             </div>
@@ -204,7 +209,10 @@ import { ExampleBox } from './example-box';
               aria-labelledby="f-region-label"
             >
               @for (region of regions; track region) {
-                <div xnListboxOption ngOption [value]="region">{{ region }}</div>
+                <!-- [label] feeds the option's typeahead search term — the
+                     pattern reads ONLY this input, never text content, so
+                     without it typing a letter on the select moves nothing. -->
+                <div xnListboxOption ngOption [value]="region" [label]="region">{{ region }}</div>
               }
             </div>
           </ng-template>

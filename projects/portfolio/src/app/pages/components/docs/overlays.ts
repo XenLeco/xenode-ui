@@ -134,9 +134,20 @@ import { ExampleBox } from './example-box';
       </app-example-box>
     </section>
 
-    <dialog xnDialog #commandDlg aria-label="Command palette" class="max-w-md p-2">
+    <!-- closedby="any": backdrop light-dismiss — on-screen keyboards have
+         no Escape. (close) collapses the combobox so a reopen never
+         resurrects the last active row. -->
+    <dialog
+      xnDialog
+      #commandDlg
+      closedby="any"
+      aria-label="Command palette"
+      class="max-w-md p-2"
+      (close)="cmd.expanded.set(false)"
+    >
       <div class="grid gap-1">
         <input
+          #cmdInput
           xnInput
           ngCombobox
           #cmd="ngCombobox"
@@ -146,22 +157,31 @@ import { ExampleBox } from './example-box';
           class="border-0 focus-visible:outline-0"
         />
         <ng-template ngComboboxPopup [combobox]="cmd">
-          <div
-            xnComboboxPanel
-            ngComboboxWidget
-            ngListbox
-            #clb="ngListbox"
-            focusMode="activedescendant"
-            selectionMode="explicit"
-            [(value)]="commandSelection"
-            (valueChange)="runCommand($event); commandDlg.close()"
-            [activeDescendant]="clb.activeDescendant()"
-            aria-label="Commands"
-            class="static mt-0 w-full border-0 shadow-none"
-          >
-            @for (command of filteredCommands(); track command) {
-              <div xnListboxOption ngOption [value]="command">{{ command }}</div>
-            } @empty {
+          <!-- Separate listbox element: role=listbox only permits
+               option/group children, so the empty state sits beside it. -->
+          <div xnComboboxPanel class="static mt-0 w-full border-0 shadow-none">
+            <!-- The aria Listbox host-binds tabindex (0 in this focus
+                 mode) at runtime; the template linter cannot see through
+                 the composed directive. -->
+            <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+            <div
+              ngComboboxWidget
+              ngListbox
+              #clb="ngListbox"
+              focusMode="activedescendant"
+              selectionMode="explicit"
+              [(value)]="commandSelection"
+              (valueChange)="runCommand($event); commandDlg.close()"
+              [activeDescendant]="clb.activeDescendant()"
+              (keydown.escape)="$event.preventDefault(); cmdInput.focus(); cmd.expanded.set(false)"
+              aria-label="Commands"
+              class="flex flex-col gap-0.5"
+            >
+              @for (command of filteredCommands(); track command) {
+                <div xnListboxOption ngOption [value]="command">{{ command }}</div>
+              }
+            </div>
+            @if (filteredCommands().length === 0) {
               <div class="px-2 py-1.5 text-sm text-muted-foreground">No commands.</div>
             }
           </div>
