@@ -32,7 +32,7 @@ ngx-charts renders, the library ships only design tokens and a `ChartCard`
 bridge. All of it on a live docs site at `/components`, generated from the
 same variants objects the components use.
 
-<!-- demo GIF slot -->
+![Docs tour: the ⌘K search palette jumps to the keyboard-driven calendar, then charts re-resolve their design tokens live on a theme flip](docs/demo.gif)
 
 ## Getting started
 
