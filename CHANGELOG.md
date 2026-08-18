@@ -75,6 +75,12 @@ and shown in the docs shell.
 - Typeahead on the custom select was dead (pre-existing): the aria
   option's search term comes ONLY from its label input, which no site
   passed — the region options now carry [label].
+- Recording the README demo GIF (real Chrome, real keys) caught what
+  static review and value-assignment tests both missed: the review's ✕
+  button had become the dialog's FIRST focusable, so showModal() focused
+  it instead of the input and typing landed nowhere — the input now
+  carries autofocus. The overview page also claimed a stale "201
+  components across 60+ families"; it says 263/~91 like the README.
 
 ## [0.2.0] — 2026-08-17
 

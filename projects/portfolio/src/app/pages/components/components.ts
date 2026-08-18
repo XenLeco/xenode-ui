@@ -82,7 +82,8 @@ interface TocEntry {
           class="mb-2 hidden w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-input px-2.5 py-1.5 text-sm text-muted-foreground transition-[color,border-color] hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:flex"
           (click)="openSearch()"
         >
-          Search docs… <kbd xnKbd aria-hidden="true">{{ kbdHint() }}</kbd>
+          Search docs…
+          <kbd xnKbd aria-hidden="true" class="whitespace-nowrap">{{ kbdHint() }}</kbd>
         </button>
         <nav
           aria-label="Component docs"
@@ -181,6 +182,9 @@ interface TocEntry {
       >
         <button xnDialogClose aria-label="Close search" (click)="searchDlg.close()">✕</button>
         <div class="grid gap-1">
+          <!-- autofocus is load-bearing: showModal() otherwise focuses the
+               FIRST focusable — since the review added the ✕ button, that
+               is the button, and typing lands nowhere. -->
           <input
             xnInput
             ngCombobox
@@ -188,6 +192,7 @@ interface TocEntry {
             [(value)]="searchQuery"
             placeholder="Search components…"
             aria-label="Search docs"
+            autofocus
             class="border-0 pr-8 focus-visible:outline-0"
           />
           <span class="sr-only" role="status">{{ statusText() }}</span>

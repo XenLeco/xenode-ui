@@ -9,7 +9,7 @@ import { CARD } from '@xenode/ui';
   template: `
     <h1 class="text-2xl font-semibold tracking-tight">Components</h1>
     <p class="mt-2 max-w-prose text-muted-foreground">
-      201 components across 60+ families. Every example is generated from the same variants objects
+      263 components across ~91 families. Every example is generated from the same variants objects
       the components use, so these pages cannot drift from the code. Pick a category:
     </p>
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
